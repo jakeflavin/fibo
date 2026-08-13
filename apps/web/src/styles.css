@@ -488,21 +488,24 @@ svg.lucide {
 }
 
 /* The header shares the content column, flush with the card edges. */
-/* Full-width app bar with a bottom border, like Jira's top nav. */
+/* Full-width app bar with a bottom border, like Jira's top nav.
+   Fixed height so no browser default spacing can inflate it. */
 .room-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 20px;
-  min-height: 48px;
+  padding: 0 20px;
+  height: 40px;
   border-bottom: 1px solid var(--line);
   flex-shrink: 0;
 }
 
+/* Name + muted version on one line. */
 .brand {
   display: flex;
-  flex-direction: column;
-  line-height: 1.25;
+  align-items: baseline;
+  gap: 6px;
+  line-height: 1;
 }
 
 .brand-name {
@@ -843,6 +846,13 @@ svg.lucide {
 
 .round-result {
   animation: rise 0.25s ease-out both;
+  /* Matches the toolbar height so the two bottom borders align. */
+  height: var(--strip-h);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 /* Tally sits to the right of the value. The row reserves two tally lines
@@ -880,12 +890,20 @@ svg.lucide {
 
 /* The controls card: header eyebrow, then one toolbar row with the round
    zone and result zone split by a vertical hairline. */
-/* Full-width toolbar strip under the app bar, like a Jira board header. */
+/* Full-width toolbar strip under the app bar, like a Jira board header.
+   The toolbar and the consensus section share one fixed height so their
+   bottom borders meet in a single continuous line across the page. */
+:root {
+  --strip-h: 96px;
+}
+
 .leader-controls {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 8px;
-  padding: 12px 20px;
+  padding: 0 20px;
+  height: var(--strip-h);
   border-bottom: 1px solid var(--line);
   flex-shrink: 0;
 }
@@ -1502,6 +1520,14 @@ svg.lucide {
     height: auto;
     overflow: visible;
     padding-bottom: 160px;
+  }
+
+  /* Stacked layout: strips size to their content again. */
+  .leader-controls,
+  .round-result {
+    height: auto;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 
   /* The toolbar wraps: the point ruler takes its own full-width line. */
