@@ -16,9 +16,6 @@ export function CardTable({ session, myUserId, canLead }: Props) {
   const revealed = session.revealed && !!story;
 
   const seats = Object.entries(users).sort(([, a], [, b]) => a.joinedAt - b.joinedAt);
-  const voteCount = Object.keys(votes).length;
-  const onlineCount = Object.values(users).filter((u) => u.online).length;
-  const everyoneVoted = voteCount > 0 && voteCount >= onlineCount;
 
   if (!story) {
     return (
@@ -38,7 +35,6 @@ export function CardTable({ session, myUserId, canLead }: Props) {
 
   return (
     <div className="table-panel">
-      <div className="eyebrow">now pointing</div>
       <div className="story-line">
         <h2 className="story-title">{story.title}</h2>
       </div>
@@ -83,24 +79,10 @@ export function CardTable({ session, myUserId, canLead }: Props) {
                   {user.name}
                 </span>
               </div>
-              <div className="seat-status dim">
-                {state === 'voted' && '✓ locked in'}
-                {state === 'thinking' && <span className="thinking">picking</span>}
-                {state === 'away' && 'away'}
-                {state === 'revealed' && (hasVoted ? '' : 'no vote')}
-              </div>
             </div>
           );
         })}
       </div>
-
-      {!revealed && (
-        <div className="table-footer">
-          <span className="dim">
-            {voteCount}/{onlineCount} votes in{everyoneVoted ? ' — all set!' : ''}
-          </span>
-        </div>
-      )}
 
       {revealed && <ResultPanel session={session} canLead={canLead} />}
     </div>

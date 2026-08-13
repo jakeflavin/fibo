@@ -26,7 +26,7 @@ async function setupRoom(browser: Browser, theme: string, viewport: { width: num
   await add.fill('FIBO-10 audit logging');
   await add.press('Enter');
   await page.getByTitle('5 points', { exact: true }).click();
-  await expect(page.getByText('1/1 votes in')).toBeVisible();
+  await expect(page.locator('.seat-voted')).toHaveCount(1);
   return { ctx, page };
 }
 

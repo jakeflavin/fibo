@@ -69,10 +69,10 @@ test('full sprint planning session with three users', async ({ browser }) => {
   const bobSeatOnAda = ada.locator('.seat', { hasText: 'Bob' });
   await expect(bobSeatOnAda).toHaveClass(/seat-voted/);
   await expect(bobSeatOnAda.locator('.seat-card-front')).toHaveText('');
-  await expect(ada.getByText('2/3 votes in')).toBeVisible();
+  await expect(ada.locator('.seat-voted')).toHaveCount(2);
 
   await ada.getByTitle('5 points', { exact: true }).click();
-  await expect(ada.getByText(/3\/3 votes in — all set!/)).toBeVisible();
+  await expect(ada.locator('.seat-voted')).toHaveCount(3);
   await shot(ada, '03-all-voted-facedown');
 
   // participants have no flip button
@@ -160,7 +160,7 @@ test('full sprint planning session with three users', async ({ browser }) => {
   await expect(ada.locator('.result-value')).toHaveText('3');
   await ada.getByRole('button', { name: /revote/ }).click();
   await expect(ada.locator('.result-value')).toHaveCount(0);
-  await expect(ada.getByText('0/3 votes in')).toBeVisible();
+  await expect(ada.locator('.seat-voted')).toHaveCount(0);
 
   // ── presence: a teammate disconnects ───────────────────────
   await cy.context().close();
