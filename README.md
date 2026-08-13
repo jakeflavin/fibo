@@ -1,28 +1,50 @@
 # fibo
 
-**Story points, no strings attached.** Ephemeral sprint-planning sessions for software teams — no accounts, no signup, just a link (or a QR code) and a name.
+**Story points, no strings attached.** Ephemeral sprint-planning sessions
+for software teams — no accounts, no signup, just a link (or a QR code)
+and a name.
 
-```
-~ $ fibo
-```
+Live at **https://fibo-49d58.web.app** · styled after the Atlassian Design
+System so Jira users feel at home.
 
 ## What it does
 
-- **Create a session** → you get a unique shareable URL and become the session **owner**.
-- **Teammates join** by opening the link and entering a name. Each person is randomly assigned one of **12 color + fat-pixel avatar identities**.
-- **Owners promote participants to leaders.** Leaders and the owner can put stories on the table, flip cards, set countdown timers, and edit results. Everyone votes.
-- **Vote** with the Fibonacci deck (0, 1, 2, 3, 5, 8, 13, 21) or play the **skip** card. Everyone can see *who* has locked in a vote, but values stay hidden until the cards are flipped.
-- **Flip** manually or let the **timer** auto-flip at zero. The most-repeated number wins by default (ties break high); leaders can override it, call a revote, or accept and move to the next story.
-- **Story queue** keeps the running list of everything pointed this session.
-- **Export / import** the session as JSON — export is available to everyone, import (which replaces the queue) to leaders and the owner.
-- **Light & dark themes**, responsive from phones to desktops, terminal-flavored UI throughout.
+- **Create a session** → you get a unique shareable URL and become the
+  session **Admin**. Teammates join by opening the link and entering a
+  name; each person gets one of 12 color + fat-pixel avatar identities.
+- **Admins manage the team** (hover a row for the `…` menu: make/remove
+  lead, remove from session). Leads run the rounds; everyone votes.
+- **Vote** with the Fibonacci deck (0–21), the **`?` skip** card, or the
+  **coffee** card. Everyone sees *who* has locked in; values stay hidden
+  until the flip.
+- **Flip** manually or let a **timer** (30s/1m/2m) auto-flip at zero. The
+  most-repeated number wins (ties break high); leads can override the
+  result on the point ruler or repoint for another round.
+- **Story queue** with points at a glance: adding a story puts it straight
+  on the table, clicking rows switches or reopens stories, and the active
+  story's title supports inline rename and delete.
+- **Export / import** the queue as JSON — export for everyone, import
+  (replaces the queue) for leads.
+- **Light & dark themes**, responsive from phones (no-scroll 5×2 hand
+  grid) to desktops.
 
-Sessions are meant to be temporary: state lives in Firebase Realtime Database keyed by an unguessable session id, with no user accounts anywhere.
+Sessions are temporary: state lives in Firebase Realtime Database keyed by
+an unguessable session id, with no user accounts anywhere.
+
+## Documentation
+
+- [FEATURES.md](FEATURES.md) — the complete feature list and how to use
+  each one.
+- [DESIGN.md](DESIGN.md) — the design system: tokens, components, and the
+  layout conventions every UI change must follow.
+- [STANDARDS.md](STANDARDS.md) — coding standards for contributions.
+- [CLAUDE.md](CLAUDE.md) — orientation for AI-assisted development.
 
 ## Stack
 
 - TypeScript monorepo (npm workspaces)
-  - `packages/shared` — domain types, deck, avatar sets, winner calculation, export/import codec
+  - `packages/shared` — domain types, deck, avatar sets, winner
+    calculation, export/import codec
   - `apps/web` — React 19 + Vite app
 - Firebase Realtime Database (live sync + presence via `onDisconnect`)
 - Firebase Hosting (SPA rewrite config included)
@@ -30,7 +52,8 @@ Sessions are meant to be temporary: state lives in Firebase Realtime Database ke
 
 ## Local development
 
-Prereqs: Node 22+, Java 17+ (for the database emulator), `npm i -g firebase-tools`.
+Prereqs: Node 22+, Java 17+ (for the database emulator),
+`npm i -g firebase-tools`.
 
 ```bash
 npm install
@@ -42,23 +65,32 @@ npm run emulators
 npm run dev
 ```
 
-The app auto-connects to the emulator whenever it's served from `localhost` and no `VITE_FIREBASE_*` env vars are set.
+The app auto-connects to the emulator whenever it's served from
+`localhost` and no `VITE_FIREBASE_*` env vars are set.
 
 ## Tests
 
 ```bash
-npm run build        # typecheck + production build (preview server serves this)
+npm run build        # typecheck + production build
 npm run emulators    # in another terminal
-npm run test:e2e     # full multi-user session flow + visual matrix (3 viewports × 2 themes)
+npm run test:e2e     # full multi-user session flow + visual matrix
 ```
 
-The e2e suite drives three browser contexts through an entire planning session: create → QR share → join → vote (secrecy asserted) → flip → override → promote leader → accept → timer auto-flip → export → import → revote → presence loss.
+The e2e suite drives three browser contexts through an entire planning
+session: create → QR share → join → vote (secrecy asserted) → flip →
+override → promote leader → accept → timer auto-flip → export → import →
+revote → presence loss.
 
-## Deploying to Firebase
+## Deploying
 
-1. Create a Firebase project and enable the **Realtime Database** (any region).
-2. Register a **web app** in the project and copy its config into `apps/web/.env.local` (see `.env.example`).
-3. Point the CLI at your project and ship it:
+Pushes to `main` deploy automatically to Firebase Hosting + database rules
+via GitHub Actions (`.github/workflows/deploy.yml`), authenticated with
+the `FIREBASE_SERVICE_ACCOUNT` repo secret. One-time setup for a new
+project lives in `scripts/setup-deploy-sa.sh`.
+
+To deploy manually to your own Firebase project instead: create a project
+with a **Realtime Database**, register a web app and copy its config into
+`apps/web/.env.local` (see `.env.example`), then:
 
 ```bash
 firebase login
@@ -67,9 +99,16 @@ npm run build
 firebase deploy --only hosting,database
 ```
 
-`firebase.json` deploys `apps/web/dist` with SPA rewrites and applies `database.rules.json` (reads/writes are scoped to `/sessions/$id`; root access is denied).
+`firebase.json` deploys `apps/web/dist` with SPA rewrites and applies
+`database.rules.json` (reads/writes are scoped to `/sessions/$id`; root
+access is denied).
 
 ## Honest limitations
 
-- **Vote secrecy is a UI convention, not cryptography.** With open per-session database rules and no server code, a determined teammate could read votes from the wire before the flip. Fine for planning poker; don't use it for salary votes.
-- **Sessions aren't auto-deleted.** RTDB has no TTL; abandoned sessions just sit there unreferenced. Add a scheduled Cloud Function if you want hard expiry.
+- **Vote secrecy is a UI convention, not cryptography.** With open
+  per-session database rules and no server code, a determined teammate
+  could read votes from the wire before the flip. Fine for planning
+  poker; don't use it for salary votes.
+- **Sessions aren't auto-deleted.** RTDB has no TTL; abandoned sessions
+  just sit there unreferenced. Add a scheduled Cloud Function if you want
+  hard expiry.

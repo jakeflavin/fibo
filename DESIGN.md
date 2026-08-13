@@ -1,4 +1,4 @@
-# fibo × Jira — design spec
+# fibo — design spec
 
 fibo's UI follows the **Atlassian Design System (ADS)** so Jira users feel at
 home. This file is the source of truth for visual decisions on the
@@ -165,3 +165,83 @@ join pages, where the form card floats).
 - The room layout: controls toolbar above the stage, rail of consensus /
   team / queue, hand docked at the stage's foot.
 - All interactions and features exactly as on `main`.
+
+## 8. Implementation conventions
+
+Decisions settled while building the spec out. New UI must follow these;
+they are load-bearing, not suggestions.
+
+### The 20px gutter
+
+Everything in the main column sits on one left edge, 20px from the
+window: the app-bar brand, the "Controls" label, the Flip button, the
+story title, the felt regions, and the hand strip. Any new element in the
+main column aligns to it. The sidebar has its own 20px internal padding.
+
+### Strips and flush borders
+
+- The toolbar and the consensus section share one height,
+  `--strip-h: 96px`, and each draws its own `border-bottom` **inside**
+  that height, so the two lines meet flush at the sidebar edge. Never mix
+  an inside `border-bottom` on one side with a `border-top` on the
+  section below the other — that's a 1px step.
+- Sidebar sections divide with `border-top` on the following section
+  (`.rail-section + .rail-section`), except after the consensus strip,
+  which carries its own bottom border.
+
+### Stability over reflow
+
+- The **team section holds a fixed 300px**; the roster scrolls inside it.
+  The queue takes the leftover height. Joins, leaves, votes, and timer
+  state must never resize or shift the sections.
+- The **card table never scrolls.** Seats re-pack into rows and resize to
+  fit the measured stage (JS packer + uniform fit-scale as last resort).
+- The consensus card reserves its layout whether or not a result exists
+  (`?` placeholder; the timer bar swaps in, nothing moves).
+
+### Hover-reveal actions (the Jira pattern)
+
+Row and title actions are invisible until intent: `opacity: 0`, shown on
+hover of the row/line and on `:focus-within` (keyboard users always get
+them). Pair `pointer-events: none` with the hidden state. Examples: the
+team-row meatball menu, the story-title pencil/trash. Title actions sit
+inline **after the last character**; when the title truncates they
+overlay the clipped corner on the title's own background.
+
+### Inline editing
+
+The story-title editor is the template: the text swaps for a full-width
+field; ✓ (submit) and ✕ (cancel) icon buttons float below the field's
+bottom-right corner on raised tiles; Enter saves, Escape cancels, and
+**clicking anywhere off the editor cancels** (blur with a
+`relatedTarget` containment check).
+
+### Menus and modals
+
+- Dropdowns anchor their top-left corner to the trigger, flip only when
+  they'd leave the viewport, are content-width, and close on outside
+  click, Escape, and scroll. Menus inside scrolling or transformed
+  containers portal to `document.body` with fixed positioning.
+- Modals always portal to `document.body` so the blanket covers the whole
+  app. Destructive confirms put the danger-colored action on the right.
+
+### Responsive breakpoints
+
+- `>860px` — desktop grid (stage + 320px sidebar).
+- `≤860px` — stacked: consensus full-width, team/queue in explicit
+  halves (`1fr 1fr`, never `auto-fit` — a spanning row keeps empty
+  tracks alive) with a vertical hairline between; hand becomes a fixed
+  bottom bar, one row of shrinking cards; toolbar wraps to two full
+  rows (Flip stretches beside the timers; the ruler shares its row with
+  repoint).
+- `≤480px` — sidebar single column; the hand deals into a 5×2 grid so
+  the whole deck stays on screen.
+- Text inputs hold **16px at ≤860px** — anything smaller makes iOS
+  Safari zoom into the field.
+
+### Data guards
+
+Realtime records can be partial (e.g. a kicked client's presence write).
+Anything that renders the user map filters `u && u.name` first, and
+stateful views remount when the entity they show changes
+(`<RoomInner key={sessionId} />`).
