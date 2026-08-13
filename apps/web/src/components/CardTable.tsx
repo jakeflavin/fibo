@@ -1,6 +1,5 @@
 import type { Session, VoteValue } from '@fibo/shared';
-import { DECK, formatVote, IDENTITY_SETS } from '@fibo/shared';
-import { finalizeStory, revealCards, revote, setResult } from '../lib/api';
+import { formatVote, IDENTITY_SETS } from '@fibo/shared';
 import { PixelAvatar } from './PixelAvatar';
 import { TimerBar } from './TimerBar';
 
@@ -44,7 +43,7 @@ export function CardTable({ session, myUserId, canLead }: Props) {
         <h2 className="story-title">{story.title}</h2>
       </div>
 
-      <TimerBar session={session} canLead={canLead} />
+      <TimerBar session={session} />
 
       <div className="seats">
         {seats.map(([uid, user]) => {
@@ -100,15 +99,6 @@ export function CardTable({ session, myUserId, canLead }: Props) {
           <span className="dim">
             {voteCount}/{onlineCount} votes in{everyoneVoted ? ' — all set!' : ''}
           </span>
-          {canLead && (
-            <button
-              className={`btn ${everyoneVoted ? 'btn-primary' : ''}`}
-              disabled={voteCount === 0}
-              onClick={() => void revealCards(session)}
-            >
-              flip cards
-            </button>
-          )}
         </div>
       )}
 
@@ -135,32 +125,7 @@ function ResultPanel({ session, canLead }: { session: Session; canLead: boolean 
         <span className="result-value">{formatVote(story.result ?? null)}</span>
         {summary && <span className="result-summary dim">({summary})</span>}
       </div>
-      {canLead ? (
-        <>
-          <div className="result-edit">
-            <span className="dim">override:</span>
-            {DECK.map((v) => (
-              <button
-                key={String(v)}
-                className={`chip ${story.result === v ? 'chip-active' : ''}`}
-                onClick={() => void setResult(session.id, story.id, v)}
-              >
-                {formatVote(v)}
-              </button>
-            ))}
-          </div>
-          <div className="result-actions">
-            <button className="btn" onClick={() => void revote(session)}>
-              revote
-            </button>
-            <button className="btn btn-primary" onClick={() => void finalizeStory(session)}>
-              accept &amp; next
-            </button>
-          </div>
-        </>
-      ) : (
-        <p className="dim">waiting for a leader to accept the result…</p>
-      )}
+      {!canLead && <p className="dim">waiting for a leader to accept the result…</p>}
     </div>
   );
 }

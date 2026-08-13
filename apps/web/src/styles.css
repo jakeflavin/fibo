@@ -712,12 +712,35 @@ a {
   font-size: 12px;
 }
 
+/* ── leader controls (top of the rail) ───────────────────────── */
+
+.leader-controls {
+  display: grid;
+  gap: 12px;
+}
+
+.leader-controls > .btn {
+  width: 100%;
+}
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+
+.controls-hint {
+  margin: 0;
+  font-size: 12px;
+}
+
 .result-edit {
   display: flex;
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
-  justify-content: center;
 }
 
 .result-edit > .dim {
@@ -726,9 +749,13 @@ a {
 
 .result-actions {
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
+  gap: 8px;
+}
+
+.result-actions .btn {
+  flex: 1;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 /* ── timer ───────────────────────────────────────────────────── */
