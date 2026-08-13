@@ -53,8 +53,8 @@ export function CardTable({ session, myUserId, canLead }: Props) {
   // Pick the row count that gives the biggest cards for the measured
   // stage: fewer, wider rows on big screens; extra rows appear as the
   // screen narrows and a wide row would squeeze the cards too small.
-  // Mirrors the CSS budget: height (H-48)/rows - 40, width via the 0.72
-  // card aspect with 46px of per-seat label/gap overhead.
+  // Mirrors the CSS budget: height (H-64)/rows - 36, width via the 0.72
+  // card aspect with 28px of per-seat label/gap overhead.
   const n = Math.max(1, seats.length);
   let rowCount = 1;
   if (stage) {
@@ -62,9 +62,9 @@ export function CardTable({ session, myUserId, canLead }: Props) {
     for (let r = 1; r <= n; r++) {
       const cols = Math.ceil(n / r);
       const size = Math.min(
-        (stage.h - 48) / r - 40,
-        ((stage.w - 28) / cols - 46) / 0.72,
-        260,
+        (stage.h - 64) / r - 36,
+        ((stage.w - 32) / cols - 28) / 0.72,
+        280,
       );
       if (size > best) {
         best = size;
@@ -152,10 +152,21 @@ export function CardTable({ session, myUserId, canLead }: Props) {
                             <PixelAvatar
                               identity={user.identity}
                               size={38}
-                              ink={hasVoted ? 'var(--bg)' : 'var(--dim)'}
+                              ink={hasVoted ? 'var(--bg)' : 'var(--idc)'}
                             />
                           </div>
                           <div className="seat-card-front">
+                            {/* Corner indices, like a real playing card. */}
+                            {revealed && (
+                              <>
+                                <span className="seat-card-corner">
+                                  {hasVoted ? <VoteGlyph value={vote} /> : '?'}
+                                </span>
+                                <span className="seat-card-corner seat-card-corner-br">
+                                  {hasVoted ? <VoteGlyph value={vote} /> : '?'}
+                                </span>
+                              </>
+                            )}
                             {/* Vote values stay out of the DOM until the flip. */}
                             {revealed ? hasVoted ? <VoteGlyph value={vote} /> : '?' : ''}
                           </div>

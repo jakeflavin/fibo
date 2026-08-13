@@ -134,10 +134,16 @@ join pages, where the form card floats).
   text accents — the Jira selected-row pattern.
 - **Story title**: left-aligned like a Jira issue summary — 20–24px,
   weight 600, no display-face theatrics.
-- **Seat cards**: a straight, evenly-spaced grid (no tilt, scatter, or
-  hover sway). Face-down cards are quiet surface tiles (card-face fill,
-  hairline border, raised shadow); a locked-in or revealed card takes the
-  player's identity color. Packing/sizing logic unchanged.
+- **The table**: the seats sit on a sunken region (`--bg`, 8px radius) —
+  the Jira board-column idiom — so raised cards have something to be
+  raised *from*.
+- **Seat cards**: a straight, tight grid (12px gaps; no tilt, scatter,
+  or hover sway). Cards are crafted like a real deck: an inner frame
+  line on every back, corner indices on revealed fronts (top-left +
+  rotated bottom-right), and the avatar seated in an identity-tinted
+  circle that echoes the team list. Face-down = card-face fill, hairline
+  border, raised shadow; locked-in/revealed = identity fill. Packing and
+  sizing logic unchanged.
 - **Hand cards**: surface tiles with hairline borders; the selected card
   uses the Jira selection pattern — `--accent-dim` fill, 2px `--accent`
   border, accent text — never a solid dark fill. Hover is a subtle 2px
