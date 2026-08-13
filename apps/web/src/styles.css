@@ -29,7 +29,6 @@
   --danger: #f0909e;
   --warn: #e2c069;
   --backdrop: rgba(0, 0, 0, 0.65);
-  --avatar-light: #e8e8e4;
 
   color-scheme: dark;
 }
@@ -51,7 +50,6 @@
   --danger: #b23a54;
   --warn: #9a6a0c;
   --backdrop: rgba(20, 20, 20, 0.4);
-  --avatar-light: #fbfbf9;
 
   color-scheme: light;
 }

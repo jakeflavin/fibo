@@ -9,27 +9,20 @@ interface Props {
 }
 
 /**
- * Renders one of the 12 fat-pixel avatars as a crisp SVG.
- * The main tone is scheme-aware: --idc resolves to the identity's dark or
- * light variant depending on the active theme (see .identity in styles.css).
+ * Renders one of the 12 fat-pixel avatars as a crisp single-color SVG.
+ * Detail pixels ('O' — eyes, teeth) punch through to whatever the avatar
+ * sits on. The color is scheme-aware: --idc resolves to the identity's dark
+ * or light variant depending on the active theme (see .identity in
+ * styles.css); `ink` overrides it for stamped renderings.
  */
 export function PixelAvatar({ identity, size = 32, className, ink }: Props) {
   const set = IDENTITY_SETS[identity % IDENTITY_SETS.length];
+  const fill = ink ?? 'var(--idc)';
   const rects: React.ReactElement[] = [];
   set.pixels.forEach((row, y) => {
     Array.from(row).forEach((ch, x) => {
-      if (ch === '.') return;
-      // Inked (stamped) rendering keeps the details: eye pixels ('O') punch
-      // through to whatever the avatar sits on, light pixels ('W') print at
-      // partial opacity.
-      if (ink && ch === 'O') return;
-      const fill =
-        ink ??
-        (ch === 'X' ? 'var(--idc)' : ch === 'O' ? set.shade : 'var(--avatar-light, #f2f2f2)');
-      const opacity = ink && ch === 'W' ? 0.55 : undefined;
-      rects.push(
-        <rect key={`${x}.${y}`} x={x} y={y} width={1} height={1} fill={fill} opacity={opacity} />,
-      );
+      if (ch === '.' || ch === 'O') return;
+      rects.push(<rect key={`${x}.${y}`} x={x} y={y} width={1} height={1} fill={fill} />);
     });
   });
   return (

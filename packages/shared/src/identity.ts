@@ -1,28 +1,28 @@
 /**
- * 12 identity sets: a color paired with a minimal fat-pixel avatar.
- * Avatars are 8x8 grids: 'X' = main color, 'O' = shade, 'W' = light, '.' = transparent.
- * Colors are the six chromatic hues of the shared Goals palette (two avatars
- * per hue), as scheme-aware dark/light pairs.
+ * 12 identity sets: a unique color paired with a minimal fat-pixel avatar.
+ * Avatars are 8x8 grids: 'X'/'W' = body, 'O' = punched-out detail (eyes,
+ * teeth), '.' = transparent. Avatars render in a single color.
+ *
+ * Colors extend the shared Goals palette: the six original chromatic hues
+ * plus six new ones built to the same recipe — bright pastel on a dark
+ * canvas, deep saturated variant on the light printout.
  */
 
 export interface IdentitySet {
   name: string;
-  /** Main color on a dark canvas (bright pastel from the shared palette). */
+  /** Color on a dark canvas (bright pastel). */
   color: string;
-  /** Main color on a light canvas (deep saturated variant of the same hue). */
+  /** Color on a light canvas (deep saturated variant of the same hue). */
   colorLight: string;
-  /** Darker shade used for eyes / details. */
-  shade: string;
   /** 8 rows x 8 cols pixel grid. */
   pixels: string[];
 }
 
 export const IDENTITY_SETS: IdentitySet[] = [
   {
-    name: 'bot',
+    name: 'bot', // rose
     color: '#F0909E',
     colorLight: '#B23A54',
-    shade: '#4A1520',
     pixels: [
       '...XX...',
       '.XXXXXX.',
@@ -35,10 +35,9 @@ export const IDENTITY_SETS: IdentitySet[] = [
     ],
   },
   {
-    name: 'invader',
+    name: 'invader', // green
     color: '#6FCF97',
     colorLight: '#1F7A4D',
-    shade: '#123B26',
     pixels: [
       '..X..X..',
       '...XX...',
@@ -51,10 +50,9 @@ export const IDENTITY_SETS: IdentitySet[] = [
     ],
   },
   {
-    name: 'ghost',
+    name: 'ghost', // cyan
     color: '#5CC9DE',
     colorLight: '#0E7C90',
-    shade: '#093E48',
     pixels: [
       '..XXXX..',
       '.XXXXXX.',
@@ -67,10 +65,9 @@ export const IDENTITY_SETS: IdentitySet[] = [
     ],
   },
   {
-    name: 'cat',
+    name: 'cat', // amber
     color: '#E2C069',
     colorLight: '#9A6A0C',
-    shade: '#453305',
     pixels: [
       '.X....X.',
       '.XX..XX.',
@@ -83,10 +80,9 @@ export const IDENTITY_SETS: IdentitySet[] = [
     ],
   },
   {
-    name: 'skull',
+    name: 'skull', // violet
     color: '#B49CF0',
     colorLight: '#6B4FC4',
-    shade: '#2E2354',
     pixels: [
       '..XXXX..',
       '.XXXXXX.',
@@ -99,10 +95,9 @@ export const IDENTITY_SETS: IdentitySet[] = [
     ],
   },
   {
-    name: 'slime',
-    color: '#B49CF0',
-    colorLight: '#6B4FC4',
-    shade: '#2E2354',
+    name: 'slime', // lime
+    color: '#B9D46E',
+    colorLight: '#68791B',
     pixels: [
       '........',
       '...XX...',
@@ -115,10 +110,9 @@ export const IDENTITY_SETS: IdentitySet[] = [
     ],
   },
   {
-    name: 'shroom',
-    color: '#F0909E',
-    colorLight: '#B23A54',
-    shade: '#4A1520',
+    name: 'shroom', // coral
+    color: '#F09A82',
+    colorLight: '#B2502E',
     pixels: [
       '..XXXX..',
       '.XXXXXX.',
@@ -131,10 +125,9 @@ export const IDENTITY_SETS: IdentitySet[] = [
     ],
   },
   {
-    name: 'fox',
+    name: 'fox', // orange
     color: '#E89A5C',
     colorLight: '#B2611E',
-    shade: '#4A2408',
     pixels: [
       'X......X',
       'XX....XX',
@@ -147,10 +140,9 @@ export const IDENTITY_SETS: IdentitySet[] = [
     ],
   },
   {
-    name: 'frog',
-    color: '#6FCF97',
-    colorLight: '#1F7A4D',
-    shade: '#123B26',
+    name: 'frog', // teal
+    color: '#6FD0C7',
+    colorLight: '#12766B',
     pixels: [
       '.XX..XX.',
       'XOXXXXOX',
@@ -163,10 +155,9 @@ export const IDENTITY_SETS: IdentitySet[] = [
     ],
   },
   {
-    name: 'alien',
-    color: '#5CC9DE',
-    colorLight: '#0E7C90',
-    shade: '#093E48',
+    name: 'alien', // sky
+    color: '#7FB5F0',
+    colorLight: '#2E62B2',
     pixels: [
       '...XX...',
       '..XXXX..',
@@ -179,10 +170,9 @@ export const IDENTITY_SETS: IdentitySet[] = [
     ],
   },
   {
-    name: 'crab',
-    color: '#E89A5C',
-    colorLight: '#B2611E',
-    shade: '#4A2408',
+    name: 'crab', // magenta
+    color: '#E093DC',
+    colorLight: '#9C2F96',
     pixels: [
       'X..XX..X',
       '.X.XX.X.',
@@ -195,10 +185,9 @@ export const IDENTITY_SETS: IdentitySet[] = [
     ],
   },
   {
-    name: 'owl',
-    color: '#E2C069',
-    colorLight: '#9A6A0C',
-    shade: '#453305',
+    name: 'owl', // periwinkle
+    color: '#94A4F0',
+    colorLight: '#4053C0',
     pixels: [
       '.X....X.',
       '.XXXXXX.',
