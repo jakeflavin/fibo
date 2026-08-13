@@ -52,7 +52,14 @@ export function Participants({ session, myUserId }: Props) {
 
   const toggleMenu = (uid: string) => (e: React.MouseEvent<HTMLButtonElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    setMenu((m) => (m?.uid === uid ? null : { uid, top: rect.bottom + 4, left: rect.right }));
+    // Anchor the menu's top-left at the trigger; shift left only when it
+    // would run off the viewport.
+    const estimatedWidth = 200;
+    const left =
+      rect.left + estimatedWidth > window.innerWidth - 8
+        ? Math.max(8, window.innerWidth - 8 - estimatedWidth)
+        : rect.left;
+    setMenu((m) => (m?.uid === uid ? null : { uid, top: rect.bottom + 4, left }));
   };
 
   return (
@@ -89,7 +96,7 @@ export function Participants({ session, myUserId }: Props) {
                         <div
                           className="menu user-menu"
                           role="menu"
-                          style={{ position: 'fixed', top: menu.top, left: menu.left, transform: 'translateX(-100%)' }}
+                          style={{ position: 'fixed', top: menu.top, left: menu.left }}
                         >
                         <button
                           className="menu-item"
