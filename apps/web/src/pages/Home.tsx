@@ -3,7 +3,7 @@ import { Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createSession } from '../lib/api';
 import { getLastName, saveLastName } from '../lib/storage';
-import { ThemeToggle } from '../components/ThemeToggle';
+import { SettingsMenu } from '../components/ThemeToggle';
 import { useToast } from '../components/Toast';
 
 export function Home() {
@@ -30,7 +30,7 @@ export function Home() {
   return (
     <div className="home">
       <div className="home-corner">
-        <ThemeToggle />
+        <SettingsMenu />
       </div>
       <main className="home-main">
         <div className="logo" aria-hidden="true">

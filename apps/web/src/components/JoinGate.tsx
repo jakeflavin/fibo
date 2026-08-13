@@ -4,7 +4,7 @@ import type { Session } from '@fibo/shared';
 import { joinSession } from '../lib/api';
 import { getLastName, saveLastName } from '../lib/storage';
 import { useToast } from './Toast';
-import { ThemeToggle } from './ThemeToggle';
+import { SettingsMenu } from './ThemeToggle';
 
 interface Props {
   session: Session;
@@ -35,7 +35,7 @@ export function JoinGate({ session, onJoined }: Props) {
   return (
     <div className="home">
       <div className="home-corner">
-        <ThemeToggle />
+        <SettingsMenu />
       </div>
       <main className="home-main">
         <div className="logo" aria-hidden="true">
