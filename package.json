@@ -1,0 +1,22 @@
+{
+  "name": "fibo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Ephemeral story-point planning sessions for software teams",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w apps/web",
+    "build": "npm run build -w apps/web",
+    "preview": "npm run preview -w apps/web",
+    "typecheck": "npm run typecheck -w packages/shared && npm run typecheck -w apps/web",
+    "emulators": "firebase emulators:start --project demo-fibo",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "typescript": "^7.0.2"
+  }
+}
