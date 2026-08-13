@@ -9,6 +9,22 @@ interface Props {
   canLead: boolean;
 }
 
+/**
+ * Deterministic per-user "thrown on the table" scatter: tilt, offset, and
+ * irregular spacing derived from the user id, so cards never reshuffle
+ * mid-round.
+ */
+function scatter(uid: string) {
+  let h = 0;
+  for (const c of uid) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return {
+    tilt: (h % 15) - 7,
+    dx: ((h >> 4) % 11) - 5,
+    dy: ((h >> 8) % 13) - 4,
+    gap: (h >> 12) % 12,
+  };
+}
+
 export function CardTable({ session, myUserId, canLead }: Props) {
   const users = session.users ?? {};
   const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
@@ -53,12 +69,30 @@ export function CardTable({ session, myUserId, canLead }: Props) {
               : user.online
                 ? 'thinking'
                 : 'away';
+          const s = scatter(uid);
           return (
-            <div key={uid} className={`seat seat-${state} ${isMe ? 'seat-me' : ''}`}>
-              <div className={`seat-card ${revealed && hasVoted ? 'flipped' : ''}`}>
+            <div
+              key={uid}
+              className={`seat seat-${state} ${hasVoted ? 'seat-has-vote' : ''} ${
+                isMe ? 'seat-me' : ''
+              } identity`}
+              style={{
+                ...identityVars(user.identity),
+                transform: `translate(${s.dx}px, ${s.dy}px)`,
+                marginLeft: s.gap,
+              }}
+            >
+              <div
+                className={`seat-card ${revealed && hasVoted ? 'flipped' : ''}`}
+                style={{ '--tilt': `${s.tilt}deg` } as React.CSSProperties}
+              >
                 <div className="seat-card-inner">
                   <div className="seat-card-back">
-                    {hasVoted ? <span className="card-check">✓</span> : <span className="card-wait">···</span>}
+                    <PixelAvatar
+                      identity={user.identity}
+                      size={30}
+                      ink={hasVoted ? 'var(--bg)' : 'var(--dim)'}
+                    />
                   </div>
                   <div
                     className={`seat-card-front ${
@@ -71,10 +105,7 @@ export function CardTable({ session, myUserId, canLead }: Props) {
                 </div>
               </div>
               <div className="seat-label">
-                <PixelAvatar identity={user.identity} size={18} />
-                <span className="seat-name identity" style={identityVars(user.identity)}>
-                  {user.name}
-                </span>
+                <span className="seat-name">{user.name}</span>
               </div>
             </div>
           );

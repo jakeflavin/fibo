@@ -4,6 +4,8 @@ interface Props {
   identity: number;
   size?: number;
   className?: string;
+  /** Single-tone silhouette color; overrides the identity's own tones. */
+  ink?: string;
 }
 
 /**
@@ -11,14 +13,15 @@ interface Props {
  * The main tone is scheme-aware: --idc resolves to the identity's dark or
  * light variant depending on the active theme (see .identity in styles.css).
  */
-export function PixelAvatar({ identity, size = 32, className }: Props) {
+export function PixelAvatar({ identity, size = 32, className, ink }: Props) {
   const set = IDENTITY_SETS[identity % IDENTITY_SETS.length];
   const rects: React.ReactElement[] = [];
   set.pixels.forEach((row, y) => {
     Array.from(row).forEach((ch, x) => {
       if (ch === '.') return;
       const fill =
-        ch === 'X' ? 'var(--idc)' : ch === 'O' ? set.shade : 'var(--avatar-light, #f2f2f2)';
+        ink ??
+        (ch === 'X' ? 'var(--idc)' : ch === 'O' ? set.shade : 'var(--avatar-light, #f2f2f2)');
       rects.push(<rect key={`${x}.${y}`} x={x} y={y} width={1} height={1} fill={fill} />);
     });
   });

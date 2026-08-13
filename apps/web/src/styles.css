@@ -550,8 +550,9 @@ a {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 22px;
-  padding: 36px 0 8px;
+  align-items: flex-start;
+  gap: 18px 10px;
+  padding: 40px 0 12px;
 }
 
 .seat {
@@ -571,6 +572,12 @@ a {
   width: 62px;
   height: 86px;
   perspective: 600px;
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 0.25s ease;
+}
+
+.seat:hover .seat-card {
+  transform: rotate(0deg) scale(1.04);
 }
 
 .seat-card-inner {
@@ -600,32 +607,22 @@ a {
 
 .seat-card-back {
   border: 1px dashed var(--line-strong);
-  color: var(--dim);
 }
 
-.card-wait {
-  font-size: 13px;
-  letter-spacing: 2px;
+/* A played card takes the user's color; the avatar is stamped in canvas ink. */
+.seat-has-vote .seat-card-back {
+  background: var(--idc);
+  border: 1px solid transparent;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
 }
 
-.seat-voted .seat-card-back {
-  background: var(--surface-hi);
-  border: 1px solid var(--success);
-  box-shadow: 0 0 20px var(--success-dim);
-}
-
-.card-check {
-  font-size: 16px;
-  color: var(--success);
-}
-
-.seat-voted .seat-card {
+.seat-has-vote .seat-card {
   animation: lockin 0.25s ease-out;
 }
 
 @keyframes lockin {
   40% {
-    transform: translateY(-6px) rotate(-2deg);
+    transform: rotate(var(--tilt, 0deg)) translateY(-6px);
   }
 }
 
@@ -635,16 +632,19 @@ a {
   transform: rotateY(180deg);
 }
 
+.seat-has-vote .seat-card-front {
+  background: var(--idc);
+  border-color: transparent;
+  color: var(--bg);
+}
+
 .card-winner {
-  border-color: var(--success);
-  color: var(--success);
-  box-shadow: 0 0 24px var(--success-dim);
+  box-shadow: 0 0 0 2px var(--success), 0 0 24px var(--success-dim);
 }
 
 .seat-label {
   display: flex;
-  align-items: center;
-  gap: 5px;
+  justify-content: center;
   max-width: 100%;
 }
 
