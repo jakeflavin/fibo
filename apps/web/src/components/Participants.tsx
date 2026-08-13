@@ -9,7 +9,7 @@ interface Props {
   myUserId: string;
 }
 
-const ROLE_TAG = { owner: '[admin]', leader: '[lead]', participant: '' } as const;
+const ROLE_TAG = { owner: 'Admin', leader: 'Lead', participant: '' } as const;
 
 export function Participants({ session, myUserId }: Props) {
   const users = session.users ?? {};
@@ -20,7 +20,7 @@ export function Participants({ session, myUserId }: Props) {
 
   return (
     <div className="rail-section rail-card team-card">
-      <div className="eyebrow">team · {rows.length}</div>
+      <div className="eyebrow">Team · {rows.length}</div>
       <ul className="user-list">
         {rows.map(([uid, user]) => {
           const vote = story ? votes[uid] : undefined;
@@ -35,11 +35,11 @@ export function Participants({ session, myUserId }: Props) {
               <span className="user-main">
                 <span className="user-name identity" style={identityVars(user.identity)}>
                   {user.name}
-                  {uid === myUserId && <span className="user-tag dim"> [you]</span>}
-                  {!canManage && ROLE_TAG[user.role] && (
-                    <span className="user-tag dim"> {ROLE_TAG[user.role]}</span>
-                  )}
                 </span>
+                {uid === myUserId && <span className="user-tag">You</span>}
+                {!canManage && ROLE_TAG[user.role] && (
+                  <span className="user-tag">{ROLE_TAG[user.role]}</span>
+                )}
                 {canManage && (
                   <button
                     className="chip chip-small"
@@ -54,7 +54,7 @@ export function Participants({ session, myUserId }: Props) {
                       user.role === 'leader' ? 'Demote to participant' : 'Promote to leader'
                     }
                   >
-                    {user.role === 'leader' ? 'remove lead' : 'add lead'}
+                    {user.role === 'leader' ? 'Remove lead' : 'Add lead'}
                   </button>
                 )}
               </span>

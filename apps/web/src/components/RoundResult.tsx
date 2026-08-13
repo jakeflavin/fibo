@@ -29,7 +29,7 @@ export function RoundResult({ session }: { session: Session }) {
 
   return (
     <div className="rail-section rail-card round-result">
-      <div className="eyebrow">consensus</div>
+      <div className="eyebrow">Consensus</div>
       {timerRunning ? (
         <TimerBar session={session} />
       ) : (

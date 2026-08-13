@@ -34,23 +34,22 @@ export function Home() {
       </div>
       <main className="home-main">
         <div className="logo" aria-hidden="true">
-          <span className="logo-prompt">~ $</span> fibo
+          fibo
         </div>
         <h1 className="sr-only">fibo</h1>
         <p className="tagline">
-          story points, no strings attached
+          Story points, no strings attached
         </p>
 
         <div className="rail-card home-card">
           <form className="home-form" onSubmit={submit}>
             <label className="field">
-              <span className="field-label">your_name*</span>
+              <span className="field-label">Your name *</span>
               <div className="prompt-input">
-                <span className="prompt">&gt;</span>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="ada"
+                  placeholder="Ada"
                   maxLength={40}
                   autoFocus
                   required
@@ -58,12 +57,12 @@ export function Home() {
               </div>
             </label>
             <button className="btn btn-primary btn-block" disabled={!name.trim() || busy}>
-              {busy ? 'creating…' : 'create session'}
+              {busy ? 'Creating…' : 'Create session'}
             </button>
           </form>
         </div>
 
-        <p className="home-notes">no accounts · no signup · sessions are temporary</p>
+        <p className="home-notes">No accounts, no signup — sessions are temporary</p>
       </main>
       <footer className="room-footer dim">
         made with <Heart size={11} aria-label="love" /> by jake

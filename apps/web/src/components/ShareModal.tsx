@@ -40,7 +40,7 @@ export function ShareModal({ session, onClose }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-title">
-          <span className="eyebrow">invite your team</span>
+          <span className="eyebrow">Invite your team</span>
           <button className="btn btn-ghost modal-close" onClick={onClose} aria-label="Close">
             <X size={15} />
           </button>
@@ -50,9 +50,9 @@ export function ShareModal({ session, onClose }: Props) {
         </div>
         <code className="share-url">{url}</code>
         <button className="btn btn-primary btn-block" onClick={copy}>
-          copy link
+          Copy link
         </button>
-        <p className="dim panel-hint">anyone with the link joins by entering a name.</p>
+        <p className="dim panel-hint">Anyone with the link joins by entering a name.</p>
       </div>
     </div>
   );

@@ -22,7 +22,7 @@ export function LeaderControls({ session }: { session: Session }) {
 
   return (
     <div className="rail-section rail-card leader-controls">
-      <div className="eyebrow">controls</div>
+      <div className="eyebrow">Controls</div>
       {/* One toolbar row: round zone | result zone. */}
       <div className="controls-row controls-bar">
         <button
@@ -30,7 +30,7 @@ export function LeaderControls({ session }: { session: Session }) {
           disabled={!story || revealed}
           onClick={() => void revealCards(session)}
         >
-          flip
+          Flip
         </button>
         <div className="seg">
           {PRESETS.map((p) => (

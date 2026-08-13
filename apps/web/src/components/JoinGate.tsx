@@ -39,23 +39,22 @@ export function JoinGate({ session, onJoined }: Props) {
       </div>
       <main className="home-main">
         <div className="logo" aria-hidden="true">
-          <span className="logo-prompt">~ $</span> fibo join
+          fibo
         </div>
-        <h1 className="sr-only">join this fibo session</h1>
+        <h1 className="sr-only">Join this fibo session</h1>
         <p className="tagline">
-          you've been invited to point some stories
+          You've been invited to point some stories
         </p>
 
         <div className="rail-card home-card">
           <form className="home-form" onSubmit={submit}>
             <label className="field">
-              <span className="field-label">your_name*</span>
+              <span className="field-label">Your name *</span>
               <div className="prompt-input">
-                <span className="prompt">&gt;</span>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="grace"
+                  placeholder="Grace"
                   maxLength={40}
                   autoFocus
                   required
@@ -63,13 +62,13 @@ export function JoinGate({ session, onJoined }: Props) {
               </div>
             </label>
             <button className="btn btn-primary btn-block" disabled={!name.trim() || busy}>
-              {busy ? 'joining…' : 'join session'}
+              {busy ? 'Joining…' : 'Join session'}
             </button>
           </form>
         </div>
 
         <p className="home-notes">
-          {count} {count === 1 ? 'person is' : 'people are'} here · no account needed
+          {count} {count === 1 ? 'person is' : 'people are'} here — no account needed
         </p>
       </main>
       <footer className="room-footer dim">

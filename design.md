@@ -1,0 +1,134 @@
+# fibo × Jira — design spec
+
+fibo's UI follows the **Atlassian Design System (ADS)** so Jira users feel at
+home. This file is the source of truth for visual decisions on the
+`jira-design` branch. Token values were pulled from `@atlaskit/tokens`
+(current "visual refresh" palette, brand `#1868DB`).
+
+What this spec covers: color, typography, shape, space, elevation, component
+recipes, and voice. What it deliberately keeps from fibo: the pixel-art
+avatars, the 12 per-player identity colors on played cards, and the game
+layout (toolbar → stage → rail). No functionality changes.
+
+---
+
+## 1. Color
+
+App tokens map to ADS tokens as follows. Light mode is the reference
+experience (Jira is light-first); dark mode uses the ADS dark ramp.
+
+| fibo token      | ADS token                          | Light                | Dark                 |
+| --------------- | ---------------------------------- | -------------------- | -------------------- |
+| `--bg`          | `elevation.surface.sunken`         | `#F8F8F8`            | `#18191A`            |
+| `--surface`     | `elevation.surface.raised`         | `#FFFFFF`            | `#242528`            |
+| `--surface-hi`  | `color.background.neutral`         | `rgba(5,21,36,0.06)` | `rgba(206,206,217,0.07)` |
+| `--line`        | `color.border`                     | `rgba(11,18,14,0.14)`| `rgba(227,228,242,0.12)` |
+| `--line-strong` | `color.border.bold`                | `#7D818A`            | `#7E8188`            |
+| `--control`     | `color.border.input`               | `#8C8F97`            | `#7E8188`            |
+| `--text`        | `color.text`                       | `#292A2E`            | `#CECFD2`            |
+| `--dim`         | `color.text.subtlest`              | `#6B6E76`            | `#96999E`            |
+| `--accent`      | `color.background.brand.bold`      | `#1868DB`            | `#669DF1`            |
+| `--accent-ink`  | `color.text.inverse`               | `#FFFFFF`            | `#1F1F21`            |
+| `--accent-dim`  | `color.background.selected`        | `#E9F2FE`            | `#1C2B42`            |
+| `--accent-hover`| `color.background.brand.bold.hovered` | `#1558BC`         | `#8FB8F6`            |
+| `--success`     | `color.text.success`               | `#4C6B1F`            | `#B3DF72`            |
+| `--danger`      | `color.text.danger` (text) / `color.background.danger.bold` (fills) | `#AE2E24` / `#C9372C` | `#FD9891` / `#F87168` |
+| `--warn`        | `color.text.warning`               | `#9E4C00`            | `#FBC828`            |
+| `--backdrop`    | ADS blanket                        | `rgba(9,30,66,0.54)` | `rgba(3,4,4,0.6)`    |
+
+Rules:
+
+- **Blue is the only interactive accent.** Primary buttons, selected states,
+  focus rings, links. No slate/graphite accents.
+- **Identity colors are gameplay, not chrome.** The 12 player hues appear
+  only on played/revealed seat cards, avatars, and player names — exactly as
+  today.
+- Semantic colors (danger/success/warning) appear only in their semantic
+  roles (destructive confirm, error toasts, timer-critical).
+
+## 2. Typography
+
+- **Family**: system sans, matching ADS fallbacks (we cannot ship Atlassian
+  Sans):
+  `ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Ubuntu, "Helvetica Neue", Helvetica, Arial, sans-serif`
+- **Body**: 14px / 20px, weight 400 (`font.body`).
+- **Small body / secondary**: 12px / 16px (`font.body.small`).
+- **Headings**: weight 600 (ADS uses 653 in Atlassian Sans; 600 is the
+  fallback equivalent). Scale: 24/28 (`heading.large`, story title),
+  20/24 (`heading.medium`), 16/20 (`heading.small`).
+- **Metrics** (consensus value, card points): weight 600, tabular-nums.
+- **Section headers** (card eyebrows): 12px, weight 600, `--dim`,
+  sentence case — **no uppercase, no letter-spacing** (Jira uses quiet
+  sentence-case section headers).
+- Monospace is retired everywhere, including numbers (use
+  `font-variant-numeric: tabular-nums` where alignment matters).
+
+## 3. Shape & space
+
+- **Radius scale** (ADS refresh): controls (buttons, inputs, chips) `4px`
+  (`radius.small`); cards/panels `8px` (`radius.large`); modals `12px`
+  (`radius.xlarge`); lozenges `2px` (`radius.xsmall`); avatars round
+  (`radius.full`).
+- **Spacing**: ADS 8px grid with 4px halves — use 4 / 8 / 12 / 16 / 24 / 32
+  (`space.050`–`space.400`). Card padding: 16px (rail), 24px (stage).
+  Gutters between cards: 16px (ADS pages breathe more than the current
+  12px).
+
+## 4. Elevation
+
+| Level    | Use                          | Light shadow                                            | Dark shadow |
+| -------- | ---------------------------- | ------------------------------------------------------- | ----------- |
+| sunken   | app canvas                   | none (color only)                                       | none        |
+| raised   | all cards/panels, hand cards | `0 1px 1px rgba(30,31,33,0.25), 0 0 1px rgba(30,31,33,0.31)` | `0 1px 1px rgba(1,4,4,0.5), 0 0 1px rgba(1,4,4,0.5)` |
+| overlay  | menu, modal, toasts          | `0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)` | `0 0 0 1px rgba(189,189,189,0.12), 0 8px 12px rgba(1,4,4,0.36), 0 0 1px rgba(1,4,4,0.5)` |
+
+Borders on cards: hairline `--line` **plus** raised shadow in light mode;
+dark mode leans on surface-color steps (ADS dark surfaces get lighter as
+they rise).
+
+## 5. Components
+
+- **Buttons** (ADS): borderless, height 32px, radius 4px, 14px weight 500,
+  padding 0 12px.
+  - *Primary*: `--accent` bg, `--accent-ink` text; hover `--accent-hover`.
+  - *Default*: `--surface-hi` (neutral) bg, `--text`; hover darkens.
+  - *Subtle*: transparent bg; hover `--surface-hi` (menu button, icon
+    buttons).
+  - *Disabled*: neutral bg at reduced opacity, no fill drop needed since
+    fills are quiet.
+- **Segmented groups** (timer presets, point ruler): joined cells inside a
+  single `--line` border, radius 4px, active cell = `--accent-dim` bg +
+  `--accent` text (Jira "selected" pattern) instead of solid fill.
+- **Text fields**: `--surface` bg, 1px `--control` border, radius 4px,
+  focus = 2px `--accent` border (border-color swap + 1px inset ring), no
+  glow. No prompt glyphs (`>`, `+`) — use placeholder + label.
+- **Lozenges** (`you`, `admin`, `lead` tags): 11px weight 600 sentence case,
+  2px radius, 2px 6px padding, neutral bg (`--surface-hi`) + `--dim` text.
+  No square brackets.
+- **Avatars**: pixel avatars retained, seated in round neutral-background
+  containers (24px in lists), like Jira avatars.
+- **Dropdown menu**: overlay surface + overlay shadow, radius 8px, item
+  hover `--surface-hi`, 14px text, icons at 16px.
+- **Modals**: overlay surface, radius 12px, overlay shadow, title 20/24
+  weight 600 left-aligned, actions right-aligned (primary on the right).
+- **Toasts**: overlay surface + shadow, radius 8px, no glyph prefixes.
+- **List rows** (team, queue): 32px min height, 4px radius hover
+  (`--surface-hi`), selected/active = `--accent-dim` bg with `--accent`
+  text accents — the Jira selected-row pattern.
+- **Seat & hand cards**: geometry, packing, and identity colors unchanged;
+  radius 8px, raised shadow, sans-serif weights per §2.
+
+## 6. Voice & content
+
+- **Sentence case everywhere**: buttons ("Create session", "Flip"), labels
+  ("Your name"), section headers ("Controls", "Team", "Queue", "Consensus").
+- **No terminal affordances**: drop `~ $` prompts, `>` / `+` input glyphs,
+  and bracketed tags. The wordmark is simply **fibo**.
+- Tooltips and errors stay plain and directive, as they are.
+
+## 7. What stays fibo
+
+- Pixel-art avatars and the 12 identity hues (played cards, names).
+- The room layout: controls toolbar above the stage, rail of consensus /
+  team / queue, hand docked at the stage's foot.
+- All interactions and features exactly as on `main`.

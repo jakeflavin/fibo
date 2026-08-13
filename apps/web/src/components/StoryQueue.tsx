@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Play, Plus, X } from 'lucide-react';
+import { Play, X } from 'lucide-react';
 import type { Session, Story } from '@fibo/shared';
 import { activateStory, addStory, deleteStory } from '../lib/api';
 import { ConfirmModal } from './ConfirmModal';
@@ -28,17 +28,14 @@ export function StoryQueue({ session, canLead }: Props) {
 
   return (
     <div className="rail-section rail-card">
-      <div className="eyebrow">queue · {stories.length}</div>
+      <div className="eyebrow">Queue · {stories.length}</div>
       {canLead && (
         <form className="story-add" onSubmit={submit}>
           <div className="prompt-input">
-            <span className="prompt">
-              <Plus size={13} />
-            </span>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="add a story…"
+              placeholder="Add a story…"
               maxLength={200}
             />
           </div>
@@ -46,7 +43,7 @@ export function StoryQueue({ session, canLead }: Props) {
       )}
       {stories.length === 0 && (
         <p className="panel-body dim">
-          {canLead ? 'queue is empty. add the first story ↑' : 'no stories yet.'}
+          {canLead ? 'The queue is empty. Add the first story above.' : 'No stories yet.'}
         </p>
       )}
       <ul className="story-list">
@@ -109,13 +106,13 @@ export function StoryQueue({ session, canLead }: Props) {
       </ul>
       {pendingDelete && (
         <ConfirmModal
-          title="delete story"
+          title="Delete story"
           message={
             <>
-              remove <strong>{pendingDelete.title}</strong> from the queue?
+              Remove <strong>{pendingDelete.title}</strong> from the queue?
             </>
           }
-          confirmLabel="delete"
+          confirmLabel="Delete"
           onConfirm={() => {
             void deleteStory(session, pendingDelete.id);
             setPendingDelete(null);

@@ -81,10 +81,10 @@ export function RoomHeader({ session, canLead, onShare }: Props) {
         {open && (
           <div className="menu" role="menu">
             <button className="menu-item" role="menuitem" onClick={pick(onShare)}>
-              <Share2 size={14} /> share / QR
+              <Share2 size={14} /> Share / QR
             </button>
             <button className="menu-item" role="menuitem" onClick={pick(doExport)}>
-              <FileDown size={14} /> export json
+              <FileDown size={14} /> Export JSON
             </button>
             {canLead && (
               <button
@@ -92,12 +92,12 @@ export function RoomHeader({ session, canLead, onShare }: Props) {
                 role="menuitem"
                 onClick={pick(() => fileInput.current?.click())}
               >
-                <FileUp size={14} /> import json
+                <FileUp size={14} /> Import JSON
               </button>
             )}
             <div className="menu-sep" />
             <button className="menu-item" role="menuitem" onClick={pick(toggle)}>
-              {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />} switch to{' '}
+              {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />} Switch to{' '}
               {theme === 'dark' ? 'light' : 'dark'} mode
             </button>
           </div>
