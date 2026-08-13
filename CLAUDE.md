@@ -30,9 +30,14 @@ polish, and carefully considered additions.
 npm run dev          # Vite dev server on :5173
 npm run emulators    # RTDB emulator (project demo-fibo, db port 9000) — run in a second terminal
 npm run typecheck    # both workspaces; must pass clean before any commit
+npm run test:unit    # vitest over packages/shared
 npm run build        # typecheck + production build
-npm run test:e2e     # Playwright against the emulator
+npm run test:e2e     # Playwright against the emulator (needs `npm run emulators` running)
 ```
+
+CI (`.github/workflows/deploy.yml`) runs typecheck + unit + e2e on every
+push and PR; `main` deploys only after they pass. Tests are part of any
+change — see the Testing section of STANDARDS.md.
 
 The app auto-connects to the emulator when served from `localhost` with no
 `VITE_FIREBASE_*` env vars. Inspect/poke emulator state over REST:

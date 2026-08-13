@@ -17,16 +17,16 @@ async function setupRoom(browser: Browser, theme: string, viewport: { width: num
   await ctx.addInitScript((t) => localStorage.setItem('fibo:theme', t as string), theme);
   const page = await ctx.newPage();
   await page.goto('/');
-  await page.getByPlaceholder('ada').fill('Ada');
-  await page.getByRole('button', { name: /create session/ }).click();
+  await page.getByPlaceholder('Ada').fill('Ada');
+  await page.getByRole('button', { name: 'Create session' }).click();
   await page.waitForURL(/\/s\//);
-  const add = page.getByPlaceholder(/add a story/);
+  const add = page.getByPlaceholder(/add a story/i);
   await add.fill('FIBO-9 checkout redesign');
   await add.press('Enter');
   await add.fill('FIBO-10 audit logging');
   await add.press('Enter');
   await page.getByTitle('5 points', { exact: true }).click();
-  await expect(page.locator('.seat-voted')).toHaveCount(1);
+  await expect(page.locator('.seat-has-vote')).toHaveCount(1);
   return { ctx, page };
 }
 
@@ -49,7 +49,7 @@ for (const theme of THEMES) {
       await page.screenshot({ path: path.join(SHOTS, `room-${theme}-${vp.name}.png`), fullPage: true });
 
       await page.getByRole('button', { name: 'menu' }).click();
-      await page.getByRole('menuitem', { name: /share/ }).click();
+      await page.getByRole('menuitem', { name: /share/i }).click();
       await expect(page.locator('.qr-box svg')).toBeVisible();
       await page.waitForTimeout(300);
       await page.screenshot({ path: path.join(SHOTS, `share-${theme}-${vp.name}.png`) });

@@ -13,7 +13,9 @@
     "preview": "npm run preview -w apps/web",
     "typecheck": "npm run typecheck -w packages/shared && npm run typecheck -w apps/web",
     "emulators": "firebase emulators:start --project demo-fibo",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:unit": "npm run test -w packages/shared",
+    "e2e:serve": "npm run build:test -w apps/web && npm run preview -w apps/web"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.0",

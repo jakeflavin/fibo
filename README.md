@@ -71,9 +71,9 @@ The app auto-connects to the emulator whenever it's served from
 ## Tests
 
 ```bash
-npm run build        # typecheck + production build
+npm run test:unit    # vitest over packages/shared (winner, codec, deck, ids, identities)
 npm run emulators    # in another terminal
-npm run test:e2e     # full multi-user session flow + visual matrix
+npm run test:e2e     # full multi-user session flow + visual matrix (3 viewports x 2 themes)
 ```
 
 The e2e suite drives three browser contexts through an entire planning
@@ -83,9 +83,10 @@ revote → presence loss.
 
 ## Deploying
 
-Pushes to `main` deploy automatically to Firebase Hosting + database rules
-via GitHub Actions (`.github/workflows/deploy.yml`), authenticated with
-the `FIREBASE_SERVICE_ACCOUNT` repo secret. One-time setup for a new
+Pushes to `main` run the full test suite and then deploy automatically to
+Firebase Hosting + database rules via GitHub Actions
+(`.github/workflows/deploy.yml`), authenticated with the
+`FIREBASE_SERVICE_ACCOUNT` repo secret. Pull requests run the tests too. One-time setup for a new
 project lives in `scripts/setup-deploy-sa.sh`.
 
 To deploy manually to your own Firebase project instead: create a project

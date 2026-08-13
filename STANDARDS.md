@@ -129,6 +129,31 @@ if a component needs a new write, add a named function to `lib/api.ts`.
   height variable so borders stay flush; text inputs hold 16px at touch
   widths.
 
+## Testing
+
+Tests are part of the change, not a follow-up. CI runs typecheck, unit
+tests, and the e2e suite on every push and PR; deploys only happen when
+all three pass.
+
+- **Unit tests (`npm run test:unit`, vitest)** cover `packages/shared`
+  exhaustively: every exported function gets happy-path, edge, and
+  rejection cases. Pure logic never ships untested — if a rule is hard to
+  test through the UI (tie-breaking, codec validation), that's exactly
+  why it lives in `packages/shared`.
+- **E2e tests (`npm run test:e2e`, Playwright against the emulator)**
+  cover user-visible behavior: the full multi-user session flow plus a
+  visual matrix (3 viewports × 2 themes). A new feature adds its steps to
+  the flow; a changed label updates the assertion in the same commit.
+- **Selectors:** prefer roles and accessible names
+  (`getByRole('button', { name: 'Flip' })`) over CSS classes; string
+  regexes are case-insensitive (`/add a story/i`) — copy is sentence
+  case and will bite you otherwise.
+- **No sleeps for state.** Await an assertion (`await expect(...)`),
+  never `waitForTimeout`, except to let a finished animation settle
+  before a screenshot.
+- A test that fails must describe a real defect. Flaky tests get fixed
+  or deleted the day they flake — never retried into submission.
+
 ## General
 
 - **Voice:** sentence case everywhere; no terminal glyphs (`~ $`, `>`,
