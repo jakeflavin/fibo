@@ -614,10 +614,10 @@ svg.lucide {
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
   grid-template-columns: minmax(0, 1fr);
-  gap: 24px;
+  gap: 16px;
   min-height: 0;
   min-width: 0;
-  padding: 24px;
+  padding: 16px;
 }
 
 /* The panel fills its row: title pinned at the top, cards centered in
@@ -672,7 +672,7 @@ svg.lucide {
   align-items: center;
   justify-content: center;
   align-self: stretch;
-  padding: 16px;
+  padding: 12px;
   background: var(--bg);
   border-radius: 8px;
   /* Never let the pile's intrinsic width inflate the stage. */
@@ -704,8 +704,8 @@ svg.lucide {
   --card-h: clamp(
     96px,
     min(
-      calc((100cqh - 64px) / var(--rows, 1) - 36px),
-      calc((100cqw / var(--cols, 1) - 28px) / 0.72)
+      calc((100cqh - 56px) / var(--rows, 1) - 36px),
+      calc((100cqw / var(--cols, 1) - 24px) / 0.72)
     ),
     280px
   );
@@ -1112,8 +1112,8 @@ svg.lucide {
   display: grid;
   gap: 12px;
   justify-items: center;
-  margin: 0 -24px -24px;
-  padding: 16px 24px 20px;
+  margin: 0 -16px -16px;
+  padding: 12px 16px 16px;
   border-top: 1px solid var(--line);
 }
 

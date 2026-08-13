@@ -53,8 +53,8 @@ export function CardTable({ session, myUserId, canLead }: Props) {
   // Pick the row count that gives the biggest cards for the measured
   // stage: fewer, wider rows on big screens; extra rows appear as the
   // screen narrows and a wide row would squeeze the cards too small.
-  // Mirrors the CSS budget: height (H-64)/rows - 36, width via the 0.72
-  // card aspect with 28px of per-seat label/gap overhead.
+  // Mirrors the CSS budget: height (H-56)/rows - 36, width via the 0.72
+  // card aspect with 24px of per-seat label/gap overhead.
   const n = Math.max(1, seats.length);
   let rowCount = 1;
   if (stage) {
@@ -62,8 +62,8 @@ export function CardTable({ session, myUserId, canLead }: Props) {
     for (let r = 1; r <= n; r++) {
       const cols = Math.ceil(n / r);
       const size = Math.min(
-        (stage.h - 64) / r - 36,
-        ((stage.w - 32) / cols - 28) / 0.72,
+        (stage.h - 56) / r - 36,
+        ((stage.w - 24) / cols - 28) / 0.72,
         280,
       );
       if (size > best) {
