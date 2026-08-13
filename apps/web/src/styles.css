@@ -281,16 +281,16 @@ svg.lucide {
   color: var(--dim);
 }
 
-/* Selected state: Jira's quiet blue selection, not a solid fill. */
+/* Selected point: solid primary fill, matching the Flip button. */
 .chip-active {
-  background: var(--accent-dim);
-  color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
   font-weight: 600;
 }
 
 .chip-active:hover {
-  background: var(--accent-dim);
-  color: var(--accent);
+  background: var(--accent-hover);
+  color: var(--accent-ink);
 }
 
 .chip-small {
@@ -646,7 +646,9 @@ svg.lucide {
 }
 
 .story-line {
-  padding: 8px 12px 4px;
+  /* No horizontal padding: the title's left edge lines up with the
+     felt region below it. */
+  padding: 8px 0 4px;
   text-align: left;
   min-height: 40px;
 }
@@ -966,8 +968,11 @@ svg.lucide {
 
 .round-result {
   animation: rise 0.25s ease-out both;
-  /* Matches the toolbar height so the two bottom borders align. */
+  /* Matches the toolbar height, and draws its own bottom border the
+     same way the toolbar does (inside the strip), so the two lines
+     meet flush at the sidebar edge. */
   height: var(--strip-h);
+  border-bottom: 1px solid var(--line);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1228,10 +1233,6 @@ svg.lucide {
   border-color: color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
-.deck-label {
-  font-size: 12px;
-}
-
 .deck-cards {
   display: flex;
   gap: 10px;
@@ -1307,18 +1308,23 @@ svg.lucide {
   border-top: 1px solid var(--line);
 }
 
+/* The consensus strip carries its own bottom border. */
+.room-side > .round-result + .rail-section {
+  border-top: 0;
+}
+
 /* Rail cards keep their natural size… */
 .room-side > .rail-section {
   flex-shrink: 0;
 }
 
-/* …except the team card, which shrinks under pressure and scrolls its
-   list internally so a big roster can't push the queue off screen. */
+/* …except the team card, which holds a fixed height — the roster
+   scrolls inside it, so joins and leaves never resize the sections. */
 .room-side > .team-card {
-  flex-shrink: 1;
+  flex: none;
+  height: 300px;
   display: flex;
   flex-direction: column;
-  min-height: 150px;
   overflow: hidden;
 }
 
@@ -1758,7 +1764,7 @@ svg.lucide {
   .team-card {
     display: block;
     overflow: visible;
-    min-height: 0;
+    height: auto;
   }
 
   .team-card .user-list {

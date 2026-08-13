@@ -68,7 +68,10 @@ export function CardTable({ session, myUserId, canLead }: Props) {
     return () => ro.disconnect();
   });
 
-  const seats = Object.entries(users).sort(([, a], [, b]) => a.joinedAt - b.joinedAt);
+  // Guard against partial records (e.g. a kicked client's presence write).
+  const seats = Object.entries(users)
+    .filter(([, u]) => u && u.name)
+    .sort(([, a], [, b]) => a.joinedAt - b.joinedAt);
 
   // Pick the row count that gives the biggest cards for the measured
   // stage: fewer, wider rows on big screens; extra rows appear as the
@@ -115,12 +118,7 @@ export function CardTable({ session, myUserId, canLead }: Props) {
     return (
       <div className="table-panel">
         <div className="table-empty">
-          <p className="dim">no story on the table.</p>
-          <p className="dim">
-            {canLead
-              ? 'add a story to the queue and press point to start.'
-              : 'waiting for a leader to pick a story…'}
-          </p>
+          <p className="dim">No story on the table.</p>
         </div>
       </div>
     );
