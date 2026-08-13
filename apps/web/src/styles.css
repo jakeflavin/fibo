@@ -387,7 +387,7 @@ a {
 .room {
   max-width: 1160px;
   margin: 0 auto;
-  padding: 0 24px 48px;
+  padding: 72px 24px 48px;
 }
 
 .room-empty {
@@ -406,19 +406,15 @@ a {
   max-width: 380px;
 }
 
-/* No app bar: brand and menu float in the top corners. */
-.room-header {
-  display: flex;
-  align-items: flex-start;
-  padding: 18px 0;
-  margin-bottom: 24px;
-}
-
+/* No app bar: brand and menu are pinned to the corners, out of flow. */
 .brand {
+  position: fixed;
+  top: 16px;
+  left: 20px;
+  z-index: 45;
   display: flex;
   flex-direction: column;
   line-height: 1.25;
-  flex: 1;
 }
 
 .brand-name {
@@ -436,8 +432,10 @@ a {
 /* ── header menu ─────────────────────────────────────────────── */
 
 .menu-wrap {
-  position: relative;
-  margin-left: auto;
+  position: fixed;
+  top: 12px;
+  right: 20px;
+  z-index: 60;
 }
 
 .menu-button {
@@ -1128,10 +1126,6 @@ a {
     padding-bottom: 160px;
   }
 
-  .room-header {
-    margin-bottom: 24px;
-  }
-
   .table-empty {
     padding: 56px 8px 32px;
   }
@@ -1179,7 +1173,7 @@ a {
   }
 
   .room {
-    padding: 0 16px 160px;
+    padding: 64px 16px 160px;
   }
 
   .seats {
