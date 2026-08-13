@@ -144,10 +144,12 @@ join pages, where the form card floats).
   circle that echoes the team list. Face-down = card-face fill, hairline
   border, raised shadow; locked-in/revealed = identity fill. Packing and
   sizing logic unchanged.
-- **Hand cards**: surface tiles with hairline borders; the selected card
-  uses the Jira selection pattern — `--accent-dim` fill, 2px `--accent`
-  border, accent text — never a solid dark fill. Hover is a subtle 2px
-  lift, not a launch.
+- **Hand cards**: sit on their own sunken felt strip mirroring the
+  table region. Surface tiles with hairline borders and the same
+  inner-frame deck detail as the seat cards; the selected card uses the
+  Jira selection pattern — `--accent-dim` fill, 2px `--accent` border,
+  accent text (frame tinted to match) — never a solid dark fill. Hover
+  is a subtle 2px lift, not a launch.
 
 ## 6. Voice & content
 

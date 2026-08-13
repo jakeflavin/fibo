@@ -1106,15 +1106,31 @@ svg.lucide {
 /* ── deck (my hand) ──────────────────────────────────────────── */
 
 /* Inside the stage card the hand is a full-bleed footer tray. */
-/* The hand is a footer tray split off by a hairline, like a Jira
-   bottom bar. */
+/* The hand sits on its own sunken felt, matching the table region. */
 .deck {
   display: grid;
-  gap: 12px;
+  gap: 8px;
   justify-items: center;
-  margin: 0 -16px -16px;
-  padding: 12px 16px 16px;
-  border-top: 1px solid var(--line);
+}
+
+.deck-cards {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+/* Same real-deck frame line as the seat cards. */
+.play-card::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  pointer-events: none;
+}
+
+.play-card-selected::after {
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
 .deck-label {
@@ -1133,6 +1149,7 @@ svg.lucide {
   flex: 1;
   min-width: 0;
   height: 76px;
+  position: relative;
   background: var(--card-face);
   border: 1px solid var(--line);
   border-radius: 8px;
