@@ -40,9 +40,8 @@ export function RoomHeader({ session, canLead, onShare }: Props) {
     const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    const slug = session.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase() || 'session';
     a.href = url;
-    a.download = `fibo-${slug}-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `fibo-session-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     toast('session exported');

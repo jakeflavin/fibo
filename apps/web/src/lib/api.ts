@@ -25,13 +25,12 @@ import { saveMyUserId } from './storage';
 
 const sessionRef = (sessionId: string) => ref(db, `sessions/${sessionId}`);
 
-export async function createSession(sessionName: string, ownerName: string): Promise<string> {
+export async function createSession(ownerName: string): Promise<string> {
   const sessionId = newSessionId();
   const userId = newUserId();
   const now = Date.now();
   const session: Session = {
     id: sessionId,
-    name: sessionName.trim() || 'sprint planning',
     createdAt: now,
     currentStoryId: null,
     revealed: false,
@@ -223,7 +222,6 @@ export async function clearTimer(sessionId: string): Promise<void> {
 /** Replace the story list with an imported export document. */
 export async function importStories(session: Session, doc: SessionExport): Promise<void> {
   await update(sessionRef(session.id), {
-    name: doc.sessionName,
     stories: storiesFromExport(doc, newStoryId),
     currentStoryId: null,
     revealed: false,

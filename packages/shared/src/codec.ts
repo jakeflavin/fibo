@@ -8,7 +8,7 @@ export function exportSession(session: Session): SessionExport {
     app: 'fibo',
     version: 1,
     exportedAt: Date.now(),
-    sessionName: session.name,
+    sessionName: session.name ?? '',
     stories: stories.map((s) => ({
       title: s.title,
       status: s.status,
@@ -37,9 +37,6 @@ export function parseSessionExport(json: string): SessionExport {
   if (doc.app !== 'fibo' || doc.version !== 1) {
     throw new ImportError('That file is not a Fibo session export (missing app/version marker).');
   }
-  if (typeof doc.sessionName !== 'string') {
-    throw new ImportError('Export is missing a session name.');
-  }
   if (!Array.isArray(doc.stories)) {
     throw new ImportError('Export is missing its stories list.');
   }
@@ -59,7 +56,7 @@ export function parseSessionExport(json: string): SessionExport {
     app: 'fibo',
     version: 1,
     exportedAt: typeof doc.exportedAt === 'number' ? doc.exportedAt : Date.now(),
-    sessionName: doc.sessionName,
+    sessionName: typeof doc.sessionName === 'string' ? doc.sessionName : '',
     stories,
   };
 }

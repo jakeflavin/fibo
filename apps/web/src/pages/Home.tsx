@@ -9,7 +9,6 @@ export function Home() {
   const navigate = useNavigate();
   const toast = useToast();
   const [name, setName] = useState(getLastName);
-  const [sessionName, setSessionName] = useState('');
   const [busy, setBusy] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
@@ -18,7 +17,7 @@ export function Home() {
     setBusy(true);
     try {
       saveLastName(name.trim());
-      const sessionId = await createSession(sessionName, name);
+      const sessionId = await createSession(name);
       navigate(`/s/${sessionId}`);
     } catch (err) {
       console.error(err);
@@ -53,18 +52,6 @@ export function Home() {
                 maxLength={40}
                 autoFocus
                 required
-              />
-            </div>
-          </label>
-          <label className="field">
-            <span className="field-label">session_name</span>
-            <div className="prompt-input">
-              <span className="prompt">&gt;</span>
-              <input
-                value={sessionName}
-                onChange={(e) => setSessionName(e.target.value)}
-                placeholder="sprint 42 planning"
-                maxLength={60}
               />
             </div>
           </label>

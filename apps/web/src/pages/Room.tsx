@@ -40,11 +40,6 @@ export function Room() {
     return () => clearTimeout(t);
   }, [session, canLead]);
 
-  const title = session?.name ? `${session.name} · fibo` : 'fibo';
-  useEffect(() => {
-    document.title = title;
-  }, [title]);
-
   if (loading) {
     return (
       <div className="room-empty">
@@ -84,7 +79,6 @@ export function Room() {
           <Deck session={session} myUserId={myUserId!} />
         </section>
         <aside className="room-side">
-          <div className="rail-session">{session.name}</div>
           <Participants session={session} myUserId={myUserId!} />
           <StoryQueue session={session} canLead={canLead} />
         </aside>

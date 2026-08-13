@@ -38,7 +38,8 @@ export interface SessionTimer {
 
 export interface Session {
   id: string;
-  name: string;
+  /** Legacy label; the UI no longer names sessions. */
+  name?: string;
   createdAt: number;
   /** The single story currently in discussion. */
   currentStoryId?: string | null;

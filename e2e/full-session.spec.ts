@@ -22,7 +22,6 @@ test('full sprint planning session with three users', async ({ browser }) => {
   await expect(ada.locator('.logo')).toBeVisible();
   await shot(ada, '01-home');
   await ada.getByPlaceholder('ada').fill('Ada');
-  await ada.getByPlaceholder('sprint 42 planning').fill('sprint 42');
   await ada.getByRole('button', { name: /create session/ }).click();
   await ada.waitForURL(/\/s\/[a-z2-9]+/);
   const url = ada.url();

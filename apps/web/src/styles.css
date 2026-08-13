@@ -406,13 +406,12 @@ a {
   max-width: 380px;
 }
 
+/* No app bar: brand and menu float in the top corners. */
 .room-header {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 0;
-  margin-bottom: 40px;
-  border-bottom: 1px solid var(--line);
+  align-items: flex-start;
+  padding: 18px 0;
+  margin-bottom: 24px;
 }
 
 .brand {
@@ -432,16 +431,6 @@ a {
   font-size: 10px;
   color: var(--dim);
   opacity: 0.6;
-}
-
-.rail-session {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--dim);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-bottom: -16px;
 }
 
 /* ── header menu ─────────────────────────────────────────────── */

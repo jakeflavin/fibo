@@ -18,7 +18,6 @@ async function setupRoom(browser: Browser, theme: string, viewport: { width: num
   const page = await ctx.newPage();
   await page.goto('/');
   await page.getByPlaceholder('ada').fill('Ada');
-  await page.getByPlaceholder('sprint 42 planning').fill('sprint 42');
   await page.getByRole('button', { name: /create session/ }).click();
   await page.waitForURL(/\/s\//);
   const add = page.getByPlaceholder(/add a story/);

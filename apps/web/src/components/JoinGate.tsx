@@ -41,7 +41,7 @@ export function JoinGate({ session, onJoined }: Props) {
           you've been invited to point some stories<span className="cursor">▊</span>
         </p>
         <form className="home-form" onSubmit={submit}>
-          <div className="form-label">$ fibo join "{session.name}"</div>
+          <div className="form-label">$ fibo join</div>
           <p className="panel-hint dim">
             {count} {count === 1 ? 'person is' : 'people are'} here · no account needed
           </p>
