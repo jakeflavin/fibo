@@ -651,11 +651,33 @@ svg.lucide {
   min-height: 40px;
 }
 
-/* Jira-style hover-reveal actions, inline right after the title text. */
+/* Jira-style hover-reveal actions, inline right after the last
+   character of the title. */
 .title-actions {
   display: inline-flex;
   gap: 2px;
-  flex: none;
+  margin-left: 8px;
+  vertical-align: middle;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.story-line:hover .title-actions,
+.story-line:focus-within .title-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* A truncated title would clip the inline actions, so they overlay
+   the clipped corner instead, on the title's own background. */
+.story-title-overflow .title-actions {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin-left: 0;
+  padding-left: 6px;
+  background: var(--surface);
 }
 
 .title-action {
@@ -666,13 +688,6 @@ svg.lucide {
   align-items: center;
   justify-content: center;
   color: var(--dim);
-  opacity: 0;
-  transition: opacity 0.12s ease;
-}
-
-.story-line:hover .title-action,
-.story-line:focus-within .title-action {
-  opacity: 1;
 }
 
 /* Jira inline-edit: full-width field with floating icon buttons
@@ -705,18 +720,9 @@ svg.lucide {
   font-size: clamp(20px, 2.2vw, 24px);
   font-weight: 600;
   margin: 0;
-  line-height: 1.25;
-  /* Shrink-to-fit row: the hover actions hug the end of the visible
-     text instead of floating at the container's far edge. */
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  min-width: 0;
-}
-
-.story-title-text {
   overflow-wrap: anywhere;
-  min-width: 0;
+  line-height: 1.25;
+  position: relative;
   /* Long titles can't eat the stage: clamp to two lines (full text in
      the title attribute). */
   display: -webkit-box;

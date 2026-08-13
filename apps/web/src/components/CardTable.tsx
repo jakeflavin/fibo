@@ -29,6 +29,19 @@ export function CardTable({ session, myUserId, canLead }: Props) {
   // Inline title editing + delete confirmation (leads only).
   const [editingTitle, setEditingTitle] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  // The hover actions live inline after the last character; when the
+  // title truncates they'd be clipped, so they overlay the corner instead.
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const [titleClipped, setTitleClipped] = useState(false);
+  useLayoutEffect(() => {
+    const el = titleRef.current;
+    if (!el) return;
+    const check = () => setTitleClipped(el.scrollHeight > el.clientHeight + 1);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    return () => ro.disconnect();
+  });
   const [fitScale, setFitScale] = useState(1);
   useLayoutEffect(() => {
     const fit = () => {
@@ -117,8 +130,12 @@ export function CardTable({ session, myUserId, canLead }: Props) {
     <div className="table-panel">
       <div className="story-line">
         {editingTitle === null ? (
-          <h2 className="story-title" title={story.title}>
-            <span className="story-title-text">{story.title}</span>
+          <h2
+            className={`story-title ${titleClipped ? 'story-title-overflow' : ''}`}
+            ref={titleRef}
+            title={story.title}
+          >
+            {story.title}
             {canLead && (
               <span className="title-actions">
                 <button
