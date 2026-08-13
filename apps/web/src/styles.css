@@ -346,6 +346,15 @@ svg.lucide {
   opacity: 0.55;
 }
 
+/* iOS Safari auto-zooms into any focused input under 16px; keep every
+   text field at 16px on touch-sized screens so the page never zooms. */
+@media (max-width: 860px) {
+  .prompt-input,
+  .prompt-input input {
+    font-size: 16px;
+  }
+}
+
 /* ── toasts ──────────────────────────────────────────────────── */
 
 .toast-stack {
