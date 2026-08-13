@@ -833,9 +833,17 @@ svg.lucide {
   width: calc(var(--card-h) * 0.72);
   height: var(--card-h);
   perspective: 700px;
+  /* Thrown on the table: each card lands with its own small tilt and
+     drop (set per user in CardTable); hovering straightens it. */
+  transform: rotate(var(--tilt, 0deg)) translateY(var(--dy, 0px));
   transition:
     width 0.45s ease,
-    height 0.45s ease;
+    height 0.45s ease,
+    transform 0.25s ease;
+}
+
+.seat:hover .seat-card {
+  transform: rotate(0deg) translateY(0);
 }
 
 .seat-card-inner {

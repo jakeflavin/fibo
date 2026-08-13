@@ -153,8 +153,12 @@ join pages, where the form card floats).
 - **The table**: the seats sit on a sunken region (`--bg`, 8px radius) —
   the Jira board-column idiom — so raised cards have something to be
   raised *from*.
-- **Seat cards**: a straight, tight grid (12px gaps; no tilt, scatter,
-  or hover sway). Cards are crafted like a real deck: an inner frame
+- **Seat cards**: a tight grid (12px gaps) with a "thrown on the
+  table" landing — each card carries a small deterministic tilt and
+  drop derived from its user id (±5°, 0–5px), identical on every
+  client and stable across renders; hovering straightens the card.
+  The scatter never perturbs the grid itself (no irregular gaps — the
+  packing math owns spacing). Cards are crafted like a real deck: an inner frame
   line on every back, corner indices on revealed fronts (top-left +
   rotated bottom-right), and the avatar seated in an identity-tinted
   circle that echoes the team list. Face-down = card-face fill, hairline

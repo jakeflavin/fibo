@@ -18,6 +18,17 @@ interface Props {
  * delete), every player's seat card packed to fit the space, and the
  * round's reveal state.
  */
+/**
+ * Deterministic per-user "thrown on the table" scatter: a small tilt and
+ * drop derived from the user id, so cards land naturally but never
+ * reshuffle mid-round (and agree across every client).
+ */
+function scatter(uid: string) {
+  let h = 0;
+  for (const c of uid) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return { tilt: (h % 11) - 5, dy: (h >> 4) % 6 };
+}
+
 export function CardTable({ session, myUserId, canLead }: Props) {
   const users = session.users ?? {};
   const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
@@ -255,7 +266,15 @@ export function CardTable({ session, myUserId, canLead }: Props) {
                     style={identityVars(user.identity)}
                   >
                     <div className="seat-unit">
-                      <div className={`seat-card ${revealed ? 'flipped' : ''}`}>
+                      <div
+                        className={`seat-card ${revealed ? 'flipped' : ''}`}
+                        style={
+                          {
+                            '--tilt': `${scatter(uid).tilt}deg`,
+                            '--dy': `${scatter(uid).dy}px`,
+                          } as React.CSSProperties
+                        }
+                      >
                         <div className="seat-card-inner">
                           <div className="seat-card-back">
                             <PixelAvatar
