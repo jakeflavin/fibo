@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { Check, Pencil, Trash2, X } from 'lucide-react';
 import type { Session } from '@fibo/shared';
 import { deleteStory, updateStoryTitle } from '../lib/api';
 import { ConfirmModal } from './ConfirmModal';
@@ -116,10 +117,8 @@ export function CardTable({ session, myUserId, canLead }: Props) {
     <div className="table-panel">
       <div className="story-line">
         {editingTitle === null ? (
-          <>
-            <h2 className="story-title" title={story.title}>
-              {story.title}
-            </h2>
+          <h2 className="story-title" title={story.title}>
+            <span className="story-title-text">{story.title}</span>
             {canLead && (
               <span className="title-actions">
                 <button
@@ -138,7 +137,7 @@ export function CardTable({ session, myUserId, canLead }: Props) {
                 </button>
               </span>
             )}
-          </>
+          </h2>
         ) : (
           <form
             className="title-edit"
@@ -164,17 +163,30 @@ export function CardTable({ session, myUserId, canLead }: Props) {
                 }}
               />
             </div>
-            <button className="btn btn-primary" type="submit" disabled={!editingTitle.trim()}>
-              Save
-            </button>
-            <button className="btn" type="button" onClick={() => setEditingTitle(null)}>
-              Cancel
-            </button>
+            <span className="title-edit-actions">
+              <button
+                className="btn title-edit-action"
+                type="submit"
+                disabled={!editingTitle.trim()}
+                aria-label="Save title"
+              >
+                <Check size={14} />
+              </button>
+              <button
+                className="btn title-edit-action"
+                type="button"
+                onClick={() => setEditingTitle(null)}
+                aria-label="Cancel editing"
+              >
+                <X size={14} />
+              </button>
+            </span>
           </form>
         )}
       </div>
-      {confirmDelete && (
-        <ConfirmModal
+      {confirmDelete &&
+        createPortal(
+          <ConfirmModal
           title="Delete story"
           message={
             <>
@@ -187,8 +199,9 @@ export function CardTable({ session, myUserId, canLead }: Props) {
             void deleteStory(session, story.id);
           }}
           onClose={() => setConfirmDelete(false)}
-        />
-      )}
+          />,
+          document.body,
+        )}
 
       <div
         className="seats"

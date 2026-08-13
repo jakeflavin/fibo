@@ -648,13 +648,10 @@ svg.lucide {
 .story-line {
   padding: 8px 12px 4px;
   text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 8px;
   min-height: 40px;
 }
 
-/* Jira-style hover-reveal actions on the story title. */
+/* Jira-style hover-reveal actions, inline right after the title text. */
 .title-actions {
   display: inline-flex;
   gap: 2px;
@@ -678,28 +675,50 @@ svg.lucide {
   opacity: 1;
 }
 
+/* Jira inline-edit: full-width field with floating icon buttons
+   hanging off its bottom-right corner. */
 .title-edit {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-  min-width: 0;
+  position: relative;
 }
 
-.title-edit-field {
-  flex: 1;
-  min-width: 0;
+.title-edit-actions {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  display: flex;
+  gap: 4px;
+  z-index: 5;
+}
+
+.title-edit-action {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
 }
 
 .story-title {
   font-size: clamp(20px, 2.2vw, 24px);
   font-weight: 600;
   margin: 0;
-  overflow-wrap: anywhere;
   line-height: 1.25;
+  /* Shrink-to-fit row: the hover actions hug the end of the visible
+     text instead of floating at the container's far edge. */
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
+.story-title-text {
+  overflow-wrap: anywhere;
+  min-width: 0;
   /* Long titles can't eat the stage: clamp to two lines (full text in
-     the title attribute). The two-line slot is always reserved, so the
-     table never bumps when titles change length. */
+     the title attribute). */
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
