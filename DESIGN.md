@@ -63,6 +63,22 @@ Rules:
 - Monospace is retired everywhere, including numbers (use
   `font-variant-numeric: tabular-nums` where alignment matters).
 
+### The enforced UI scale
+
+Outside of headings, display type (logo, consensus value), and card
+metrics, exactly three sizes exist, declared as tokens in `:root` and
+used everywhere via `var()` — never as literals:
+
+| Token            | Size | Use |
+| ---------------- | ---- | --- |
+| `--font-body`    | 14px | Anything the user reads or clicks: buttons, segment cells, ruler chips, menu items, list-row titles, names, vote columns, the timer clock |
+| `--font-small`   | 12px | Secondary/labelling type: eyebrows, field labels, hints, badges, tallies, the footer |
+| `--font-lozenge` | 11px | Lozenge tags (`You`, `Admin`, `Lead`) and the version chip only |
+
+13px does not exist. Interactive controls and list rows are at least
+32px tall (joined-group cells are 30px inside their 1px group border,
+32px outer). Text inputs stay 16px at touch widths (§8).
+
 ## 3. Shape & space
 
 - **Radius scale** (ADS refresh): controls (buttons, inputs, chips) `4px`
