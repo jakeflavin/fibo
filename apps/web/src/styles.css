@@ -2,23 +2,30 @@
    fibo — dark-first, minimal, one quiet surface
    ─────────────────────────────────────────────────────────────── */
 
+/*
+ * Palette ported from the Goals iOS app (GoalsKit Theme.swift), green family:
+ * graphite-green canvas, lifted card surface, one phosphor accent. Hairlines
+ * carry structure at 8% white / 10% black; pressable controls get a heavier
+ * 32% / 34% stroke so they read as controls, not seams.
+ */
 :root,
 :root[data-theme='dark'] {
   --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Menlo, Consolas,
     'Liberation Mono', monospace;
 
-  --bg: #0b0c0f;
-  --surface: #15171c;
-  --surface-hi: #1c1f25;
-  --line: rgba(255, 255, 255, 0.07);
+  --bg: #0a0f0c;
+  --surface: #111915;
+  --surface-hi: #1b231f;
+  --line: rgba(255, 255, 255, 0.08);
   --line-strong: rgba(255, 255, 255, 0.16);
-  --text: #e8eaed;
-  --dim: #878d98;
-  --accent: #4ade80;
-  --accent-ink: #04170b;
-  --accent-dim: rgba(74, 222, 128, 0.13);
-  --danger: #f87171;
-  --warn: #fbbf24;
+  --control: rgba(255, 255, 255, 0.32);
+  --text: #e9edeb;
+  --dim: #87928c;
+  --accent: #6fcf97;
+  --accent-ink: #0a0f0c;
+  --accent-dim: rgba(111, 207, 151, 0.14);
+  --danger: #f0909e;
+  --warn: #e2c069;
   --backdrop: rgba(0, 0, 0, 0.65);
   --avatar-light: #e8e8e4;
 
@@ -26,19 +33,20 @@
 }
 
 :root[data-theme='light'] {
-  --bg: #fafaf9;
-  --surface: #ffffff;
-  --surface-hi: #f0f0ee;
-  --line: rgba(0, 0, 0, 0.08);
+  --bg: #ebf1ec;
+  --surface: #f9fcfa;
+  --surface-hi: #e0e7e1;
+  --line: rgba(0, 0, 0, 0.1);
   --line-strong: rgba(0, 0, 0, 0.2);
-  --text: #1a1b1e;
-  --dim: #71747b;
-  --accent: #059669;
-  --accent-ink: #ffffff;
-  --accent-dim: rgba(5, 150, 105, 0.1);
-  --danger: #dc2626;
-  --warn: #b45309;
-  --backdrop: rgba(20, 20, 20, 0.4);
+  --control: rgba(0, 0, 0, 0.34);
+  --text: #191c1a;
+  --dim: #67716b;
+  --accent: #1f7a4d;
+  --accent-ink: #ebf1ec;
+  --accent-dim: rgba(31, 122, 77, 0.1);
+  --danger: #b23a54;
+  --warn: #9a6a0c;
+  --backdrop: rgba(20, 22, 20, 0.4);
   --avatar-light: #fbfbf9;
 
   color-scheme: light;
@@ -125,7 +133,7 @@ a {
 
 .btn {
   background: transparent;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--control);
   border-radius: 8px;
   padding: 8px 16px;
   cursor: pointer;
@@ -783,7 +791,7 @@ a {
   width: 54px;
   height: 76px;
   background: transparent;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--control);
   border-radius: 10px;
   cursor: pointer;
   display: flex;
