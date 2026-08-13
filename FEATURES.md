@@ -62,6 +62,9 @@ works. The app lives at https://fibo-49d58.web.app.
   table. Switching away from a flipped story with a standing result accepts
   that result and marks the story done; switching away mid-round returns it
   to the queue with votes cleared.
+- **Reorder by drag** — leads drag rows to rearrange the queue (touch
+  works too; keyboard: focus a row, Space lifts, arrows move, Space
+  drops). A plain click still puts the story on the table.
 - **Reopen a pointed story** — clicking a done story reopens it revealed,
   with everyone's cards and the consensus intact (use repoint for a fresh
   round on it).
@@ -111,7 +114,9 @@ The controls toolbar sits under the app bar:
 - **Auto** — the toggle at the end of the timer segment. While on, the
   round flips by itself the moment every online player has voted
   (offline members don't block it — they reveal as `?`). The setting is
-  session-wide and persists across rounds and stories.
+  session-wide and persists across rounds and stories. Auto and the
+  countdown are alternatives: starting a timer disarms Auto, and arming
+  Auto cancels a running timer.
 - **Consensus & override** — after the flip, the consensus card shows the
   winning value plus the tally (`13×2 · ?×4`). The point ruler in the
   toolbar lets leads override the result to any deck value; the selected

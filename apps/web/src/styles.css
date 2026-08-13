@@ -1589,6 +1589,15 @@ svg.lucide {
   min-width: 26px;
 }
 
+/* The row in flight during a drag-reorder rides above its neighbors. */
+.story-dragging {
+  position: relative;
+  z-index: 5;
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  cursor: grabbing;
+}
+
 /* The story on the table: tinted row, visible on the card surface. */
 .story-active {
   background: var(--accent-dim);

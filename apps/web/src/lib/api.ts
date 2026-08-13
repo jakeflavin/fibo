@@ -132,9 +132,17 @@ export async function setRole(sessionId: string, userId: string, role: Role): Pr
   await touch(sessionId);
 }
 
-/** Toggle auto-flip: cards reveal as soon as everyone online has voted. */
+/**
+ * Toggle auto-flip: cards reveal as soon as everyone online has voted.
+ * Auto and the countdown are alternatives (one segment, one mode):
+ * arming auto cancels a running timer, and starting a timer disarms auto.
+ */
 export async function setAutoFlip(sessionId: string, on: boolean): Promise<void> {
-  await update(sessionRef(sessionId), { autoFlip: on, touchedAt: Date.now() });
+  await update(sessionRef(sessionId), {
+    autoFlip: on,
+    ...(on ? { timer: null } : {}),
+    touchedAt: Date.now(),
+  });
 }
 
 /** Admin-only: change the deck in play. Standing results keep their
@@ -221,6 +229,15 @@ export async function addStories(
     }
   });
   await update(sessionRef(session.id), updates);
+}
+
+/** Persist a drag-reorder: story orders become their new list positions. */
+export async function reorderStories(sessionId: string, orderedIds: string[]): Promise<void> {
+  const updates: Record<string, unknown> = { touchedAt: Date.now() };
+  orderedIds.forEach((id, i) => {
+    updates[`stories/${id}/order`] = i;
+  });
+  await update(sessionRef(sessionId), updates);
 }
 
 /** Delete a story; deleting the active story also clears the table. */
@@ -333,11 +350,11 @@ export async function revote(session: Session): Promise<void> {
 
 /** Start the shared countdown; cards auto-flip when it ends. */
 export async function startTimer(sessionId: string, seconds: number): Promise<void> {
-  await set(ref(db, `sessions/${sessionId}/timer`), {
-    endsAt: Date.now() + seconds * 1000,
-    seconds,
+  await update(sessionRef(sessionId), {
+    timer: { endsAt: Date.now() + seconds * 1000, seconds },
+    autoFlip: false,
+    touchedAt: Date.now(),
   });
-  await touch(sessionId);
 }
 
 /** Delete a whole session (the on-open expiry gate's cleanup). */

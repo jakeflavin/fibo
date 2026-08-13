@@ -40,6 +40,16 @@ test('auto flip reveals the round once everyone online has voted', async ({ brow
   await bob.getByTitle('3 points', { exact: true }).click();
   await expect(ada.locator('.result-value')).toHaveText('3');
 
+  // Auto and the timer are one segment: a timer disarms auto, and
+  // re-arming auto cancels the timer.
+  await ada.getByRole('button', { name: 'Repoint this story' }).click();
+  await ada.getByRole('button', { name: '30s' }).click();
+  await expect(ada.locator('.timer-clock')).toBeVisible();
+  await expect(auto).toHaveAttribute('aria-pressed', 'false');
+  await auto.click();
+  await expect(auto).toHaveAttribute('aria-pressed', 'true');
+  await expect(ada.locator('.timer-clock')).toHaveCount(0);
+
   await adaCtx.close();
   await bobCtx.close();
 });
