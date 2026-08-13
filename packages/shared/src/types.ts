@@ -46,6 +46,10 @@ export interface Session {
   currentStoryId?: string | null;
   /** Whether the current round's cards are face-up. */
   revealed: boolean;
+  /** Epoch ms of the last meaningful write (vote, flip, queue change…). */
+  touchedAt?: number;
+  /** Epoch ms when a client last disconnected (written server-side). */
+  lastSeenAt?: number;
   timer?: SessionTimer | null;
   users?: Record<string, SessionUser>;
   stories?: Record<string, Story>;

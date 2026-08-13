@@ -22,6 +22,9 @@ polish, and carefully considered additions.
 - `apps/web/src/` — the app. `lib/api.ts` owns every database read/write;
   components never touch Firebase directly. `styles.css` is the single
   stylesheet.
+- `functions/` — the scheduled session-cleanup Cloud Function
+  (standalone package, not an npm workspace; mirrors
+  `packages/shared/src/expiry.ts` — keep them in sync).
 - `scripts/` — one-time ops scripts (deploy service-account setup).
 
 ## Commands

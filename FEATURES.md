@@ -20,9 +20,11 @@ works. The app lives at https://fibo-49d58.web.app.
 - **Leave session** — gear menu → "Leave session" (destructive, confirmed
   first). Removes you from the roster along with your vote and forgets your
   identity for that room. You can rejoin any time with the invite link.
-- **Ephemeral by design** — sessions live in the Realtime Database with no
-  cleanup jobs or ownership transfer; when everyone leaves, it simply goes
-  stale. A dead link shows a "session not found" page.
+- **Ephemeral by design** — a session expires once everyone is offline
+  and nothing has touched it for **48 hours**. A weekly cleanup job
+  (Sundays) deletes expired sessions, and opening an expired session's
+  link shows "Session expired" and deletes it on the spot. A dead link
+  shows a "session not found" page.
 
 ## Roles
 

@@ -6,6 +6,7 @@ import {
   remove,
   onValue,
   onDisconnect,
+  serverTimestamp,
 } from 'firebase/database';
 import {
   computeWinner,
@@ -25,6 +26,13 @@ import { saveMyUserId } from './storage';
 
 const sessionRef = (sessionId: string) => ref(db, `sessions/${sessionId}`);
 
+/**
+ * Stamp the session's last-activity time. The weekly cleanup and the
+ * on-open expiry gate treat a session as abandoned only when this (and
+ * presence) goes quiet — see packages/shared/src/expiry.ts.
+ */
+const touch = (sessionId: string) => set(ref(db, `sessions/${sessionId}/touchedAt`), Date.now());
+
 /** Create a session owned by the given user; returns the session id. */
 export async function createSession(ownerName: string): Promise<string> {
   const sessionId = newSessionId();
@@ -33,6 +41,7 @@ export async function createSession(ownerName: string): Promise<string> {
   const session: Session = {
     id: sessionId,
     createdAt: now,
+    touchedAt: now,
     currentStoryId: null,
     revealed: false,
     users: {
@@ -63,6 +72,7 @@ export async function joinSession(sessionId: string, name: string): Promise<stri
     online: true,
     joinedAt: Date.now(),
   });
+  await touch(sessionId);
   saveMyUserId(sessionId, userId);
   return userId;
 }
@@ -75,18 +85,26 @@ export async function joinSession(sessionId: string, name: string): Promise<stri
  */
 export function trackPresence(sessionId: string, userId: string): () => void {
   const onlineRef = ref(db, `sessions/${sessionId}/users/${userId}/online`);
+  // Session-level last-seen stamp, written server-side on disconnect: it
+  // feeds the expiry clock without touching (or resurrecting) any user
+  // record, and a stamp against an already-deleted session is rejected
+  // by the rules' id/createdAt validation.
+  const lastSeenRef = ref(db, `sessions/${sessionId}/lastSeenAt`);
   const connectedRef = ref(db, '.info/connected');
   const unsubscribe = onValue(connectedRef, (snap) => {
     if (snap.val() === true) {
       void onDisconnect(onlineRef)
         .remove()
         .then(() => set(onlineRef, true));
+      void onDisconnect(lastSeenRef).set(serverTimestamp());
     }
   });
   return () => {
     unsubscribe();
     void onDisconnect(onlineRef).cancel();
+    void onDisconnect(lastSeenRef).cancel();
     void remove(onlineRef);
+    void set(lastSeenRef, Date.now());
   };
 }
 
@@ -103,11 +121,12 @@ export function subscribeSession(
 /** Change a user's role (admin action: make/remove lead). */
 export async function setRole(sessionId: string, userId: string, role: Role): Promise<void> {
   await set(ref(db, `sessions/${sessionId}/users/${userId}/role`), role);
+  await touch(sessionId);
 }
 
 /** Remove a user from the session, along with their vote on the table. */
 export async function removeUser(session: Session, userId: string): Promise<void> {
-  const updates: Record<string, unknown> = { [`users/${userId}`]: null };
+  const updates: Record<string, unknown> = { [`users/${userId}`]: null, touchedAt: Date.now() };
   const storyId = session.currentStoryId;
   if (storyId) updates[`stories/${storyId}/votes/${userId}`] = null;
   await update(sessionRef(session.id), updates);
@@ -125,6 +144,7 @@ export async function addStory(sessionId: string, title: string, order: number):
     createdAt: Date.now(),
   };
   await set(ref(db, `sessions/${sessionId}/stories/${id}`), story);
+  await touch(sessionId);
   return id;
 }
 
@@ -135,10 +155,12 @@ export async function deleteStory(session: Session, storyId: string): Promise<vo
       currentStoryId: null,
       revealed: false,
       timer: null,
+      touchedAt: Date.now(),
       [`stories/${storyId}`]: null,
     });
   } else {
     await remove(ref(db, `sessions/${session.id}/stories/${storyId}`));
+    await touch(session.id);
   }
 }
 
@@ -153,6 +175,7 @@ export async function activateStory(session: Session, storyId: string): Promise<
     currentStoryId: storyId,
     revealed: reopen,
     timer: null,
+    touchedAt: Date.now(),
     [`stories/${storyId}/status`]: 'active',
   };
   if (!reopen) {
@@ -184,6 +207,7 @@ export async function castVote(
   const voteRef = ref(db, `sessions/${sessionId}/stories/${storyId}/votes/${userId}`);
   if (value === null) await remove(voteRef);
   else await set(voteRef, value);
+  await touch(sessionId);
 }
 
 /** Flip the cards: everyone sees the votes and the default winner is written. */
@@ -194,6 +218,7 @@ export async function revealCards(session: Session): Promise<void> {
   await update(sessionRef(session.id), {
     revealed: true,
     timer: null,
+    touchedAt: Date.now(),
     [`stories/${storyId}/result`]: computeWinner(votes),
   });
 }
@@ -205,6 +230,7 @@ export async function updateStoryTitle(
   title: string,
 ): Promise<void> {
   await set(ref(db, `sessions/${sessionId}/stories/${storyId}/title`), title.trim());
+  await touch(sessionId);
 }
 
 /** Leaders can override the winning value after the flip. */
@@ -214,6 +240,7 @@ export async function setResult(
   value: VoteValue,
 ): Promise<void> {
   await set(ref(db, `sessions/${sessionId}/stories/${storyId}/result`), value);
+  await touch(sessionId);
 }
 
 /** Clear votes and flip cards back down for another round on the same story. */
@@ -223,6 +250,7 @@ export async function revote(session: Session): Promise<void> {
   await update(sessionRef(session.id), {
     revealed: false,
     timer: null,
+    touchedAt: Date.now(),
     [`stories/${storyId}/votes`]: null,
     [`stories/${storyId}/result`]: null,
   });
@@ -234,6 +262,12 @@ export async function startTimer(sessionId: string, seconds: number): Promise<vo
     endsAt: Date.now() + seconds * 1000,
     seconds,
   });
+  await touch(sessionId);
+}
+
+/** Delete a whole session (the on-open expiry gate's cleanup). */
+export async function deleteSession(sessionId: string): Promise<void> {
+  await remove(sessionRef(sessionId));
 }
 
 /** Replace the story list with an imported export document. */
@@ -243,5 +277,6 @@ export async function importStories(session: Session, doc: SessionExport): Promi
     currentStoryId: null,
     revealed: false,
     timer: null,
+    touchedAt: Date.now(),
   });
 }

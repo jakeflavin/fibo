@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Heart } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import type { Session } from '@fibo/shared';
-import { revealCards, trackPresence } from '../lib/api';
+import { isSessionExpired } from '@fibo/shared';
+import { deleteSession, revealCards, trackPresence } from '../lib/api';
 import { getMyUserId } from '../lib/storage';
 import { useSession } from '../lib/useSession';
 import { RoomHeader } from '../components/RoomHeader';
@@ -26,6 +27,17 @@ export function Room() {
 
 function RoomInner({ sessionId }: { sessionId: string }) {
   const { session, loading } = useSession(sessionId);
+  // On-open expiry gate: an abandoned session past its TTL is treated as
+  // gone (and deleted) even if the weekly sweep hasn't reached it yet.
+  // Latched: the deletion empties the live subscription, and the page
+  // must keep saying "expired", not flip to "not found".
+  const [expired, setExpired] = useState(false);
+  useEffect(() => {
+    if (session && isSessionExpired(session)) {
+      setExpired(true);
+      void deleteSession(sessionId);
+    }
+  }, [session, sessionId]);
   const [myUserId, setMyUserId] = useState<string | null>(() => getMyUserId(sessionId));
   const [shareOpen, setShareOpen] = useState(false);
 
@@ -37,7 +49,7 @@ function RoomInner({ sessionId }: { sessionId: string }) {
 
   // Keep my online flag in sync with the realtime connection.
   useEffect(() => {
-    if (!me || !myUserId) return;
+    if (expired || !me || !myUserId) return;
     return trackPresence(sessionId, myUserId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, myUserId, me !== undefined]);
@@ -60,6 +72,23 @@ function RoomInner({ sessionId }: { sessionId: string }) {
         <p className="dim">
           Connecting…
         </p>
+      </div>
+    );
+  }
+
+  if (expired) {
+    return (
+      <div className="room-empty">
+        <div className="notfound">
+          <div className="eyebrow">Session expired</div>
+          <p className="dim">
+            This session ended more than 48 hours ago and has been deleted. Sessions on fibo are
+            temporary.
+          </p>
+          <a className="btn btn-primary" href="/">
+            Start a new session
+          </a>
+        </div>
       </div>
     );
   }

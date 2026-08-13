@@ -2,7 +2,11 @@
   "$schema": "https://raw.githubusercontent.com/firebase/firebase-tools/master/schema/firebase-config.json",
   "hosting": {
     "public": "apps/web/dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "rewrites": [
       {
         "source": "**",
@@ -25,5 +29,12 @@
       "port": 4000
     },
     "singleProjectMode": true
+  },
+  "functions": {
+    "source": "functions",
+    "predeploy": [
+      "npm --prefix functions ci",
+      "npm --prefix functions run build"
+    ]
   }
 }

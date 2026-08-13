@@ -31,6 +31,9 @@ jobs:
 
       - run: npm run test:unit
 
+      - name: Typecheck the cleanup function
+        run: npm --prefix functions ci && npm --prefix functions run typecheck
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
@@ -76,4 +79,4 @@ jobs:
         run: |
           printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/gcp-sa.json"
           export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/gcp-sa.json"
-          npx firebase-tools deploy --only hosting,database --project fibo-49d58 --non-interactive
+          npx firebase-tools deploy --only hosting,database,functions --project fibo-49d58 --non-interactive

@@ -110,6 +110,8 @@ access is denied).
   per-session database rules and no server code, a determined teammate
   could read votes from the wire before the flip. Fine for planning
   poker; don't use it for salary votes.
-- **Sessions aren't auto-deleted.** RTDB has no TTL; abandoned sessions
-  just sit there unreferenced. Add a scheduled Cloud Function if you want
-  hard expiry.
+- **Session deletion is best-effort weekly.** A session expires once
+  everyone is offline and nothing has touched it for 48 hours; a
+  scheduled Cloud Function sweeps expired sessions every Sunday, and the
+  app deletes an expired session on sight if anyone opens its link
+  first. Between those, expired data can sit at rest for up to a week.

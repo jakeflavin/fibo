@@ -45,21 +45,37 @@ if ! echo "$RESP" | grep -q '"email"'; then
   echo "  (already exists — reusing)"
 fi
 
-echo "→ granting roles/firebase.admin"
+echo "→ granting deploy roles"
 POLICY=$(api -X POST "https://cloudresourcemanager.googleapis.com/v1/projects/$PROJECT:getIamPolicy" -d '{}')
 echo "$POLICY" | grep -q '"bindings"' || fail "getIamPolicy" "$POLICY"
 UPDATED=$(node -e "
 const policy = $POLICY;
-const role = 'roles/firebase.admin';
+// firebase.admin covers hosting + database; the rest are what deploying
+// a scheduled v2 Cloud Function needs (function, Cloud Run service,
+// Cloud Scheduler job, and acting as the runtime service account).
+const roles = [
+  'roles/firebase.admin',
+  'roles/cloudfunctions.admin',
+  'roles/run.admin',
+  'roles/cloudscheduler.admin',
+  'roles/iam.serviceAccountUser',
+];
 const member = 'serviceAccount:$SA_EMAIL';
-let b = policy.bindings.find(b => b.role === role);
-if (!b) { b = { role, members: [] }; policy.bindings.push(b); }
-if (!b.members.includes(member)) b.members.push(member);
+for (const role of roles) {
+  let b = policy.bindings.find(b => b.role === role);
+  if (!b) { b = { role, members: [] }; policy.bindings.push(b); }
+  if (!b.members.includes(member)) b.members.push(member);
+}
 process.stdout.write(JSON.stringify({ policy }));
 ")
 RESP=$(api -X POST "https://cloudresourcemanager.googleapis.com/v1/projects/$PROJECT:setIamPolicy" \
   -d "$UPDATED")
 echo "$RESP" | grep -q '"bindings"' || fail "setIamPolicy" "$RESP"
+
+if [ "${SKIP_KEY:-}" = "1" ]; then
+  echo "✓ roles updated (SKIP_KEY=1: existing key/secret kept)"
+  exit 0
+fi
 
 echo "→ creating key + storing as GitHub secret FIREBASE_SERVICE_ACCOUNT"
 KEY=$(api -X POST "https://iam.googleapis.com/v1/projects/$PROJECT/serviceAccounts/$SA_EMAIL/keys" -d '{}')
