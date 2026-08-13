@@ -14,15 +14,13 @@ export function Deck({ session, myUserId }: Props) {
 
   return (
     <div className="deck" data-disabled={disabled || undefined}>
-      <div className="deck-label dim">
-        {disabled
-          ? session.revealed && story
+      {disabled && (
+        <div className="deck-label dim">
+          {session.revealed && story
             ? 'cards are up — waiting for the next round'
-            : 'your hand — waiting for a story'
-          : myVote !== undefined
-            ? 'tap again to take it back'
-            : 'pick a card'}
-      </div>
+            : 'your hand — waiting for a story'}
+        </div>
+      )}
       <div className="deck-cards">
         {DECK.map((value) => {
           const selected = !disabled && myVote === value;

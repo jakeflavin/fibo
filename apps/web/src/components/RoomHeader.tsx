@@ -1,22 +1,39 @@
-import { useRef } from 'react';
-import type { Session, SessionUser } from '@fibo/shared';
+import { useEffect, useRef, useState } from 'react';
+import type { Session } from '@fibo/shared';
 import { exportSession, parseSessionExport, ImportError } from '@fibo/shared';
 import { importStories } from '../lib/api';
+import { useTheme } from './ThemeToggle';
 import { useToast } from './Toast';
 
 interface Props {
   session: Session;
-  me: SessionUser;
   canLead: boolean;
   onShare: () => void;
-  themeToggle: React.ReactNode;
 }
 
-export function RoomHeader({ session, me, canLead, onShare, themeToggle }: Props) {
+export function RoomHeader({ session, canLead, onShare }: Props) {
   const toast = useToast();
+  const { theme, toggle } = useTheme();
   const fileInput = useRef<HTMLInputElement>(null);
-  const users = session.users ?? {};
-  const online = Object.values(users).filter((u) => u.online).length;
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+
+  // Close the menu on outside click or Escape.
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
 
   const doExport = () => {
     const doc = exportSession(session);
@@ -41,48 +58,63 @@ export function RoomHeader({ session, me, canLead, onShare, themeToggle }: Props
     }
   };
 
+  const pick = (action: () => void) => () => {
+    setOpen(false);
+    action();
+  };
+
   return (
     <header className="room-header">
       <a className="brand" href="/" title="fibo home">
         fibo<span className="cursor">▊</span>
       </a>
-      <div className="room-title">
-        <span className="room-name">{session.name}</span>
-        <span className="room-meta dim">
-          {online}/{Object.keys(users).length} online · you: {me.name} [{me.role}]
-        </span>
-      </div>
-      <div className="room-actions">
-        <button className="btn btn-ghost" onClick={onShare} title="Share link / QR code">
-          share
+      <span className="room-name">{session.name}</span>
+      <div className="menu-wrap" ref={menuRef}>
+        <button
+          className="btn btn-ghost menu-button"
+          aria-label="menu"
+          aria-expanded={open}
+          onClick={() => setOpen((o) => !o)}
+        >
+          ⋯
         </button>
-        <button className="btn btn-ghost" onClick={doExport} title="Download session as JSON">
-          export
-        </button>
-        {canLead && (
-          <>
-            <button
-              className="btn btn-ghost"
-              onClick={() => fileInput.current?.click()}
-              title="Import stories from a fibo JSON export (replaces the current list)"
-            >
-              import
+        {open && (
+          <div className="menu" role="menu">
+            <button className="menu-item" role="menuitem" onClick={pick(onShare)}>
+              share / QR
             </button>
-            <input
-              ref={fileInput}
-              type="file"
-              accept="application/json,.json"
-              hidden
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) void doImport(f);
-                e.target.value = '';
-              }}
-            />
-          </>
+            <button className="menu-item" role="menuitem" onClick={pick(doExport)}>
+              export json
+            </button>
+            {canLead && (
+              <button
+                className="menu-item"
+                role="menuitem"
+                onClick={pick(() => fileInput.current?.click())}
+              >
+                import json
+              </button>
+            )}
+            <div className="menu-sep" />
+            <button className="menu-item" role="menuitem" onClick={pick(toggle)}>
+              switch to {theme === 'dark' ? 'light' : 'dark'} mode
+            </button>
+          </div>
         )}
-        {themeToggle}
       </div>
+      {canLead && (
+        <input
+          ref={fileInput}
+          type="file"
+          accept="application/json,.json"
+          hidden
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) void doImport(f);
+            e.target.value = '';
+          }}
+        />
+      )}
     </header>
   );
 }

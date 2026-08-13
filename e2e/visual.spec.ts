@@ -49,7 +49,8 @@ for (const theme of THEMES) {
       await page.waitForTimeout(400);
       await page.screenshot({ path: path.join(SHOTS, `room-${theme}-${vp.name}.png`), fullPage: true });
 
-      await page.getByRole('button', { name: 'share', exact: true }).click();
+      await page.getByRole('button', { name: 'menu' }).click();
+      await page.getByRole('menuitem', { name: /share/ }).click();
       await expect(page.locator('.qr-box svg')).toBeVisible();
       await page.waitForTimeout(300);
       await page.screenshot({ path: path.join(SHOTS, `share-${theme}-${vp.name}.png`) });

@@ -6,7 +6,7 @@ function effectiveTheme(): 'light' | 'dark' {
   return getTheme() === 'light' ? 'light' : 'dark';
 }
 
-export function ThemeToggle() {
+export function useTheme() {
   const [theme, setTheme] = useState<'light' | 'dark'>(effectiveTheme);
 
   useEffect(() => {
@@ -19,6 +19,11 @@ export function ThemeToggle() {
     setTheme(next);
   };
 
+  return { theme, toggle };
+}
+
+export function ThemeToggle() {
+  const { theme, toggle } = useTheme();
   return (
     <button
       className="btn btn-ghost theme-toggle"

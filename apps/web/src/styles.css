@@ -369,13 +369,9 @@ a {
 }
 
 .home-notes {
-  list-style: none;
-  padding: 0;
   margin: 40px 0 0;
   color: var(--dim);
   font-size: 12px;
-  display: grid;
-  gap: 3px;
   text-align: center;
   opacity: 0.8;
 }
@@ -412,12 +408,11 @@ a {
 
 .room-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 16px;
-  padding: 18px 0;
+  padding: 14px 0;
   margin-bottom: 40px;
   border-bottom: 1px solid var(--line);
-  flex-wrap: wrap;
 }
 
 .brand {
@@ -430,27 +425,66 @@ a {
   font-size: 13px;
 }
 
-.room-title {
-  flex: 1;
-  min-width: 180px;
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
 .room-name {
   font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--dim);
 }
 
-.room-meta {
-  font-size: 12px;
+/* ── header menu ─────────────────────────────────────────────── */
+
+.menu-wrap {
+  position: relative;
+  margin-left: auto;
 }
 
-.room-actions {
-  display: flex;
-  align-items: center;
-  gap: 2px;
+.menu-button {
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 200px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  z-index: 60;
+  animation: rise 0.15s ease-out both;
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.menu-item:hover {
+  background: var(--surface-hi);
+}
+
+.menu-sep {
+  height: 1px;
+  background: var(--line);
+  margin: 6px 8px;
 }
 
 .room-grid {
@@ -1136,9 +1170,6 @@ a {
     height: 76px;
   }
 
-  .room-actions {
-    flex-wrap: wrap;
-  }
 }
 
 /* ── motion preferences ──────────────────────────────────────── */

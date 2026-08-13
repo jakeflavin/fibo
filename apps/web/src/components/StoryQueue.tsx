@@ -35,7 +35,7 @@ export function StoryQueue({ session, canLead }: Props) {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="add a story (e.g. FIBO-123 login flow)"
+              placeholder="add a story…"
               maxLength={200}
             />
           </div>

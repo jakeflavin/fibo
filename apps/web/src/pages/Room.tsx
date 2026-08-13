@@ -4,7 +4,6 @@ import type { Session } from '@fibo/shared';
 import { revealCards, trackPresence } from '../lib/api';
 import { getMyUserId } from '../lib/storage';
 import { useSession } from '../lib/useSession';
-import { ThemeToggle } from '../components/ThemeToggle';
 import { RoomHeader } from '../components/RoomHeader';
 import { JoinGate } from '../components/JoinGate';
 import { CardTable } from '../components/CardTable';
@@ -78,13 +77,7 @@ export function Room() {
 
   return (
     <div className="room">
-      <RoomHeader
-        session={session}
-        me={me}
-        canLead={canLead}
-        onShare={() => setShareOpen(true)}
-        themeToggle={<ThemeToggle />}
-      />
+      <RoomHeader session={session} canLead={canLead} onShare={() => setShareOpen(true)} />
       <main className="room-grid">
         <section className="room-table">
           <CardTable session={session} myUserId={myUserId!} canLead={canLead} />

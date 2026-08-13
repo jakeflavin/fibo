@@ -36,8 +36,9 @@ test('full sprint planning session with three users', async ({ browser }) => {
   await addInput.press('Enter');
   await expect(ada.locator('.story-title')).toHaveText('FIBO-1 login flow');
 
-  // ── share modal shows QR + link ────────────────────────────
-  await ada.getByRole('button', { name: 'share', exact: true }).click();
+  // ── share modal (via the header menu) shows QR + link ──────
+  await ada.getByRole('button', { name: 'menu' }).click();
+  await ada.getByRole('menuitem', { name: /share/ }).click();
   await expect(ada.locator('.qr-box svg')).toBeVisible();
   await expect(ada.locator('.share-url')).toContainText('/s/');
   await shot(ada, '02-share-qr');
@@ -92,7 +93,7 @@ test('full sprint planning session with three users', async ({ browser }) => {
 
   // ── owner promotes Bob to leader ───────────────────────────
   await ada.locator('.user-row', { hasText: 'Bob' }).getByTitle('Promote to leader').click();
-  await expect(bob.getByText('you: Bob [leader]')).toBeVisible();
+  await expect(bob.locator('.user-row', { hasText: '(you)' })).toContainText('[lead]');
   await expect(bob.getByRole('button', { name: /accept & next/ })).toBeVisible();
 
   // ── leader accepts; story archived with its points ─────────
@@ -122,7 +123,8 @@ test('full sprint planning session with three users', async ({ browser }) => {
 
   // ── export (participants can too) ──────────────────────────
   const downloadPromise = cy.waitForEvent('download');
-  await cy.getByRole('button', { name: 'export', exact: true }).click();
+  await cy.getByRole('button', { name: 'menu' }).click();
+  await cy.getByRole('menuitem', { name: /export/ }).click();
   const download = await downloadPromise;
   const exportPath = path.join(SHOTS, 'export.json');
   await download.saveAs(exportPath);
@@ -134,8 +136,11 @@ test('full sprint planning session with three users', async ({ browser }) => {
   ]);
   expect(doc.stories[0].result).toBe(8);
 
-  // participants don't get the import button
-  await expect(cy.getByRole('button', { name: 'import', exact: true })).toHaveCount(0);
+  // participants don't get the import option in the menu
+  await cy.getByRole('button', { name: 'menu' }).click();
+  await expect(cy.getByRole('menuitem', { name: /export/ })).toBeVisible();
+  await expect(cy.getByRole('menuitem', { name: /import/ })).toHaveCount(0);
+  await cy.keyboard.press('Escape');
 
   // ── import (leader): replaces the queue ────────────────────
   doc.stories.push({ title: 'FIBO-3 imported story', status: 'queued', result: null });

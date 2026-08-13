@@ -42,7 +42,6 @@ export function Home() {
         </p>
 
         <form className="home-form" onSubmit={submit}>
-          <div className="form-label">$ fibo new-session</div>
           <label className="field">
             <span className="field-label">your_name*</span>
             <div className="prompt-input">
@@ -74,11 +73,7 @@ export function Home() {
           </button>
         </form>
 
-        <ul className="home-notes">
-          <li>no accounts. no signup. sessions are temporary.</li>
-          <li>share the link or QR code — teammates just enter a name.</li>
-          <li>export the results as JSON before you leave.</li>
-        </ul>
+        <p className="home-notes">no accounts · no signup · sessions are temporary</p>
       </main>
     </div>
   );
