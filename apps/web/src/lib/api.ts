@@ -182,6 +182,42 @@ export async function addStory(sessionId: string, title: string, order: number):
   return id;
 }
 
+/**
+ * Append several stories at once (bulk paste). One atomic write; the
+ * first new story goes on the table only when nothing is active.
+ */
+export async function addStories(
+  session: Session,
+  titles: string[],
+  startOrder: number,
+): Promise<void> {
+  if (titles.length === 0) return;
+  const now = Date.now();
+  // The first pasted story starts the round when the table is empty.
+  // Its status is set inside the story object itself — a multi-path
+  // update may not write both stories/x and stories/x/status.
+  const dealFirst = !session.currentStoryId;
+  const updates: Record<string, unknown> = { touchedAt: now };
+  titles.forEach((title, i) => {
+    const id = newStoryId();
+    const first = i === 0;
+    const story: Story = {
+      id,
+      title: title.trim(),
+      status: dealFirst && first ? 'active' : 'queued',
+      order: startOrder + i,
+      result: null,
+      createdAt: now,
+    };
+    updates[`stories/${id}`] = story;
+    if (dealFirst && first) {
+      updates.currentStoryId = id;
+      updates.revealed = false;
+    }
+  });
+  await update(sessionRef(session.id), updates);
+}
+
 /** Delete a story; deleting the active story also clears the table. */
 export async function deleteStory(session: Session, storyId: string): Promise<void> {
   if (session.currentStoryId === storyId) {

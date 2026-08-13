@@ -54,6 +54,10 @@ works. The app lives at https://fibo-49d58.web.app.
 
 - **Add a story** — leads type into "Add a story…" and press Enter. A new
   story goes **straight onto the table** as the active story.
+- **Bulk paste** — pasting a multi-line list into the same input queues
+  one story per line (markdown bullets are stripped, blanks dropped).
+  When nothing is on the table, the first pasted story starts the round;
+  otherwise the batch just appends.
 - **Switch stories** — leads click any non-active row to put it on the
   table. Switching away from a flipped story with a standing result accepts
   that result and marks the story done; switching away mid-round returns it
@@ -113,6 +117,9 @@ The controls toolbar sits under the app bar:
 
 ## Export / Import
 
+- **Copy results** — gear menu; puts the queue on the clipboard as a
+  `title<TAB>points` table (unpointed stories blank), ready to paste
+  into Jira or a spreadsheet. Available to everyone.
 - **Export JSON** — gear menu; downloads the queue with points and the
   session's deck (`fibo-session-YYYY-MM-DD.json`, format v3; v1/v2 files
   import fine). Available to everyone.

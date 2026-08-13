@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Session } from '@fibo/shared';
-import { activateStory, addStory } from '../lib/api';
+import { splitPastedTitles } from '@fibo/shared';
+import { activateStory, addStories, addStory } from '../lib/api';
 import { VoteGlyph } from './VoteGlyph';
 
 interface Props {
@@ -16,6 +17,15 @@ export function StoryQueue({ session, canLead }: Props) {
   const [title, setTitle] = useState('');
   const stories = Object.values(session.stories ?? {}).sort((a, b) => a.order - b.order);
   const maxOrder = stories.reduce((m, s) => Math.max(m, s.order), -1);
+
+  /** Pasting a multi-line list queues one story per line. */
+  const onPaste = async (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const titles = splitPastedTitles(e.clipboardData.getData('text/plain'));
+    if (titles.length < 2) return; // single-line pastes edit the field normally
+    e.preventDefault();
+    setTitle('');
+    await addStories(session, titles, maxOrder + 1);
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,8 +46,9 @@ export function StoryQueue({ session, canLead }: Props) {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Add a story…"
+              placeholder="Add a story… (paste a list for many)"
               maxLength={200}
+              onPaste={(e) => void onPaste(e)}
             />
           </div>
         </form>

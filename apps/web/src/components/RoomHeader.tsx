@@ -1,8 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileDown, FileUp, Layers, LogOut, Moon, Plus, Settings, Share2, Sun } from 'lucide-react';
+import {
+  ClipboardList,
+  FileDown,
+  FileUp,
+  Layers,
+  LogOut,
+  Moon,
+  Plus,
+  Settings,
+  Share2,
+  Sun,
+} from 'lucide-react';
 import type { Session } from '@fibo/shared';
-import { exportSession, parseSessionExport, ImportError } from '@fibo/shared';
+import { exportSession, parseSessionExport, resultsTable, ImportError } from '@fibo/shared';
 import { createSession, importStories, removeUser } from '../lib/api';
 import { clearMyUserId } from '../lib/storage';
 import { ConfirmModal } from './ConfirmModal';
@@ -61,6 +72,15 @@ export function RoomHeader({ session, myUserId, canLead, onShare }: Props) {
     toast('Session exported');
   };
 
+  const copyResults = async () => {
+    try {
+      await navigator.clipboard.writeText(resultsTable(session));
+      toast('Results copied — paste into Jira or a spreadsheet');
+    } catch {
+      toast('Could not access the clipboard.', 'error');
+    }
+  };
+
   const doImport = async (file: File) => {
     try {
       const doc = parseSessionExport(await file.text());
@@ -111,6 +131,9 @@ export function RoomHeader({ session, myUserId, canLead, onShare }: Props) {
             </button>
             <button className="menu-item" role="menuitem" onClick={pick(doExport)}>
               <FileDown size={14} /> Export JSON
+            </button>
+            <button className="menu-item" role="menuitem" onClick={pick(() => void copyResults())}>
+              <ClipboardList size={14} /> Copy results
             </button>
             {canLead && (
               <button

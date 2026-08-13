@@ -5,3 +5,4 @@ export * from './winner';
 export * from './ids';
 export * from './codec';
 export * from './expiry';
+export * from './clipboard';
