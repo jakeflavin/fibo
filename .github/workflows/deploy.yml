@@ -79,4 +79,5 @@ jobs:
         run: |
           printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/gcp-sa.json"
           export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/gcp-sa.json"
-          npx firebase-tools deploy --only hosting,database,functions --project fibo-49d58 --non-interactive
+          # --force: auto-accept the artifact-registry cleanup policy prompt
+          npx firebase-tools deploy --only hosting,database,functions --project fibo-49d58 --non-interactive --force
