@@ -462,14 +462,13 @@ svg.lucide {
 
 /* The room is an app shell: it owns the viewport and never scrolls the
    page — long content (the queue) scrolls inside its own pane. */
+/* Jira shell: full-bleed white chrome, sections divided by hairlines. */
 .room {
-  max-width: 1160px;
-  margin: 0 auto;
   height: 100dvh;
-  padding: 14px 24px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  background: var(--surface);
 }
 
 .room-empty {
@@ -489,11 +488,15 @@ svg.lucide {
 }
 
 /* The header shares the content column, flush with the card edges. */
+/* Full-width app bar with a bottom border, like Jira's top nav. */
 .room-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  padding: 8px 20px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
 }
 
 .brand {
@@ -569,10 +572,11 @@ svg.lucide {
   margin: 6px 8px;
 }
 
+/* Content fills the window; the rail is a bordered sidebar, no gutters. */
 .room-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 0;
   flex: 1;
   min-height: 0;
 }
@@ -583,7 +587,8 @@ svg.lucide {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding-top: 10px;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
   font-size: 11px;
   opacity: 0.75;
 }
@@ -594,11 +599,13 @@ svg.lucide {
 .room-main {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
   min-height: 0;
   min-width: 0;
 }
 
+/* The stage is a flat, full-bleed region — structure comes from the
+   toolbar's and deck's hairline dividers, not card chrome. */
 .room-table {
   flex: 1;
   display: grid;
@@ -607,10 +614,6 @@ svg.lucide {
   gap: 24px;
   min-height: 0;
   min-width: 0;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: var(--shadow-card);
   padding: 24px;
 }
 
@@ -877,12 +880,14 @@ svg.lucide {
 
 /* The controls card: header eyebrow, then one toolbar row with the round
    zone and result zone split by a vertical hairline. */
+/* Full-width toolbar strip under the app bar, like a Jira board header. */
 .leader-controls {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-top: 12px;
-  padding-bottom: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
 }
 
 /* Outweigh the generic rail eyebrow margin: the flex gap is the rhythm. */
@@ -1039,12 +1044,15 @@ svg.lucide {
 /* ── deck (my hand) ──────────────────────────────────────────── */
 
 /* Inside the stage card the hand is a full-bleed footer tray. */
+/* The hand is a footer tray split off by a hairline, like a Jira
+   bottom bar. */
 .deck {
   display: grid;
   gap: 12px;
   justify-items: center;
   margin: 0 -24px -24px;
   padding: 16px 24px 20px;
+  border-top: 1px solid var(--line);
 }
 
 .deck-label {
@@ -1112,10 +1120,16 @@ svg.lucide {
 .room-side {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
   font-size: 13px;
   min-width: 0;
   min-height: 0;
+  border-left: 1px solid var(--line);
+}
+
+/* Sidebar sections stack table-like, split by hairlines. */
+.room-side > .rail-section + .rail-section {
+  border-top: 1px solid var(--line);
 }
 
 /* Rail cards keep their natural size… */
@@ -1158,12 +1172,9 @@ svg.lucide {
 }
 
 /* Every rail section sits on its own raised card. */
+/* Flat sections: padding only — dividers come from the layout. */
 .rail-card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: var(--shadow-card);
-  padding: 16px;
+  padding: 16px 20px;
 }
 
 .rail-section > .eyebrow {
@@ -1520,9 +1531,12 @@ svg.lucide {
     overflow-y: visible;
   }
 
+  /* Stacked: the sidebar becomes a bordered section below the stage. */
   .room-side {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    border-left: none;
+    border-top: 1px solid var(--line);
   }
 
   .room-side > .rail-section:last-child {
@@ -1605,7 +1619,7 @@ svg.lucide {
   }
 
   .room {
-    padding: 12px 16px 160px;
+    padding-bottom: 160px;
   }
 
   .seat-row {

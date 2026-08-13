@@ -74,17 +74,34 @@ Rules:
   Gutters between cards: 16px (ADS pages breathe more than the current
   12px).
 
-## 4. Elevation
+## 4. Layout & elevation
+
+**Jira chrome is full-bleed and table-like — no floating cards, no
+gutters.** The app fills the window on the `--surface` background, and
+structure comes from 1px `--line` dividers between sections:
+
+- **App bar**: full-width, ~48px, brand left / actions right, bottom
+  border. No fixed-width page container.
+- **Toolbar** (leads): full-width strip under the app bar with a bottom
+  border, like a Jira board header.
+- **Sidebar** (consensus / team / queue): fixed 320px column with a left
+  border; sections stack with hairline dividers between them, each with
+  16–20px internal padding.
+- **Stage**: flat region filling the remainder; the hand is a footer tray
+  split off by a top hairline.
+- **Footer**: slim full-width strip with a top border.
+- On mobile the sidebar stacks below the stage (left border becomes a top
+  border); the hand becomes the fixed bottom bar.
+
+Shadows are reserved for things that genuinely float:
 
 | Level    | Use                          | Light shadow                                            | Dark shadow |
 | -------- | ---------------------------- | ------------------------------------------------------- | ----------- |
-| sunken   | app canvas                   | none (color only)                                       | none        |
-| raised   | all cards/panels, hand cards | `0 1px 1px rgba(30,31,33,0.25), 0 0 1px rgba(30,31,33,0.31)` | `0 1px 1px rgba(1,4,4,0.5), 0 0 1px rgba(1,4,4,0.5)` |
+| raised   | seat + hand cards            | `0 1px 1px rgba(30,31,33,0.25), 0 0 1px rgba(30,31,33,0.31)` | `0 1px 1px rgba(1,4,4,0.5), 0 0 1px rgba(1,4,4,0.5)` |
 | overlay  | menu, modal, toasts          | `0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)` | `0 0 0 1px rgba(189,189,189,0.12), 0 8px 12px rgba(1,4,4,0.36), 0 0 1px rgba(1,4,4,0.5)` |
 
-Borders on cards: hairline `--line` **plus** raised shadow in light mode;
-dark mode leans on surface-color steps (ADS dark surfaces get lighter as
-they rise).
+`elevation.surface.sunken` remains for set-apart canvases (the home and
+join pages, where the form card floats).
 
 ## 5. Components
 
