@@ -541,11 +541,6 @@ a {
   opacity: 0.35;
 }
 
-.seat-me .seat-name {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
 .seat-card {
   width: 62px;
   height: 86px;
@@ -628,8 +623,11 @@ a {
 }
 
 .seat-name {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 18px; /* matches the seat avatar height */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -878,7 +876,11 @@ a {
 }
 
 .user-name {
+  font-size: 11px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 22px; /* matches the rail avatar height */
   flex: 1;
   min-width: 0;
   overflow: hidden;
