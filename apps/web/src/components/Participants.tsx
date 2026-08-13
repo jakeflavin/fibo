@@ -52,7 +52,7 @@ export function Participants({ session, myUserId }: Props) {
 
   const toggleMenu = (uid: string) => (e: React.MouseEvent<HTMLButtonElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    setMenu((m) => (m?.uid === uid ? null : { uid, top: rect.bottom + 4, left: rect.right - 200 }));
+    setMenu((m) => (m?.uid === uid ? null : { uid, top: rect.bottom + 4, left: rect.right }));
   };
 
   return (
@@ -89,7 +89,7 @@ export function Participants({ session, myUserId }: Props) {
                         <div
                           className="menu user-menu"
                           role="menu"
-                          style={{ position: 'fixed', top: menu.top, left: menu.left }}
+                          style={{ position: 'fixed', top: menu.top, left: menu.left, transform: 'translateX(-100%)' }}
                         >
                         <button
                           className="menu-item"
