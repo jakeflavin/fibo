@@ -33,6 +33,22 @@ export function CardTable({ session, myUserId, canLead }: Props) {
 
   const seats = Object.entries(users).sort(([, a], [, b]) => a.joinedAt - b.joinedAt);
 
+  // Deal the seats into at least two staggered rows so the table reads as a
+  // pile of thrown cards rather than a lineup. Rows stay balanced (max ~4 per
+  // row) and the split is deterministic in join order.
+  const rowCount = Math.min(seats.length, Math.max(2, Math.ceil(seats.length / 4)));
+  const rows: (typeof seats)[] = [];
+  {
+    const base = Math.floor(seats.length / rowCount);
+    const extra = seats.length % rowCount;
+    let i = 0;
+    for (let r = 0; r < rowCount; r++) {
+      const size = base + (r < extra ? 1 : 0);
+      rows.push(seats.slice(i, i + size));
+      i += size;
+    }
+  }
+
   if (!story) {
     return (
       <div className="table-panel">
@@ -58,7 +74,13 @@ export function CardTable({ session, myUserId, canLead }: Props) {
       <TimerBar session={session} />
 
       <div className="seats">
-        {seats.map(([uid, user]) => {
+        {rows.map((row, ri) => (
+          <div
+            key={ri}
+            className="seat-row"
+            style={{ transform: `translateX(${ri % 2 ? 28 : -16}px)` }}
+          >
+            {row.map(([uid, user]) => {
           const vote = votes[uid];
           const hasVoted = vote !== undefined;
           const isMe = uid === myUserId;
@@ -90,7 +112,7 @@ export function CardTable({ session, myUserId, canLead }: Props) {
                   <div className="seat-card-back">
                     <PixelAvatar
                       identity={user.identity}
-                      size={30}
+                      size={38}
                       ink={hasVoted ? 'var(--bg)' : 'var(--dim)'}
                     />
                   </div>
@@ -105,7 +127,9 @@ export function CardTable({ session, myUserId, canLead }: Props) {
               </div>
             </div>
           );
-        })}
+            })}
+          </div>
+        ))}
       </div>
 
     </div>
