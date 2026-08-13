@@ -1300,12 +1300,42 @@ svg.lucide {
 
 .user-row {
   /* Fixed columns so votes line up across rows:
-     dot | avatar | name + tags + lead action | vote */
+     dot | avatar | name + tags + actions | vote */
   display: grid;
   grid-template-columns: 6px 28px minmax(0, 1fr) 2ch;
   align-items: center;
   gap: 8px;
   animation: rise 0.25s ease-out both;
+}
+
+/* Jira-style hover-reveal row actions: the meatball shows on hover,
+   keyboard focus, or while its menu is open. */
+.user-more-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.user-more {
+  height: 24px;
+  width: 24px;
+  padding: 0;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.user-row:hover .user-more,
+.user-row:focus-within .user-more,
+.user-more[aria-expanded='true'] {
+  opacity: 1;
+}
+
+.user-menu {
+  min-width: 200px;
+}
+
+.menu-item-danger {
+  color: var(--danger);
 }
 
 /* Pixel avatars sit in Jira-style round containers in lists. */

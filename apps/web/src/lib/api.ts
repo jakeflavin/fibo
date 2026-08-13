@@ -96,6 +96,14 @@ export async function setRole(sessionId: string, userId: string, role: Role): Pr
   await set(ref(db, `sessions/${sessionId}/users/${userId}/role`), role);
 }
 
+/** Remove a user from the session, along with their vote on the table. */
+export async function removeUser(session: Session, userId: string): Promise<void> {
+  const updates: Record<string, unknown> = { [`users/${userId}`]: null };
+  const storyId = session.currentStoryId;
+  if (storyId) updates[`stories/${storyId}/votes/${userId}`] = null;
+  await update(sessionRef(session.id), updates);
+}
+
 export async function addStory(sessionId: string, title: string, order: number): Promise<string> {
   const id = newStoryId();
   const story: Story = {
