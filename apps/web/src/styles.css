@@ -227,8 +227,18 @@ a {
   border-color: var(--accent);
 }
 
-.chip:active {
+.chip:active:not(:disabled) {
   transform: scale(0.93);
+}
+
+.chip:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.chip:disabled:hover {
+  color: var(--dim);
+  border-color: var(--line);
 }
 
 .chip-active {
@@ -686,6 +696,12 @@ a {
 
 .result-summary {
   font-size: 11px;
+}
+
+.result-none {
+  color: var(--dim);
+  opacity: 0.5;
+  animation: none;
 }
 
 /* ── leader controls (top of the rail) ───────────────────────── */

@@ -160,7 +160,7 @@ test('full sprint planning session with three users', async ({ browser }) => {
   await ada.getByRole('button', { name: /flip cards/ }).click();
   await expect(ada.locator('.result-value')).toHaveText('3');
   await ada.getByRole('button', { name: /revote/ }).click();
-  await expect(ada.locator('.result-value')).toHaveCount(0);
+  await expect(ada.locator('.result-value')).toHaveText('—');
   await expect(ada.locator('.seat-voted')).toHaveCount(0);
 
   // ── presence: a teammate disconnects ───────────────────────
