@@ -1754,7 +1754,9 @@ svg.lucide {
   /* Stacked: the sidebar becomes a bordered section below the stage. */
   .room-side {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    /* Explicit halves: auto-fit could mint a third, empty column that
+       consensus's full-width row keeps alive. */
+    grid-template-columns: 1fr 1fr;
     border-left: none;
     border-top: 1px solid var(--line);
   }
@@ -1770,8 +1772,7 @@ svg.lucide {
     border-top: 1px solid var(--line);
   }
 
-  /* When team and queue share a row (two 240px columns fit), a vertical
-     hairline splits them; below that the grid wraps to one column. */
+  /* When team and queue share a row, a vertical hairline splits them. */
   @media (min-width: 481px) {
     .room-side > .rail-section:last-child {
       border-left: 1px solid var(--line);
@@ -1854,7 +1855,12 @@ svg.lucide {
     padding-bottom: 200px;
   }
 
-  /* Phones: the whole hand stays on screen as two rows of five. */
+  /* Phones: sections stack in one column. */
+  .room-side {
+    grid-template-columns: 1fr;
+  }
+
+  /* The whole hand stays on screen as two rows of five. */
   .deck-cards {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
