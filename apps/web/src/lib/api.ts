@@ -67,15 +67,19 @@ export async function createSession(
   return sessionId;
 }
 
-/** Add a participant with a free identity; returns their user id. */
-export async function joinSession(sessionId: string, name: string): Promise<string> {
+/** Add a member with a free identity; returns their user id. */
+export async function joinSession(
+  sessionId: string,
+  name: string,
+  role: Extract<Role, 'participant' | 'spectator'> = 'participant',
+): Promise<string> {
   const usersSnap = await get(ref(db, `sessions/${sessionId}/users`));
   const users = (usersSnap.val() ?? {}) as Record<string, { identity: number }>;
   const taken = Object.values(users).map((u) => u.identity);
   const userId = newUserId();
   await set(ref(db, `sessions/${sessionId}/users/${userId}`), {
     name: name.trim(),
-    role: 'participant',
+    role,
     identity: pickIdentity(taken),
     online: true,
     joinedAt: Date.now(),
@@ -126,10 +130,20 @@ export function subscribeSession(
   });
 }
 
-/** Change a user's role (admin action: make/remove lead). */
-export async function setRole(sessionId: string, userId: string, role: Role): Promise<void> {
-  await set(ref(db, `sessions/${sessionId}/users/${userId}/role`), role);
-  await touch(sessionId);
+/**
+ * Change a user's role (admin action: make/remove lead or spectator).
+ * Someone stepping back to spectate takes their card off the table.
+ */
+export async function setRole(session: Session, userId: string, role: Role): Promise<void> {
+  const updates: Record<string, unknown> = {
+    [`users/${userId}/role`]: role,
+    touchedAt: Date.now(),
+  };
+  const storyId = session.currentStoryId;
+  if (role === 'spectator' && storyId) {
+    updates[`stories/${storyId}/votes/${userId}`] = null;
+  }
+  await update(sessionRef(session.id), updates);
 }
 
 /**

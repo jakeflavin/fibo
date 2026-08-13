@@ -1,5 +1,6 @@
-/** Roles a user can hold within a session. The owner is the session admin. */
-export type Role = 'owner' | 'leader' | 'participant';
+/** Roles a user can hold within a session. The owner is the session
+ *  admin; spectators watch without a seat, a hand, or a tally entry. */
+export type Role = 'owner' | 'leader' | 'participant' | 'spectator';
 
 /**
  * A card a user can play: a deck value (number for numeric decks,

@@ -132,7 +132,7 @@ function RoomInner({ sessionId }: { sessionId: string }) {
           {canLead && <LeaderControls session={session} />}
           <section className="room-table">
             <CardTable session={session} myUserId={myUserId!} canLead={canLead} />
-            <Deck session={session} myUserId={myUserId!} />
+            {me.role !== 'spectator' && <Deck session={session} myUserId={myUserId!} />}
           </section>
         </section>
         <aside className="room-side">

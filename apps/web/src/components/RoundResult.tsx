@@ -23,8 +23,12 @@ export function RoundResult({ session }: { session: Session }) {
     }
     tally = [...counts.entries()].sort((a, b) => b[1] - a[1]);
     // Every ? card on the table: explicit skips plus missing votes.
+    // Spectators have no card, so they never count as missing.
     const skips = votes.filter((v) => v === 'skip').length;
-    questionMarks = skips + Object.keys(session.users ?? {}).length - votes.length;
+    const players = Object.values(session.users ?? {}).filter(
+      (u) => u?.name && u.role !== 'spectator',
+    ).length;
+    questionMarks = skips + players - votes.length;
   }
 
   return (

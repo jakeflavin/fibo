@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart } from 'lucide-react';
+import { Eye, Heart } from 'lucide-react';
 import type { Session } from '@fibo/shared';
 import { joinSession } from '../lib/api';
 import { getLastName, saveLastName } from '../lib/storage';
@@ -18,19 +18,23 @@ export function JoinGate({ session, onJoined }: Props) {
   const [busy, setBusy] = useState(false);
   const count = Object.keys(session.users ?? {}).length;
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const join = async (role: 'participant' | 'spectator') => {
     if (!name.trim() || busy) return;
     setBusy(true);
     try {
       saveLastName(name.trim());
-      const userId = await joinSession(session.id, name);
+      const userId = await joinSession(session.id, name, role);
       onJoined(userId);
     } catch (err) {
       console.error(err);
       toast('Could not join the session. Are you online?', 'error');
       setBusy(false);
     }
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await join('participant');
   };
 
   return (
@@ -64,6 +68,15 @@ export function JoinGate({ session, onJoined }: Props) {
             </label>
             <button className="btn btn-primary btn-block" disabled={!name.trim() || busy}>
               {busy ? 'Joining…' : 'Join session'}
+            </button>
+            <button
+              type="button"
+              className="btn btn-ghost btn-block home-import"
+              disabled={!name.trim() || busy}
+              onClick={() => void join('spectator')}
+              title="Watch the session without a seat or a hand"
+            >
+              <Eye size={14} /> Join as spectator
             </button>
           </form>
         </div>

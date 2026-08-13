@@ -16,8 +16,9 @@ works. The app lives at https://fibo-49d58.web.app.
   a previously exported file: stories, their points, and the deck all
   carry over.
 - **Join a session** — anyone who opens a session link sees the join gate:
-  enter a name, press "Join session". No account needed. The gate shows how
-  many people are already there.
+  enter a name, press "Join session" (or **"Join as spectator"** to watch
+  without a seat). No account needed. The gate shows how many people are
+  already there.
 - **Share / QR** — gear menu → "Share / QR" opens a modal with the invite
   link and a QR code teammates can scan.
 - **New session** — gear menu → "New session" creates a fresh room under
@@ -34,11 +35,12 @@ works. The app lives at https://fibo-49d58.web.app.
 
 ## Roles
 
-| Role        | Lozenge | Powers |
-| ----------- | ------- | ------ |
-| Admin       | `Admin` | Everything a Lead can do, plus manage the team |
-| Lead        | `Lead`  | Run rounds: queue, activate, flip, timer, override, repoint, edit/delete stories, import |
-| Participant | —       | Vote, watch, export |
+| Role        | Lozenge     | Powers |
+| ----------- | ----------- | ------ |
+| Admin       | `Admin`     | Everything a Lead can do, plus manage the team and the deck |
+| Lead        | `Lead`      | Run rounds: queue, activate, flip, timer, override, repoint, edit/delete stories, import |
+| Participant | —           | Vote, watch, export |
+| Spectator   | `Spectator` | Watch and export only: no seat card, no hand, never counted in the tally or auto-flip |
 
 - The session creator is the Admin. There is exactly one — and only a
   deliberate handoff moves the seat: **Transfer admin** in a team row's
@@ -46,7 +48,9 @@ works. The app lives at https://fibo-49d58.web.app.
   previous one down to Lead.
 - Your own row carries a `You` lozenge.
 - **Team management (Admin only)** — hovering a team row reveals a `…`
-  (meatball) button. Its menu offers **Make lead / Remove as lead** and the
+  (meatball) button. Its menu offers **Make lead / Remove as lead**,
+  **Make spectator / Make participant** (stepping back to spectate takes
+  any standing vote off the table), **Transfer admin**, and the
   destructive **Remove from session** (removes the user and their vote on
   the table).
 

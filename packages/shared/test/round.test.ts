@@ -59,6 +59,18 @@ describe('everyoneVoted', () => {
     expect(everyoneVoted(base({ users: { a: user({ online: false }) } }))).toBe(false);
   });
 
+  it('spectators never block or enable the flip', () => {
+    const s = base({
+      users: { a: user({}), watcher: user({ role: 'spectator' }) },
+      stories: {
+        s1: { id: 's1', title: 't', status: 'active', order: 0, createdAt: 0, votes: { a: 5 } },
+      },
+    });
+    expect(everyoneVoted(s)).toBe(true);
+    const onlyWatchers = base({ users: { watcher: user({ role: 'spectator' }) } });
+    expect(everyoneVoted(onlyWatchers)).toBe(false);
+  });
+
   it('ignores partial ghost user records', () => {
     const s = base({
       users: { a: user({}), ghost: { online: true } as SessionUser },

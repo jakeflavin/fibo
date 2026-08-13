@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, Crown, Ellipsis, UserMinus, UserPen } from 'lucide-react';
+import { Check, Crown, Ellipsis, Eye, UserMinus, UserPen } from 'lucide-react';
 import type { Session } from '@fibo/shared';
 import { removeUser, setRole, transferAdmin } from '../lib/api';
 import { ConfirmModal } from './ConfirmModal';
@@ -12,7 +12,7 @@ interface Props {
   myUserId: string;
 }
 
-const ROLE_TAG = { owner: 'Admin', leader: 'Lead', participant: '' } as const;
+const ROLE_TAG = { owner: 'Admin', leader: 'Lead', participant: '', spectator: 'Spectator' } as const;
 
 /**
  * The team list: presence, identity, role lozenges, and vote status per
@@ -81,6 +81,7 @@ export function Participants({ session, myUserId }: Props) {
           const voted = vote !== undefined;
           const canManage = iAmOwner && user.role !== 'owner';
           const isLead = user.role === 'leader';
+          const isSpectator = user.role === 'spectator';
           return (
             <li key={uid} className={`user-row ${user.online ? '' : 'user-offline'}`}>
               <span className={`presence-dot ${user.online ? 'on' : 'off'}`} />
@@ -108,26 +109,40 @@ export function Participants({ session, myUserId }: Props) {
                           role="menu"
                           style={{ position: 'fixed', top: menu.top, left: menu.left }}
                         >
+                        {!isSpectator && (
+                          <button
+                            className="menu-item"
+                            role="menuitem"
+                            onClick={() => {
+                              setMenu(null);
+                              void setRole(session, uid, isLead ? 'participant' : 'leader');
+                            }}
+                          >
+                            <UserPen size={14} /> {isLead ? 'Remove as lead' : 'Make lead'}
+                          </button>
+                        )}
                         <button
                           className="menu-item"
                           role="menuitem"
                           onClick={() => {
                             setMenu(null);
-                            void setRole(session.id, uid, isLead ? 'participant' : 'leader');
+                            void setRole(session, uid, isSpectator ? 'participant' : 'spectator');
                           }}
                         >
-                          <UserPen size={14} /> {isLead ? 'Remove as lead' : 'Make lead'}
+                          <Eye size={14} /> {isSpectator ? 'Make participant' : 'Make spectator'}
                         </button>
-                        <button
-                          className="menu-item"
-                          role="menuitem"
-                          onClick={() => {
-                            setMenu(null);
-                            setPendingTransfer({ uid, name: user.name });
-                          }}
-                        >
-                          <Crown size={14} /> Transfer admin
-                        </button>
+                        {!isSpectator && (
+                          <button
+                            className="menu-item"
+                            role="menuitem"
+                            onClick={() => {
+                              setMenu(null);
+                              setPendingTransfer({ uid, name: user.name });
+                            }}
+                          >
+                            <Crown size={14} /> Transfer admin
+                          </button>
+                        )}
                         <button
                           className="menu-item menu-item-danger"
                           role="menuitem"
@@ -145,7 +160,7 @@ export function Participants({ session, myUserId }: Props) {
                 )}
               </span>
               <span className={`user-vote ${voted ? 'user-voted' : ''}`}>
-                {story ? (
+                {story && user.role !== 'spectator' ? (
                   session.revealed ? (
                     <VoteGlyph value={vote ?? null} />
                   ) : voted ? (

@@ -84,9 +84,10 @@ export function CardTable({ session, myUserId, canLead }: Props) {
     return () => ro.disconnect();
   });
 
-  // Guard against partial records (e.g. a kicked client's presence write).
+  // Guard against partial records (e.g. a kicked client's presence
+  // write); spectators watch from the rail, not the table.
   const seats = Object.entries(users)
-    .filter(([, u]) => u && u.name)
+    .filter(([, u]) => u && u.name && u.role !== 'spectator')
     .sort(([, a], [, b]) => a.joinedAt - b.joinedAt);
 
   // Pick the row count that gives the biggest cards for the measured
