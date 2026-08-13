@@ -24,6 +24,14 @@ export function saveMyUserId(sessionId: string, userId: string): void {
   safeSet(`fibo:user:${sessionId}`, userId);
 }
 
+export function clearMyUserId(sessionId: string): void {
+  try {
+    localStorage.removeItem(`fibo:user:${sessionId}`);
+  } catch {
+    // Ignore blocked storage.
+  }
+}
+
 export function getLastName(): string {
   return safeGet('fibo:name') ?? '';
 }

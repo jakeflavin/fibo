@@ -1,19 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
-import { FileDown, FileUp, Moon, Settings, Share2, Sun } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { FileDown, FileUp, LogOut, Moon, Plus, Settings, Share2, Sun } from 'lucide-react';
 import type { Session } from '@fibo/shared';
 import { exportSession, parseSessionExport, ImportError } from '@fibo/shared';
-import { importStories } from '../lib/api';
+import { createSession, importStories, removeUser } from '../lib/api';
+import { clearMyUserId } from '../lib/storage';
+import { ConfirmModal } from './ConfirmModal';
 import { useTheme } from './ThemeToggle';
 import { useToast } from './Toast';
 
 interface Props {
   session: Session;
+  myUserId: string;
   canLead: boolean;
   onShare: () => void;
 }
 
-export function RoomHeader({ session, canLead, onShare }: Props) {
+export function RoomHeader({ session, myUserId, canLead, onShare }: Props) {
   const toast = useToast();
+  const navigate = useNavigate();
+  const [confirmLeave, setConfirmLeave] = useState(false);
   const { theme, toggle } = useTheme();
   const fileInput = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -63,6 +69,19 @@ export function RoomHeader({ session, canLead, onShare }: Props) {
     action();
   };
 
+  const newSession = async () => {
+    const name = session.users?.[myUserId]?.name ?? '';
+    if (!name) return;
+    const sessionId = await createSession(name);
+    navigate(`/s/${sessionId}`);
+  };
+
+  const leave = async () => {
+    await removeUser(session, myUserId);
+    clearMyUserId(session.id);
+    navigate('/');
+  };
+
   return (
     <header className="room-header">
       <a className="brand" href="/" title="fibo home">
@@ -96,13 +115,36 @@ export function RoomHeader({ session, canLead, onShare }: Props) {
               </button>
             )}
             <div className="menu-sep" />
+            <button className="menu-item" role="menuitem" onClick={pick(() => void newSession())}>
+              <Plus size={14} /> New session
+            </button>
             <button className="menu-item" role="menuitem" onClick={pick(toggle)}>
               {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />} Switch to{' '}
               {theme === 'dark' ? 'light' : 'dark'} mode
             </button>
+            <div className="menu-sep" />
+            <button
+              className="menu-item menu-item-danger"
+              role="menuitem"
+              onClick={pick(() => setConfirmLeave(true))}
+            >
+              <LogOut size={14} /> Leave session
+            </button>
           </div>
         )}
       </div>
+      {confirmLeave && (
+        <ConfirmModal
+          title="Leave session"
+          message={<>Leave this session? You can rejoin any time with the invite link.</>}
+          confirmLabel="Leave"
+          onConfirm={() => {
+            setConfirmLeave(false);
+            void leave();
+          }}
+          onClose={() => setConfirmLeave(false)}
+        />
+      )}
       {canLead && (
         <input
           ref={fileInput}

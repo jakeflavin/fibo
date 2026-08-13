@@ -16,7 +16,14 @@ import { StoryQueue } from '../components/StoryQueue';
 import { ShareModal } from '../components/ShareModal';
 
 export function Room() {
+  // Remount per session id: navigating from one room straight to
+  // another (e.g. "New session") must not carry over identity state or
+  // a presence subscription from the previous room.
   const { sessionId = '' } = useParams();
+  return <RoomInner key={sessionId} sessionId={sessionId} />;
+}
+
+function RoomInner({ sessionId }: { sessionId: string }) {
   const { session, loading } = useSession(sessionId);
   const [myUserId, setMyUserId] = useState<string | null>(() => getMyUserId(sessionId));
   const [shareOpen, setShareOpen] = useState(false);
@@ -75,7 +82,12 @@ export function Room() {
 
   return (
     <div className="room">
-      <RoomHeader session={session} canLead={canLead} onShare={() => setShareOpen(true)} />
+      <RoomHeader
+        session={session}
+        myUserId={myUserId!}
+        canLead={canLead}
+        onShare={() => setShareOpen(true)}
+      />
       <main className="room-grid">
         <section className="room-main">
           {canLead && <LeaderControls session={session} />}
