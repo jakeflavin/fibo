@@ -614,10 +614,10 @@ svg.lucide {
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
   grid-template-columns: minmax(0, 1fr);
-  gap: 0;
+  gap: 8px;
   min-height: 0;
   min-width: 0;
-  padding: 0;
+  padding: 8px;
 }
 
 /* The panel fills its row: title pinned at the top, cards centered in
@@ -646,7 +646,7 @@ svg.lucide {
 }
 
 .story-line {
-  padding: 16px 20px 12px;
+  padding: 8px 12px 4px;
   text-align: left;
 }
 
@@ -673,7 +673,7 @@ svg.lucide {
   align-self: stretch;
   padding: 12px 16px;
   background: var(--bg);
-  border-radius: 0;
+  border-radius: 8px;
   /* Never let the pile's intrinsic width inflate the stage. */
   min-width: 0;
   max-width: 100%;
@@ -1145,7 +1145,7 @@ svg.lucide {
 .deck-cards {
   background: var(--bg);
   padding: 12px 16px;
-  border-top: 1px solid var(--line);
+  border-radius: 8px;
 }
 
 /* Same real-deck frame line as the seat cards. */
