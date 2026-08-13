@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { computeWinner } from '../src/winner';
+import { DECK_PRESETS } from '../src/deck';
 import type { VoteValue } from '../src/types';
 
 const votes = (...values: VoteValue[]): Record<string, VoteValue> =>
@@ -33,5 +34,14 @@ describe('computeWinner', () => {
 
   it('handles a single vote', () => {
     expect(computeWinner(votes(13))).toBe(13);
+  });
+
+  it('breaks ties by deck rank for non-numeric decks', () => {
+    expect(computeWinner(votes('S', 'XL'), DECK_PRESETS.tshirt)).toBe('XL');
+    expect(computeWinner(votes('M', 'M', 'S'), DECK_PRESETS.tshirt)).toBe('M');
+  });
+
+  it('ranks values missing from the deck lowest (mid-round deck change)', () => {
+    expect(computeWinner(votes(5, 'M'), DECK_PRESETS.tshirt)).toBe('M');
   });
 });

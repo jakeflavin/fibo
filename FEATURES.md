@@ -8,7 +8,13 @@ works. The app lives at https://fibo-49d58.web.app.
 
 - **Create a session** — on the home page, enter your name and press
   "Create session". You become the session's **Admin** and land in the room.
-  Your name is remembered locally for next time.
+  Your name is remembered locally for next time. A **deck picker** sits
+  below the name: Fibonacci (the default — quick create stays one click),
+  T-shirt sizes, or a custom deck (two to twelve cards, entered lowest to
+  highest; "skip" and "coffee" are reserved).
+- **Start from an export** — the home page can also create a session from
+  a previously exported file: stories, their points, and the deck all
+  carry over.
 - **Join a session** — anyone who opens a session link sees the join gate:
   enter a name, press "Join session". No account needed. The gate shows how
   many people are already there.
@@ -89,8 +95,12 @@ works. The app lives at https://fibo-49d58.web.app.
 The controls toolbar sits under the app bar:
 
 - **Flip** — reveals everyone's cards and writes the default winner
-  (majority, ties broken high). Flipping is allowed even before everyone
-  votes; non-voters flip as `?`.
+  (majority, ties broken toward the higher deck rank). Flipping is
+  allowed even before everyone votes; non-voters flip as `?`.
+- **Change deck (Admin)** — gear menu → "Change deck" opens a modal with
+  the same picker as the home page. The hand and the override ruler
+  restyle for everyone immediately; **stories already pointed keep their
+  values unless they're repointed**.
 - **Timer** — `30s / 1m / 2m` starts a shared countdown; cards auto-flip
   at zero. The timer bar replaces the consensus placeholder while running.
   Flip cancels a running timer; timer buttons disable while one is active.
@@ -103,11 +113,14 @@ The controls toolbar sits under the app bar:
 
 ## Export / Import
 
-- **Export JSON** — gear menu; downloads the queue with statuses and
-  points (`fibo-session-YYYY-MM-DD.json`, format v2; v1 files import
-  fine). Available to everyone.
+- **Export JSON** — gear menu; downloads the queue with points and the
+  session's deck (`fibo-session-YYYY-MM-DD.json`, format v3; v1/v2 files
+  import fine). Available to everyone.
 - **Import JSON** — gear menu, leads only; replaces the story list with
-  the imported document and clears the table.
+  the imported document and clears the table. The session's deck is not
+  changed by an in-session import (deck changes are the Admin's, via
+  "Change deck"); importing on the **home page** applies the file's deck
+  to the new session.
 
 ## Appearance
 

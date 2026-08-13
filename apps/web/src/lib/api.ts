@@ -10,11 +10,13 @@ import {
 } from 'firebase/database';
 import {
   computeWinner,
+  deckCards,
   newSessionId,
   newStoryId,
   newUserId,
   pickIdentity,
   storiesFromExport,
+  type DeckChoice,
   type Role,
   type Session,
   type SessionExport,
@@ -34,7 +36,11 @@ const sessionRef = (sessionId: string) => ref(db, `sessions/${sessionId}`);
 const touch = (sessionId: string) => set(ref(db, `sessions/${sessionId}/touchedAt`), Date.now());
 
 /** Create a session owned by the given user; returns the session id. */
-export async function createSession(ownerName: string): Promise<string> {
+export async function createSession(
+  ownerName: string,
+  deck?: DeckChoice | null,
+  stories?: Record<string, Story>,
+): Promise<string> {
   const sessionId = newSessionId();
   const userId = newUserId();
   const now = Date.now();
@@ -44,6 +50,8 @@ export async function createSession(ownerName: string): Promise<string> {
     touchedAt: now,
     currentStoryId: null,
     revealed: false,
+    ...(deck && deck.preset !== 'fib' ? { deck } : {}),
+    ...(stories ? { stories } : {}),
     users: {
       [userId]: {
         name: ownerName.trim(),
@@ -122,6 +130,15 @@ export function subscribeSession(
 export async function setRole(sessionId: string, userId: string, role: Role): Promise<void> {
   await set(ref(db, `sessions/${sessionId}/users/${userId}/role`), role);
   await touch(sessionId);
+}
+
+/** Admin-only: change the deck in play. Standing results keep their
+ *  old values until a story is repointed. */
+export async function setDeck(sessionId: string, deck: DeckChoice): Promise<void> {
+  await update(sessionRef(sessionId), {
+    deck: deck.preset === 'fib' ? null : deck,
+    touchedAt: Date.now(),
+  });
 }
 
 /**
@@ -236,7 +253,7 @@ export async function revealCards(session: Session): Promise<void> {
     revealed: true,
     timer: null,
     touchedAt: Date.now(),
-    [`stories/${storyId}/result`]: computeWinner(votes),
+    [`stories/${storyId}/result`]: computeWinner(votes, deckCards(session)),
   });
 }
 

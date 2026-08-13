@@ -20,7 +20,7 @@ const session = (stories: Story[]): Session => ({
 });
 
 describe('exportSession', () => {
-  it('emits a v2 document sorted by queue order', () => {
+  it('emits a v3 document sorted by queue order', () => {
     const doc = exportSession(
       session([
         story({ id: 'b', title: 'second', order: 1, status: 'done', result: 8 }),
@@ -28,7 +28,8 @@ describe('exportSession', () => {
       ]),
     );
     expect(doc.app).toBe('fibo');
-    expect(doc.version).toBe(2);
+    expect(doc.version).toBe(3);
+    expect(doc.deck).toEqual({ preset: 'fib', cards: [0, 1, 2, 3, 5, 8, 13, 21] });
     expect(Date.parse(doc.exportedAt)).not.toBeNaN();
     expect(doc.stories).toEqual([{ title: 'first' }, { title: 'second', points: 8 }]);
   });
@@ -68,7 +69,7 @@ describe('parseSessionExport', () => {
       ],
     };
     const parsed = parseSessionExport(JSON.stringify(v1));
-    expect(parsed.version).toBe(2);
+    expect(parsed.version).toBe(3);
     expect(parsed.stories).toEqual([{ title: 'pointed', points: 5 }, { title: 'open' }]);
   });
 
@@ -88,11 +89,40 @@ describe('parseSessionExport', () => {
     ['not json at all', 'nope{'],
     ['a non-object', '42'],
     ['missing the app marker', '{"version":2,"stories":[]}'],
-    ['an unknown version', '{"app":"fibo","version":3,"stories":[]}'],
+    ['an unknown version', '{"app":"fibo","version":4,"stories":[]}'],
     ['a missing stories list', '{"app":"fibo","version":2}'],
     ['a story without a title', '{"app":"fibo","version":2,"stories":[{"points":5}]}'],
   ])('rejects %s', (_label, json) => {
     expect(() => parseSessionExport(json)).toThrow(ImportError);
+  });
+});
+
+describe('parseSessionExport deck handling', () => {
+  it('round-trips a t-shirt deck with string points', () => {
+    const parsed = parseSessionExport(
+      JSON.stringify({
+        app: 'fibo',
+        version: 3,
+        exportedAt: new Date().toISOString(),
+        deck: { preset: 'tshirt' },
+        stories: [{ title: 'sized', points: 'XL' }],
+      }),
+    );
+    expect(parsed.deck?.cards).toContain('XL');
+    expect(parsed.stories).toEqual([{ title: 'sized', points: 'XL' }]);
+  });
+
+  it('drops points that are not in the imported deck', () => {
+    const parsed = parseSessionExport(
+      JSON.stringify({
+        app: 'fibo',
+        version: 3,
+        exportedAt: new Date().toISOString(),
+        deck: { preset: 'custom', cards: ['A', 'B'] },
+        stories: [{ title: 'stray', points: 5 }],
+      }),
+    );
+    expect(parsed.stories).toEqual([{ title: 'stray' }]);
   });
 });
 

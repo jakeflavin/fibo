@@ -1,5 +1,5 @@
 import type { Session } from '@fibo/shared';
-import { DECK } from '@fibo/shared';
+import { COFFEE, deckCards, SKIP } from '@fibo/shared';
 import { castVote } from '../lib/api';
 import { VoteGlyph } from './VoteGlyph';
 
@@ -21,7 +21,7 @@ export function Deck({ session, myUserId }: Props) {
   return (
     <div className="deck" data-disabled={disabled || undefined}>
       <div className="deck-cards">
-        {DECK.map((value) => {
+        {[...deckCards(session), SKIP, COFFEE].map((value) => {
           const selected = !disabled && myVote === value;
           return (
             <button
@@ -39,7 +39,9 @@ export function Deck({ session, myUserId }: Props) {
                   ? 'Skip this story'
                   : value === 'coffee'
                     ? 'Coffee break'
-                    : `${value} points`
+                    : typeof value === 'number'
+                      ? `${value} points`
+                      : String(value)
               }
             >
               <span className="play-card-value">

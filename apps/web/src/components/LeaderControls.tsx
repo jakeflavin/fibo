@@ -1,6 +1,6 @@
 import { RotateCcw } from 'lucide-react';
 import type { Session } from '@fibo/shared';
-import { DECK } from '@fibo/shared';
+import { COFFEE, deckCards, SKIP } from '@fibo/shared';
 import { revealCards, revote, setResult, startTimer } from '../lib/api';
 import { VoteGlyph } from './VoteGlyph';
 
@@ -47,7 +47,7 @@ export function LeaderControls({ session }: { session: Session }) {
         </div>
         <div className="controls-sep" />
         <div className="result-edit">
-          {DECK.map((v) => (
+          {[...deckCards(session), SKIP, COFFEE].map((v) => (
             <button
               key={String(v)}
               className={`chip ${revealed && story?.result === v ? 'chip-active' : ''}`}

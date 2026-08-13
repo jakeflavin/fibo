@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileDown, FileUp, LogOut, Moon, Plus, Settings, Share2, Sun } from 'lucide-react';
+import { FileDown, FileUp, Layers, LogOut, Moon, Plus, Settings, Share2, Sun } from 'lucide-react';
 import type { Session } from '@fibo/shared';
 import { exportSession, parseSessionExport, ImportError } from '@fibo/shared';
 import { createSession, importStories, removeUser } from '../lib/api';
 import { clearMyUserId } from '../lib/storage';
 import { ConfirmModal } from './ConfirmModal';
+import { DeckModal } from './DeckModal';
 import { useTheme } from './ThemeToggle';
 import { useToast } from './Toast';
 
@@ -24,6 +25,8 @@ export function RoomHeader({ session, myUserId, canLead, onShare }: Props) {
   const toast = useToast();
   const navigate = useNavigate();
   const [confirmLeave, setConfirmLeave] = useState(false);
+  const [deckOpen, setDeckOpen] = useState(false);
+  const isAdmin = session.users?.[myUserId]?.role === 'owner';
   const { theme, toggle } = useTheme();
   const fileInput = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -119,6 +122,15 @@ export function RoomHeader({ session, myUserId, canLead, onShare }: Props) {
               </button>
             )}
             <div className="menu-sep" />
+            {isAdmin && (
+              <button
+                className="menu-item"
+                role="menuitem"
+                onClick={pick(() => setDeckOpen(true))}
+              >
+                <Layers size={14} /> Change deck
+              </button>
+            )}
             <button className="menu-item" role="menuitem" onClick={pick(() => void newSession())}>
               <Plus size={14} /> New session
             </button>
@@ -137,6 +149,7 @@ export function RoomHeader({ session, myUserId, canLead, onShare }: Props) {
           </div>
         )}
       </div>
+      {deckOpen && <DeckModal session={session} onClose={() => setDeckOpen(false)} />}
       {confirmLeave && (
         <ConfirmModal
           title="Leave session"

@@ -135,7 +135,7 @@ test('full sprint planning session with three users', async ({ browser }) => {
   await download.saveAs(exportPath);
   const doc = JSON.parse(fs.readFileSync(exportPath, 'utf8'));
   expect(doc.app).toBe('fibo');
-  expect(doc.version).toBe(2);
+  expect(doc.version).toBe(3);
   expect(doc.stories.map((s: { title: string }) => s.title)).toEqual([
     'FIBO-1 login flow',
     'FIBO-2 signup form',

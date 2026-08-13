@@ -256,6 +256,39 @@ svg.lucide {
   width: 100%;
 }
 
+/* Deck picker: preset segments + custom input + rank-order preview. */
+.deck-picker {
+  display: grid;
+  gap: 8px;
+}
+
+.deck-picker-seg .seg-cell {
+  flex: 1;
+}
+
+/* Selected segment: the same solid primary as other selections. */
+.seg-cell.seg-cell-active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.seg-cell.seg-cell-active:hover:not(:disabled) {
+  background: var(--accent-hover);
+  color: var(--accent-ink);
+}
+
+.deck-picker-preview {
+  font-size: var(--font-small);
+  text-align: left;
+}
+
+.home-import {
+  margin-top: 8px;
+  color: var(--dim);
+  gap: 6px;
+}
+
 /* Small subtle buttons (ruler cells, row actions). */
 .chip {
   background: transparent;
