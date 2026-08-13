@@ -108,6 +108,10 @@ The controls toolbar sits under the app bar:
 - **Timer** — `30s / 1m / 2m` starts a shared countdown; cards auto-flip
   at zero. The timer bar replaces the consensus placeholder while running.
   Flip cancels a running timer; timer buttons disable while one is active.
+- **Auto** — the toggle at the end of the timer segment. While on, the
+  round flips by itself the moment every online player has voted
+  (offline members don't block it — they reveal as `?`). The setting is
+  session-wide and persists across rounds and stories.
 - **Consensus & override** — after the flip, the consensus card shows the
   winning value plus the tally (`13×2 · ?×4`). The point ruler in the
   toolbar lets leads override the result to any deck value; the selected

@@ -5,6 +5,8 @@ import { DECK_PRESETS, formatVote, parseCustomDeck } from '@fibo/shared';
 interface Props {
   value: DeckChoice;
   onChange: (deck: DeckChoice | null) => void;
+  /** Show the rank-order preview row (the deck modal does; home doesn't). */
+  preview?: boolean;
 }
 
 const PRESETS: Array<{ id: DeckPreset; label: string }> = [
@@ -19,7 +21,7 @@ const PRESETS: Array<{ id: DeckPreset; label: string }> = [
  * live preview of the cards in rank order. Reports null while a custom
  * deck has fewer than two cards.
  */
-export function DeckPicker({ value, onChange }: Props) {
+export function DeckPicker({ value, onChange, preview: showPreview = true }: Props) {
   const [customText, setCustomText] = useState(
     value.preset === 'custom' ? value.cards.map(String).join(', ') : '',
   );
@@ -68,11 +70,13 @@ export function DeckPicker({ value, onChange }: Props) {
           />
         </div>
       )}
-      <div className="deck-picker-preview dim" aria-hidden="true">
-        {preview && preview.length > 0
-          ? [...preview.map(formatVote), '?', '‖'].join(' · ')
-          : 'Enter at least two cards, lowest first'}
-      </div>
+      {showPreview && (
+        <div className="deck-picker-preview dim" aria-hidden="true">
+          {preview && preview.length > 0
+            ? [...preview.map(formatVote), '?', '‖'].join(' · ')
+            : 'Enter at least two cards, lowest first'}
+        </div>
+      )}
     </div>
   );
 }

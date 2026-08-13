@@ -132,6 +132,11 @@ export async function setRole(sessionId: string, userId: string, role: Role): Pr
   await touch(sessionId);
 }
 
+/** Toggle auto-flip: cards reveal as soon as everyone online has voted. */
+export async function setAutoFlip(sessionId: string, on: boolean): Promise<void> {
+  await update(sessionRef(sessionId), { autoFlip: on, touchedAt: Date.now() });
+}
+
 /** Admin-only: change the deck in play. Standing results keep their
  *  old values until a story is repointed. */
 export async function setDeck(sessionId: string, deck: DeckChoice): Promise<void> {

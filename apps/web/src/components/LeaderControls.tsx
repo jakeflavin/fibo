@@ -1,7 +1,7 @@
 import { RotateCcw } from 'lucide-react';
 import type { Session } from '@fibo/shared';
 import { COFFEE, deckCards, SKIP } from '@fibo/shared';
-import { revealCards, revote, setResult, startTimer } from '../lib/api';
+import { revealCards, revote, setAutoFlip, setResult, startTimer } from '../lib/api';
 import { VoteGlyph } from './VoteGlyph';
 
 const PRESETS = [
@@ -44,6 +44,14 @@ export function LeaderControls({ session }: { session: Session }) {
               {p.label}
             </button>
           ))}
+          <button
+            className={`seg-cell ${session.autoFlip ? 'seg-cell-active' : ''}`}
+            aria-pressed={!!session.autoFlip}
+            onClick={() => void setAutoFlip(session.id, !session.autoFlip)}
+            title="Flip automatically once everyone online has voted"
+          >
+            Auto
+          </button>
         </div>
         <div className="controls-sep" />
         <div className="result-edit">

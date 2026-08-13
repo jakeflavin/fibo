@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Heart } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import type { Session } from '@fibo/shared';
-import { isSessionExpired } from '@fibo/shared';
+import { everyoneVoted, isSessionExpired } from '@fibo/shared';
 import { deleteSession, revealCards, trackPresence } from '../lib/api';
 import { getMyUserId } from '../lib/storage';
 import { useSession } from '../lib/useSession';
@@ -53,6 +53,12 @@ function RoomInner({ sessionId }: { sessionId: string }) {
     return trackPresence(sessionId, myUserId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, myUserId, me !== undefined]);
+
+  // Auto-flip: once everyone online has voted, any leading client flips.
+  useEffect(() => {
+    if (!session?.autoFlip || session.revealed || !canLead) return;
+    if (everyoneVoted(session)) void revealCards(session);
+  }, [session, canLead]);
 
   // When the countdown ends, any leading client flips the cards.
   useEffect(() => {

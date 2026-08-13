@@ -65,6 +65,8 @@ export interface Session {
   revealed: boolean;
   /** The deck in play; absent means the Fibonacci default. */
   deck?: DeckChoice | null;
+  /** Flip automatically once every online player has voted. */
+  autoFlip?: boolean;
   /** Epoch ms of the last meaningful write (vote, flip, queue change…). */
   touchedAt?: number;
   /** Epoch ms when a client last disconnected (written server-side). */
