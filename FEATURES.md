@@ -34,7 +34,10 @@ works. The app lives at https://fibo-49d58.web.app.
 | Lead        | `Lead`  | Run rounds: queue, activate, flip, timer, override, repoint, edit/delete stories, import |
 | Participant | —       | Vote, watch, export |
 
-- The session creator is the Admin. There is exactly one.
+- The session creator is the Admin. There is exactly one — and only a
+  deliberate handoff moves the seat: **Transfer admin** in a team row's
+  `…` menu (confirmed first) makes that user the Admin and steps the
+  previous one down to Lead.
 - Your own row carries a `You` lozenge.
 - **Team management (Admin only)** — hovering a team row reveals a `…`
   (meatball) button. Its menu offers **Make lead / Remove as lead** and the

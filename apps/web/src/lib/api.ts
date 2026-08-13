@@ -124,6 +124,23 @@ export async function setRole(sessionId: string, userId: string, role: Role): Pr
   await touch(sessionId);
 }
 
+/**
+ * Hand the admin seat to another user, atomically: they become the
+ * owner and the previous owner steps down to lead. There is always
+ * exactly one admin.
+ */
+export async function transferAdmin(
+  sessionId: string,
+  fromUserId: string,
+  toUserId: string,
+): Promise<void> {
+  await update(sessionRef(sessionId), {
+    [`users/${toUserId}/role`]: 'owner',
+    [`users/${fromUserId}/role`]: 'leader',
+    touchedAt: Date.now(),
+  });
+}
+
 /** Remove a user from the session, along with their vote on the table. */
 export async function removeUser(session: Session, userId: string): Promise<void> {
   const updates: Record<string, unknown> = { [`users/${userId}`]: null, touchedAt: Date.now() };

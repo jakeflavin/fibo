@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, Ellipsis, UserMinus, UserPen } from 'lucide-react';
+import { Check, Crown, Ellipsis, UserMinus, UserPen } from 'lucide-react';
 import type { Session } from '@fibo/shared';
-import { removeUser, setRole } from '../lib/api';
+import { removeUser, setRole, transferAdmin } from '../lib/api';
+import { ConfirmModal } from './ConfirmModal';
 import { identityVars, PixelAvatar } from './PixelAvatar';
 import { VoteGlyph } from './VoteGlyph';
 
@@ -32,6 +33,10 @@ export function Participants({ session, myUserId }: Props) {
   // card, so the menu is fixed-positioned from the trigger; it closes on
   // outside click, Escape, or any scroll.
   const [menu, setMenu] = useState<{ uid: string; top: number; left: number } | null>(null);
+  // Transfer is confirmed first: the admin gives up their own powers.
+  const [pendingTransfer, setPendingTransfer] = useState<{ uid: string; name: string } | null>(
+    null,
+  );
   const listRef = useRef<HTMLUListElement>(null);
   useEffect(() => {
     if (!menu) return;
@@ -114,6 +119,16 @@ export function Participants({ session, myUserId }: Props) {
                           <UserPen size={14} /> {isLead ? 'Remove as lead' : 'Make lead'}
                         </button>
                         <button
+                          className="menu-item"
+                          role="menuitem"
+                          onClick={() => {
+                            setMenu(null);
+                            setPendingTransfer({ uid, name: user.name });
+                          }}
+                        >
+                          <Crown size={14} /> Transfer admin
+                        </button>
+                        <button
                           className="menu-item menu-item-danger"
                           role="menuitem"
                           onClick={() => {
@@ -146,6 +161,24 @@ export function Participants({ session, myUserId }: Props) {
           );
         })}
       </ul>
+      {pendingTransfer && (
+        <ConfirmModal
+          title="Transfer admin"
+          message={
+            <>
+              Make <strong>{pendingTransfer.name}</strong> the admin? You'll step down to lead —
+              only they will be able to manage the team.
+            </>
+          }
+          confirmLabel="Transfer"
+          onConfirm={() => {
+            const { uid } = pendingTransfer;
+            setPendingTransfer(null);
+            void transferAdmin(session.id, myUserId, uid);
+          }}
+          onClose={() => setPendingTransfer(null)}
+        />
+      )}
     </div>
   );
 }
