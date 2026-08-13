@@ -1,4 +1,4 @@
-import { expect, test, type Browser } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 const EMULATOR = 'http://127.0.0.1:9000';
 const NS = 'ns=demo-fibo-default-rtdb';
@@ -9,66 +9,48 @@ async function emulator(path: string, init?: RequestInit) {
   return res.json();
 }
 
-async function createAbandonedSession(browser: Browser): Promise<{ id: string; url: string }> {
-  const ctx = await browser.newContext();
-  const page = await ctx.newPage();
-  await page.goto('/');
-  await page.getByPlaceholder('Ada').fill('Rip');
-  await page.getByRole('button', { name: 'Create session' }).click();
-  await page.waitForURL(/\/s\/[a-z2-9]+/);
-  const url = page.url();
-  const id = url.split('/s/')[1];
-  // Leave, and wait for the server-side disconnect writes to land so the
-  // aging patch below can't be overwritten by them.
-  await ctx.close();
-  await expect
-    .poll(
-      async () => {
-        const users = (await emulator(`${id}/users`)) ?? {};
-        return Object.values(users as Record<string, { online?: boolean }>).some((u) => u?.online);
+/**
+ * Plant a session directly over REST (no browser client, so no
+ * disconnect timing to wait out) whose last activity is `age` ago.
+ */
+async function plantSession(id: string, age: number) {
+  const then = Date.now() - age;
+  await emulator(id, {
+    method: 'PUT',
+    body: JSON.stringify({
+      id,
+      createdAt: then,
+      touchedAt: then,
+      lastSeenAt: then,
+      revealed: false,
+      users: {
+        u1: { name: 'Ghost', role: 'owner', identity: 0, online: false, joinedAt: then },
       },
-      // The emulator can take a while to notice a closed socket in CI.
-      { timeout: 45_000 },
-    )
-    .toBe(false);
-  return { id, url };
+    }),
+  });
 }
 
-test('an abandoned session past its TTL expires on open and is deleted', async ({ browser }) => {
-  const { id, url } = await createAbandonedSession(browser);
+const DAY = 24 * 60 * 60 * 1000;
 
-  // Age everything three days, as the weekly sweep would find it.
-  const threeDaysAgo = Date.now() - 3 * 24 * 60 * 60 * 1000;
-  const session = await emulator(id);
-  const patch: Record<string, unknown> = {
-    createdAt: threeDaysAgo,
-    touchedAt: threeDaysAgo,
-    lastSeenAt: threeDaysAgo,
-  };
-  for (const uid of Object.keys(session.users ?? {})) {
-    patch[`users/${uid}/joinedAt`] = threeDaysAgo;
-  }
-  await emulator(id, { method: 'PATCH', body: JSON.stringify(patch) });
+test('an abandoned session past its TTL expires on open and is deleted', async ({ page }) => {
+  const id = 'e2estale9x';
+  await plantSession(id, 3 * DAY);
 
-  // A fresh visitor hits the expiry gate…
-  const ctx = await browser.newContext();
-  const visitor = await ctx.newPage();
-  await visitor.goto(url);
-  await expect(visitor.getByText('Session expired')).toBeVisible();
-  await expect(visitor.getByRole('link', { name: 'Start a new session' })).toBeVisible();
+  await page.goto(`/s/${id}`);
+  await expect(page.getByText('Session expired')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Start a new session' })).toBeVisible();
 
   // …and the gate deletes the data.
   await expect.poll(() => emulator(id)).toBeNull();
-  await ctx.close();
 });
 
-test('a quiet but recent session opens normally', async ({ browser }) => {
-  const { url } = await createAbandonedSession(browser);
+test('a quiet but recent session opens normally', async ({ page }) => {
+  const id = 'e2efresh9x';
+  await plantSession(id, 12 * 60 * 60 * 1000); // half a day: inside the TTL
 
-  const ctx = await browser.newContext();
-  const visitor = await ctx.newPage();
-  await visitor.goto(url);
+  await page.goto(`/s/${id}`);
   // Inside the TTL: the join gate shows, not the expiry page.
-  await expect(visitor.getByRole('button', { name: 'Join session' })).toBeVisible();
-  await ctx.close();
+  await expect(page.getByRole('button', { name: 'Join session' })).toBeVisible();
+
+  await emulator(id, { method: 'DELETE' });
 });
