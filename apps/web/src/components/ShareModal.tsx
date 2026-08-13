@@ -32,14 +32,14 @@ export function ShareModal({ session, onClose }: Props) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
-        className="panel modal"
+        className="modal"
         role="dialog"
         aria-modal="true"
         aria-label="Share session"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="panel-title">
-          // invite your team
+        <div className="modal-title">
+          <span className="eyebrow">invite your team</span>
           <button className="btn btn-ghost modal-close" onClick={onClose} aria-label="Close">
             ×
           </button>
@@ -49,7 +49,7 @@ export function ShareModal({ session, onClose }: Props) {
         </div>
         <code className="share-url">{url}</code>
         <button className="btn btn-primary btn-block" onClick={copy}>
-          [ copy link ]
+          copy link
         </button>
         <p className="dim panel-hint">anyone with the link joins by entering a name.</p>
       </div>

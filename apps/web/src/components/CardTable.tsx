@@ -23,13 +23,12 @@ export function CardTable({ session, myUserId, canLead }: Props) {
 
   if (!story) {
     return (
-      <div className="panel table-panel">
-        <div className="panel-title">// story in discussion</div>
+      <div className="table-panel">
         <div className="table-empty">
           <p className="dim">no story on the table.</p>
           <p className="dim">
             {canLead
-              ? 'add a story to the queue and press [point] to start.'
+              ? 'add a story to the queue and press point to start.'
               : 'waiting for a leader to pick a story…'}
             <span className="cursor">▊</span>
           </p>
@@ -39,10 +38,9 @@ export function CardTable({ session, myUserId, canLead }: Props) {
   }
 
   return (
-    <div className="panel table-panel">
-      <div className="panel-title">// story in discussion</div>
+    <div className="table-panel">
+      <div className="eyebrow">now pointing</div>
       <div className="story-line">
-        <span className="story-marker">▶</span>
         <h2 className="story-title">{story.title}</h2>
       </div>
 
@@ -65,7 +63,7 @@ export function CardTable({ session, myUserId, canLead }: Props) {
               <div className={`seat-card ${revealed && hasVoted ? 'flipped' : ''}`}>
                 <div className="seat-card-inner">
                   <div className="seat-card-back">
-                    {hasVoted ? <span className="card-pattern">▚▞</span> : <span>…</span>}
+                    {hasVoted ? <span className="card-check">✓</span> : <span className="card-wait">···</span>}
                   </div>
                   <div
                     className={`seat-card-front ${
@@ -108,7 +106,7 @@ export function CardTable({ session, myUserId, canLead }: Props) {
               disabled={voteCount === 0}
               onClick={() => void revealCards(session)}
             >
-              [ flip cards ]
+              flip cards
             </button>
           )}
         </div>
@@ -153,10 +151,10 @@ function ResultPanel({ session, canLead }: { session: Session; canLead: boolean 
           </div>
           <div className="result-actions">
             <button className="btn" onClick={() => void revote(session)}>
-              [ revote ]
+              revote
             </button>
             <button className="btn btn-primary" onClick={() => void finalizeStory(session)}>
-              [ accept &amp; next ]
+              accept &amp; next
             </button>
           </div>
         </>

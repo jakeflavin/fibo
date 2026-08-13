@@ -97,7 +97,7 @@ test('full sprint planning session with three users', async ({ browser }) => {
 
   // ── leader accepts; story archived with its points ─────────
   await bob.getByRole('button', { name: /accept & next/ }).click();
-  await expect(bob.locator('.story-row', { hasText: 'FIBO-1' })).toContainText('[8]');
+  await expect(bob.locator('.story-row', { hasText: 'FIBO-1' }).locator('.story-badge')).toHaveText('8');
   await expect(bob.getByText('no story on the table.')).toBeVisible();
 
   // ── leader queues the next story, timer auto-flips ─────────
@@ -144,7 +144,7 @@ test('full sprint planning session with three users', async ({ browser }) => {
   await bob.locator('input[type=file]').setInputFiles(importPath);
   await expect(bob.locator('.story-row')).toHaveCount(3);
   await expect(ada.locator('.story-row', { hasText: 'FIBO-3 imported story' })).toBeVisible();
-  await expect(ada.locator('.story-row', { hasText: 'FIBO-1' })).toContainText('[8]');
+  await expect(ada.locator('.story-row', { hasText: 'FIBO-1' }).locator('.story-badge')).toHaveText('8');
 
   // ── revote flow ────────────────────────────────────────────
   const row = ada.locator('.story-row', { hasText: 'FIBO-2' });

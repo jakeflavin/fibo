@@ -49,8 +49,7 @@ export function RoomHeader({ session, me, canLead, onShare, themeToggle }: Props
       <div className="room-title">
         <span className="room-name">{session.name}</span>
         <span className="room-meta dim">
-          /s/{session.id} · {online}/{Object.keys(users).length} online · you: {me.name} [
-          {me.role}]
+          {online}/{Object.keys(users).length} online · you: {me.name} [{me.role}]
         </span>
       </div>
       <div className="room-actions">

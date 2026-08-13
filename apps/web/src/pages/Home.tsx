@@ -41,8 +41,8 @@ export function Home() {
           story points, no strings attached<span className="cursor">▊</span>
         </p>
 
-        <form className="panel home-form" onSubmit={submit}>
-          <div className="panel-title">$ fibo new-session</div>
+        <form className="home-form" onSubmit={submit}>
+          <div className="form-label">$ fibo new-session</div>
           <label className="field">
             <span className="field-label">your_name*</span>
             <div className="prompt-input">
@@ -70,14 +70,14 @@ export function Home() {
             </div>
           </label>
           <button className="btn btn-primary btn-block" disabled={!name.trim() || busy}>
-            {busy ? 'creating…' : '[ create session ]'}
+            {busy ? 'creating…' : 'create session'}
           </button>
         </form>
 
         <ul className="home-notes">
-          <li>// no accounts. no signup. sessions are temporary.</li>
-          <li>// share the link or QR code — teammates just enter a name.</li>
-          <li>// export the results as JSON before you leave.</li>
+          <li>no accounts. no signup. sessions are temporary.</li>
+          <li>share the link or QR code — teammates just enter a name.</li>
+          <li>export the results as JSON before you leave.</li>
         </ul>
       </main>
     </div>

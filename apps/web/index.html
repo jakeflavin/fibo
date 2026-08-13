@@ -10,14 +10,14 @@
     />
     <title>fibo — story points, no strings attached</title>
     <script>
-      // Apply the stored theme before first paint to avoid a flash.
+      // Apply the stored theme before first paint. fibo is dark-first:
+      // dark unless the user explicitly chose light.
       (function () {
+        var t = 'dark';
         try {
-          var t = localStorage.getItem('fibo:theme');
-          if (t === 'light' || t === 'dark') {
-            document.documentElement.setAttribute('data-theme', t);
-          }
+          if (localStorage.getItem('fibo:theme') === 'light') t = 'light';
         } catch (e) {}
+        document.documentElement.setAttribute('data-theme', t);
       })();
     </script>
   </head>

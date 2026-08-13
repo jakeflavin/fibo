@@ -18,8 +18,8 @@ export function Participants({ session, myUserId }: Props) {
   const rows = Object.entries(users).sort(([, a], [, b]) => a.joinedAt - b.joinedAt);
 
   return (
-    <div className="panel">
-      <div className="panel-title">// team ({rows.length})</div>
+    <div className="rail-section">
+      <div className="eyebrow">team · {rows.length}</div>
       <ul className="user-list">
         {rows.map(([uid, user]) => {
           const set = IDENTITY_SETS[user.identity % IDENTITY_SETS.length];

@@ -59,13 +59,13 @@ export function Room() {
   if (!session) {
     return (
       <div className="room-empty">
-        <div className="panel">
-          <div className="panel-title">! session not found</div>
-          <p className="panel-body">
+        <div className="notfound">
+          <div className="eyebrow">session not found</div>
+          <p className="dim">
             This session doesn't exist (or has expired). Sessions on fibo are temporary.
           </p>
           <a className="btn btn-primary" href="/">
-            [ start a new session ]
+            start a new session
           </a>
         </div>
       </div>

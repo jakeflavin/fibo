@@ -2,9 +2,8 @@ import { useEffect, useState } from 'react';
 import { getTheme, saveTheme } from '../lib/storage';
 
 function effectiveTheme(): 'light' | 'dark' {
-  const stored = getTheme();
-  if (stored) return stored;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  // Dark-first: dark unless the user explicitly chose light.
+  return getTheme() === 'light' ? 'light' : 'dark';
 }
 
 export function ThemeToggle() {

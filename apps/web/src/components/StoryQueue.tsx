@@ -26,8 +26,8 @@ export function StoryQueue({ session, canLead }: Props) {
   };
 
   return (
-    <div className="panel">
-      <div className="panel-title">// stories ({stories.length})</div>
+    <div className="rail-section">
+      <div className="eyebrow">queue · {stories.length}</div>
       {canLead && (
         <form className="story-add" onSubmit={submit}>
           <div className="prompt-input">
@@ -50,7 +50,7 @@ export function StoryQueue({ session, canLead }: Props) {
         {stories.map((s) => (
           <li key={s.id} className={`story-row story-${s.status}`}>
             <span className="story-badge">
-              {s.status === 'done' ? `[${formatVote(s.result ?? null)}]` : s.status === 'active' ? '[▶]' : '[ ]'}
+              {s.status === 'done' ? formatVote(s.result ?? null) : s.status === 'active' ? '▶' : '·'}
             </span>
             <span className="story-row-title" title={s.title}>
               {s.title}

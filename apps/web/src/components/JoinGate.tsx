@@ -40,8 +40,8 @@ export function JoinGate({ session, onJoined }: Props) {
         <p className="tagline">
           you've been invited to point some stories<span className="cursor">▊</span>
         </p>
-        <form className="panel home-form" onSubmit={submit}>
-          <div className="panel-title">$ fibo join "{session.name}"</div>
+        <form className="home-form" onSubmit={submit}>
+          <div className="form-label">$ fibo join "{session.name}"</div>
           <p className="panel-hint dim">
             {count} {count === 1 ? 'person is' : 'people are'} here · no account needed
           </p>
@@ -60,7 +60,7 @@ export function JoinGate({ session, onJoined }: Props) {
             </div>
           </label>
           <button className="btn btn-primary btn-block" disabled={!name.trim() || busy}>
-            {busy ? 'joining…' : '[ join session ]'}
+            {busy ? 'joining…' : 'join session'}
           </button>
         </form>
       </main>

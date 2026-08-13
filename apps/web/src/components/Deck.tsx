@@ -17,11 +17,11 @@ export function Deck({ session, myUserId }: Props) {
       <div className="deck-label dim">
         {disabled
           ? session.revealed && story
-            ? '// cards are up — waiting for the next round'
-            : '// your hand (waiting for a story)'
+            ? 'cards are up — waiting for the next round'
+            : 'your hand — waiting for a story'
           : myVote !== undefined
-            ? '// tap again to take it back'
-            : '// pick a card'}
+            ? 'tap again to take it back'
+            : 'pick a card'}
       </div>
       <div className="deck-cards">
         {DECK.map((value) => {
@@ -39,9 +39,7 @@ export function Deck({ session, myUserId }: Props) {
               aria-pressed={selected}
               title={value === 'skip' ? 'Skip this story' : `${value} points`}
             >
-              <span className="play-card-corner">{formatVote(value)}</span>
               <span className="play-card-value">{formatVote(value)}</span>
-              <span className="play-card-corner play-card-corner-br">{formatVote(value)}</span>
             </button>
           );
         })}
