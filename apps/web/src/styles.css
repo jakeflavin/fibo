@@ -196,8 +196,7 @@ a {
 
 /* Disabled filled buttons drop their fill: a washed-out solid reads as a
    stuck state, an outline reads as "not yet". */
-.btn-primary:disabled,
-.btn-toggled:disabled {
+.btn-primary:disabled {
   background: transparent;
   border-color: var(--control);
   color: var(--text);
@@ -541,7 +540,7 @@ svg.lucide {
   position: absolute;
   right: 0;
   top: calc(100% + 8px);
-  min-width: 200px;
+  min-width: 240px;
   background: var(--surface);
   border: 1px solid var(--line-strong);
   border-radius: 12px;
@@ -552,7 +551,10 @@ svg.lucide {
 }
 
 .menu-item {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
   width: 100%;
   text-align: left;
   background: transparent;
@@ -602,14 +604,17 @@ svg.lucide {
   flex-direction: column;
   gap: 12px;
   min-height: 0;
+  min-width: 0;
 }
 
 .room-table {
   flex: 1;
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
   min-height: 0;
+  min-width: 0;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -629,7 +634,6 @@ svg.lucide {
 
 .room-table .seats {
   flex: 1;
-  justify-content: center;
 }
 
 /* ── the stage ───────────────────────────────────────────────── */
@@ -651,8 +655,7 @@ svg.lucide {
   font-size: clamp(22px, 3.2vw, 32px);
   font-weight: 700;
   letter-spacing: -0.5px;
-  margin: 0 auto;
-  max-width: 640px;
+  margin: 0;
   overflow-wrap: anywhere;
   line-height: 1.25;
   /* Long titles can't eat the stage: clamp to two lines (full text in
@@ -671,17 +674,34 @@ svg.lucide {
   align-items: center;
   justify-content: center;
   padding: 16px 0 8px;
+  /* Never let the pile's intrinsic width inflate the stage. */
+  min-width: 0;
+  max-width: 100%;
   /* Size container: cards measure the room they have with cq units. */
   container-type: size;
+}
+
+/* Measured by the fit-scale logic: when even minimum-size cards overflow
+   the stage, the whole pile scales down uniformly instead of scrolling. */
+.seats-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: 50% 50%;
+  transition: transform 0.3s ease;
 }
 
 /* Cards grow into the stage: height is bounded by the vertical room split
    across the dealt rows AND the horizontal room split across the widest
    row (via the card's 0.72 aspect), so few cards get genuinely big. */
+/* The card table never scrolls: cards shrink to fit, but never below the
+   96px floor where their proportions (radius, avatar, label) break down.
+   Below that, the fit-scale in CardTable shrinks the whole pile
+   uniformly, keeping true card proportions at any size. */
 .seat,
 .seat-card {
   --card-h: clamp(
-    84px,
+    96px,
     min(
       calc((100cqh - 48px) / var(--rows, 1) - 40px),
       calc((100cqw / var(--cols, 1) - 46px) / 0.72)
@@ -692,7 +712,10 @@ svg.lucide {
 
 .seat-row {
   display: flex;
-  flex-wrap: wrap;
+  /* Rows never wrap, and size to their content so the fit-scale can
+     measure the pile's true width and shrink it uniformly to fit. */
+  flex-wrap: nowrap;
+  width: max-content;
   justify-content: center;
   align-items: flex-start;
   gap: 20px;
@@ -700,16 +723,6 @@ svg.lucide {
 
 .seat-row + .seat-row {
   margin-top: 12px;
-}
-
-/* Grouped distribution reads as a horizontal bar chart: rows start at
-   the left edge instead of centering. */
-.seats-grouped {
-  align-items: stretch;
-}
-
-.seats-grouped .seat-row {
-  justify-content: flex-start;
 }
 
 .seat {
@@ -736,6 +749,8 @@ svg.lucide {
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  /* Constrain to the seat so long names ellipsize instead of colliding. */
+  max-width: 100%;
   transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(var(--tilt, 0deg));
   transition: transform 0.45s ease;
 }
@@ -837,12 +852,18 @@ svg.lucide {
   animation: rise 0.25s ease-out both;
 }
 
-/* Tally sits to the right of the value so its arrival never shifts the
-   block's height or the value's position. */
+/* Tally sits to the right of the value. The row reserves two tally lines
+   and centers, so a wrapping tally fills the reserved space instead of
+   pushing the cards below. */
 .result-headline {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
+  min-height: 36px;
+}
+
+.result-summary {
+  line-height: 1.6;
 }
 
 .result-value {
@@ -940,17 +961,6 @@ svg.lucide {
   font-size: 14px;
 }
 
-/* Pressed state for the distribution-view toggle. */
-.btn-toggled {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-ink);
-}
-
-.btn-toggled:hover:not(:disabled) {
-  color: var(--accent-ink);
-}
-
 /* Override values: one joined ruler of points; the standing result is
    the filled notch. Shares its row with the result actions. */
 .result-edit {
@@ -996,14 +1006,14 @@ svg.lucide {
 
 /* ── timer ───────────────────────────────────────────────────── */
 
+/* Lives in the consensus card, standing in for the result headline —
+   same height, so the rail never shifts when it appears. */
 .timer-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 14px 0 0;
   width: 100%;
-  /* Fixed height: the slot is reserved even when no timer is running. */
-  height: 18px;
+  height: 36px;
 }
 
 .timer-clock {
@@ -1119,10 +1129,31 @@ svg.lucide {
   min-height: 0;
 }
 
-/* The queue (last section) takes the leftover height; its list scrolls. */
-.room-side > .rail-section:last-child {
-  flex: 1;
+/* Rail cards keep their natural size… */
+.room-side > .rail-section {
+  flex-shrink: 0;
+}
+
+/* …except the team card, which shrinks under pressure and scrolls its
+   list internally so a big roster can't push the queue off screen. */
+.room-side > .team-card {
+  flex-shrink: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 150px;
+  overflow: hidden;
+}
+
+.team-card .user-list {
+  overflow-y: auto;
   min-height: 0;
+}
+
+/* The queue (last section) takes the leftover height; its list scrolls.
+   It never collapses below a few visible rows. */
+.room-side > .rail-section:last-child {
+  flex: 1 1 auto;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
 }
@@ -1470,13 +1501,22 @@ svg.lucide {
   .room-side {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    border-top: 1px solid var(--line);
-    padding-top: 28px;
   }
 
   .room-side > .rail-section:last-child {
     flex: none;
+    min-height: 0;
     display: block;
+  }
+
+  .team-card {
+    display: block;
+    overflow: visible;
+    min-height: 0;
+  }
+
+  .team-card .user-list {
+    max-height: 40vh;
   }
 
   .story-list {
@@ -1526,8 +1566,9 @@ svg.lucide {
   }
 
   .play-card {
-    /* Back to fixed-size cards in the scrolling mobile hand. */
-    flex: 0 0 46px;
+    /* Cards share the bar's full width; the 46px basis keeps them
+       tappable, scrolling only when they genuinely can't fit. */
+    flex: 1 0 46px;
     height: 66px;
   }
 

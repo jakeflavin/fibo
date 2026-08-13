@@ -89,7 +89,7 @@ export function StoryQueue({ session, canLead }: Props) {
               <span className="story-row-title" title={s.title}>
                 {s.title}
               </span>
-              {canLead && s.status !== 'active' && (
+              {canLead && (
                 <span className="story-actions">
                   <button
                     className="chip chip-small"

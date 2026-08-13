@@ -1,27 +1,26 @@
 import type { Session, SessionExport, Story } from './types';
 import { isValidVote } from './deck';
 
-/** Serialize a session to the portable export document (stories + results). */
+/** Serialize a session to the portable export document (stories + points). */
 export function exportSession(session: Session): SessionExport {
   const stories = Object.values(session.stories ?? {}).sort((a, b) => a.order - b.order);
   return {
     app: 'fibo',
-    version: 1,
-    exportedAt: Date.now(),
-    sessionName: session.name ?? '',
-    stories: stories.map((s) => ({
-      title: s.title,
-      status: s.status,
-      result: s.result ?? null,
-    })),
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    stories: stories.map((s) => {
+      const points = s.status === 'done' && s.result != null ? s.result : null;
+      return points != null ? { title: s.title, points } : { title: s.title };
+    }),
   };
 }
 
 export class ImportError extends Error {}
 
 /**
- * Parse and validate an export document. Throws ImportError with a
- * human-readable message when the JSON isn't a valid Fibo export.
+ * Parse and validate an export document. Accepts current (v2) exports and
+ * legacy v1 files. Throws ImportError with a human-readable message when
+ * the JSON isn't a valid Fibo export.
  */
 export function parseSessionExport(json: string): SessionExport {
   let data: unknown;
@@ -34,7 +33,7 @@ export function parseSessionExport(json: string): SessionExport {
     throw new ImportError('That file is not a Fibo session export.');
   }
   const doc = data as Record<string, unknown>;
-  if (doc.app !== 'fibo' || doc.version !== 1) {
+  if (doc.app !== 'fibo' || (doc.version !== 1 && doc.version !== 2)) {
     throw new ImportError('That file is not a Fibo session export (missing app/version marker).');
   }
   if (!Array.isArray(doc.stories)) {
@@ -48,22 +47,25 @@ export function parseSessionExport(json: string): SessionExport {
     if (typeof s.title !== 'string' || s.title.trim() === '') {
       throw new ImportError(`Story #${i + 1} is missing a title.`);
     }
-    const status = s.status === 'done' ? 'done' : 'queued';
-    const result = status === 'done' && isValidVote(s.result) ? s.result : null;
-    return { title: s.title, status, result } as SessionExport['stories'][number];
+    // v2 stores points; v1 stored result (+ status, which points implies).
+    const rawPoints = doc.version === 2 ? s.points : s.status === 'done' ? s.result : null;
+    const points = isValidVote(rawPoints) ? rawPoints : null;
+    return points != null ? { title: s.title, points } : { title: s.title };
   });
   return {
     app: 'fibo',
-    version: 1,
-    exportedAt: typeof doc.exportedAt === 'number' ? doc.exportedAt : Date.now(),
-    sessionName: typeof doc.sessionName === 'string' ? doc.sessionName : '',
+    version: 2,
+    exportedAt:
+      typeof doc.exportedAt === 'string'
+        ? doc.exportedAt
+        : new Date(typeof doc.exportedAt === 'number' ? doc.exportedAt : Date.now()).toISOString(),
     stories,
   };
 }
 
 /**
  * Materialize imported stories as fresh Story records (new ids, no votes).
- * Previously-active stories come back as queued so the room stays consistent.
+ * Stories with points come back done; the rest are queued.
  */
 export function storiesFromExport(
   doc: SessionExport,
@@ -76,9 +78,9 @@ export function storiesFromExport(
     out[id] = {
       id,
       title: s.title,
-      status: s.status === 'done' ? 'done' : 'queued',
+      status: s.points != null ? 'done' : 'queued',
       order: i,
-      result: s.result ?? null,
+      result: s.points ?? null,
       createdAt: now,
     };
   });

@@ -133,7 +133,6 @@ export async function activateStory(session: Session, storyId: string): Promise<
   const updates: Record<string, unknown> = {
     currentStoryId: storyId,
     revealed: reopen,
-    grouped: false,
     timer: null,
     [`stories/${storyId}/status`]: 'active',
   };
@@ -174,15 +173,9 @@ export async function revealCards(session: Session): Promise<void> {
   const votes = session.stories?.[storyId]?.votes ?? {};
   await update(sessionRef(session.id), {
     revealed: true,
-    grouped: false,
     timer: null,
     [`stories/${storyId}/result`]: computeWinner(votes),
   });
-}
-
-/** Leaders can toggle the revealed cards into the grouped distribution view. */
-export async function setGrouped(sessionId: string, grouped: boolean): Promise<void> {
-  await set(ref(db, `sessions/${sessionId}/grouped`), grouped);
 }
 
 /** Leaders can override the winning value after the flip. */
@@ -200,7 +193,6 @@ export async function revote(session: Session): Promise<void> {
   if (!storyId) return;
   await update(sessionRef(session.id), {
     revealed: false,
-    grouped: false,
     timer: null,
     [`stories/${storyId}/votes`]: null,
     [`stories/${storyId}/result`]: null,

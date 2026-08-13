@@ -1,7 +1,7 @@
-import { ChartBar, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import type { Session } from '@fibo/shared';
 import { DECK } from '@fibo/shared';
-import { revealCards, revote, setGrouped, setResult, startTimer } from '../lib/api';
+import { revealCards, revote, setResult, startTimer } from '../lib/api';
 import { VoteGlyph } from './VoteGlyph';
 
 const PRESETS = [
@@ -59,15 +59,6 @@ export function LeaderControls({ session }: { session: Session }) {
           ))}
         </div>
         <div className="controls-actions">
-          <button
-            className={`btn btn-icon ${session.grouped ? 'btn-toggled' : ''}`}
-            disabled={!revealed}
-            onClick={() => void setGrouped(session.id, !session.grouped)}
-            title="Group the flipped cards by point value"
-            aria-label="Toggle distribution view"
-          >
-            <ChartBar size={15} />
-          </button>
           <button
             className="btn btn-icon"
             disabled={!revealed}

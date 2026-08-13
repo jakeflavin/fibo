@@ -1,4 +1,5 @@
 import type { Session, VoteValue } from '@fibo/shared';
+import { TimerBar } from './TimerBar';
 import { VoteGlyph } from './VoteGlyph';
 
 /**
@@ -8,42 +9,52 @@ import { VoteGlyph } from './VoteGlyph';
 export function RoundResult({ session }: { session: Session }) {
   const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
   const revealed = session.revealed && !!story;
+  const timerRunning = !!session.timer && !revealed;
 
   let tally: [VoteValue, number][] = [];
-  let noVotes = 0;
+  let questionMarks = 0;
   if (revealed) {
     const votes = Object.values(story?.votes ?? {});
     const counts = new Map<VoteValue, number>();
-    for (const v of votes) counts.set(v, (counts.get(v) ?? 0) + 1);
+    for (const v of votes) {
+      // Skip votes render as ? — count them with the non-voters below.
+      if (v === 'skip') continue;
+      counts.set(v, (counts.get(v) ?? 0) + 1);
+    }
     tally = [...counts.entries()].sort((a, b) => b[1] - a[1]);
-    // Seats that flipped without a vote — the ? cards on the table.
-    noVotes = Object.keys(session.users ?? {}).length - votes.length;
+    // Every ? card on the table: explicit skips plus missing votes.
+    const skips = votes.filter((v) => v === 'skip').length;
+    questionMarks = skips + Object.keys(session.users ?? {}).length - votes.length;
   }
 
   return (
     <div className="rail-section rail-card round-result">
       <div className="eyebrow">consensus</div>
-      <div className="result-headline">
-        <span className={`result-value ${revealed ? '' : 'result-none'}`}>
-          {revealed ? <VoteGlyph value={story?.result ?? null} /> : '?'}
-        </span>
-        {revealed && (tally.length > 0 || noVotes > 0) && (
-          <span className="result-summary dim">
-            {tally.map(([v, n], i) => (
-              <span key={String(v)}>
-                {i > 0 && ' · '}
-                <VoteGlyph value={v} />
-                ×{n}
-              </span>
-            ))}
-            {noVotes > 0 && (
-              <span>
-                {tally.length > 0 && ' · '}?×{noVotes}
-              </span>
-            )}
+      {timerRunning ? (
+        <TimerBar session={session} />
+      ) : (
+        <div className="result-headline">
+          <span className={`result-value ${revealed ? '' : 'result-none'}`}>
+            {revealed ? <VoteGlyph value={story?.result ?? null} /> : '?'}
           </span>
-        )}
-      </div>
+          {revealed && (tally.length > 0 || questionMarks > 0) && (
+            <span className="result-summary dim">
+              {tally.map(([v, n], i) => (
+                <span key={String(v)}>
+                  {i > 0 && ' · '}
+                  <VoteGlyph value={v} />
+                  ×{n}
+                </span>
+              ))}
+              {questionMarks > 0 && (
+                <span>
+                  {tally.length > 0 && ' · '}?×{questionMarks}
+                </span>
+              )}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

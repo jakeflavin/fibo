@@ -46,22 +46,22 @@ export interface Session {
   currentStoryId?: string | null;
   /** Whether the current round's cards are face-up. */
   revealed: boolean;
-  /** Whether revealed cards are grouped by value into the distribution view. */
-  grouped?: boolean;
   timer?: SessionTimer | null;
   users?: Record<string, SessionUser>;
   stories?: Record<string, Story>;
 }
 
-/** Portable JSON document produced by "export session". */
+/**
+ * Portable JSON document produced by "export session". A story with
+ * points is done; one without is still queued.
+ */
 export interface SessionExport {
   app: 'fibo';
-  version: 1;
-  exportedAt: number;
-  sessionName: string;
+  version: 2;
+  /** ISO-8601 timestamp of the export. */
+  exportedAt: string;
   stories: Array<{
     title: string;
-    status: StoryStatus;
-    result?: VoteValue | null;
+    points?: VoteValue | null;
   }>;
 }

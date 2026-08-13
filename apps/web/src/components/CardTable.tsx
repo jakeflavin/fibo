@@ -1,7 +1,6 @@
-import { useLayoutEffect, useRef } from 'react';
-import type { Session, VoteValue } from '@fibo/shared';
+import { useLayoutEffect, useRef, useState } from 'react';
+import type { Session } from '@fibo/shared';
 import { identityVars, PixelAvatar } from './PixelAvatar';
-import { TimerBar } from './TimerBar';
 import { VoteGlyph } from './VoteGlyph';
 
 interface Props {
@@ -30,76 +29,76 @@ function scatter(uid: string) {
   };
 }
 
-/** Sort key for grouping: numbers ascending, then coffee, skip, no vote. */
-function voteOrder(vote: VoteValue | undefined): number {
-  if (vote === undefined) return Number.MAX_SAFE_INTEGER;
-  if (vote === 'skip') return Number.MAX_SAFE_INTEGER - 1;
-  if (vote === 'coffee') return Number.MAX_SAFE_INTEGER - 2;
-  return vote;
-}
-
 export function CardTable({ session, myUserId, canLead }: Props) {
   const users = session.users ?? {};
   const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
   const votes = story?.votes ?? {};
   const revealed = session.revealed && !!story;
 
-  // Leads toggle the revealed cards into one row per vote value so the
-  // distribution is easy to read; the flag is shared session state.
-  const grouped = revealed && !!session.grouped;
-
-  // FLIP: remember where each seat was on the previous render and animate
-  // it from there whenever the layout reshuffles.
-  const seatEls = useRef(new Map<string, HTMLDivElement>());
-  const prevRects = useRef(new Map<string, DOMRect>());
+  // The table never scrolls: the pile re-packs and the cards resize to
+  // whatever space the stage offers. The stage is measured live; when it
+  // can't be measured yet the pile renders at scale and corrects itself
+  // on the first layout pass.
+  const seatsRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [stage, setStage] = useState<{ w: number; h: number } | null>(null);
+  const [fitScale, setFitScale] = useState(1);
   useLayoutEffect(() => {
-    const nextRects = new Map<string, DOMRect>();
-    for (const [uid, el] of seatEls.current) {
-      if (!el?.isConnected) continue;
-      nextRects.set(uid, el.getBoundingClientRect());
-    }
-    for (const [uid, rect] of nextRects) {
-      const prev = prevRects.current.get(uid);
-      const el = seatEls.current.get(uid);
-      if (!prev || !el) continue;
-      const dx = prev.left - rect.left;
-      const dy = prev.top - rect.top;
-      if (Math.abs(dx) + Math.abs(dy) < 2) continue;
-      el.style.transition = 'none';
-      el.style.transform = `translate(${dx}px, ${dy}px)`;
-      void el.offsetWidth;
-      el.style.transition = 'transform 0.7s cubic-bezier(0.3, 0.8, 0.3, 1)';
-      el.style.transform = '';
-      el.addEventListener(
-        'transitionend',
-        () => {
-          el.style.transition = '';
-        },
-        { once: true },
+    const fit = () => {
+      const outer = seatsRef.current;
+      const inner = innerRef.current;
+      if (!outer || !inner || inner.offsetHeight === 0) return;
+      setStage((prev) => {
+        const w = outer.clientWidth;
+        const h = outer.clientHeight;
+        return prev && prev.w === w && prev.h === h ? prev : { w, h };
+      });
+      // Last-resort uniform shrink for layouts no packing can fit.
+      // +24 covers the alternating row stagger offsets.
+      const s = Math.min(
+        1,
+        outer.clientHeight / inner.offsetHeight,
+        outer.clientWidth / (inner.offsetWidth + 24),
       );
-    }
-    prevRects.current = nextRects;
+      setFitScale((prev) => (Math.abs(prev - s) > 0.01 ? s : prev));
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    if (seatsRef.current) ro.observe(seatsRef.current);
+    if (innerRef.current) ro.observe(innerRef.current);
+    return () => ro.disconnect();
   });
 
   const seats = Object.entries(users).sort(([, a], [, b]) => a.joinedAt - b.joinedAt);
 
-  let rows: (typeof seats)[];
-  if (grouped) {
-    // One row per distinct vote value, ascending; skip and non-voters sink
-    // to the bottom.
-    const byValue = new Map<number, typeof seats>();
-    for (const seat of seats) {
-      const key = voteOrder(votes[seat[0]]);
-      const group = byValue.get(key);
-      if (group) group.push(seat);
-      else byValue.set(key, [seat]);
+  // Pick the row count that gives the biggest cards for the measured
+  // stage: fewer, wider rows on big screens; extra rows appear as the
+  // screen narrows and a wide row would squeeze the cards too small.
+  // Mirrors the CSS budget: height (H-48)/rows - 40, width via the 0.72
+  // card aspect with 46px of per-seat label/gap overhead.
+  const n = Math.max(1, seats.length);
+  let rowCount = 1;
+  if (stage) {
+    let best = -Infinity;
+    for (let r = 1; r <= n; r++) {
+      const cols = Math.ceil(n / r);
+      const size = Math.min(
+        (stage.h - 48) / r - 40,
+        ((stage.w - 28) / cols - 46) / 0.72,
+        260,
+      );
+      if (size > best) {
+        best = size;
+        rowCount = r;
+      }
     }
-    rows = [...byValue.entries()].sort((a, b) => a[0] - b[0]).map(([, group]) => group);
   } else {
-    // Deal the seats into balanced rows of up to four, deterministic in
-    // join order. Small teams get one row of big cards.
-    const rowCount = Math.max(1, Math.ceil(seats.length / 4));
-    rows = [];
+    rowCount = Math.max(1, Math.ceil(n / 4));
+  }
+
+  // Deal the seats into balanced rows, deterministic in join order.
+  const rows: (typeof seats)[] = [];
+  {
     const base = Math.floor(seats.length / rowCount);
     const extra = seats.length % rowCount;
     let i = 0;
@@ -136,79 +135,80 @@ export function CardTable({ session, myUserId, canLead }: Props) {
         </h2>
       </div>
 
-      <TimerBar session={session} />
-
       <div
-        className={`seats ${grouped ? 'seats-grouped' : ''}`}
+        className="seats"
+        ref={seatsRef}
         style={{ '--rows': rows.length, '--cols': cols } as React.CSSProperties}
       >
-        {rows.map((row, ri) => (
-          <div
-            key={ri}
-            className="seat-row"
-            style={{ transform: `translateX(${grouped ? 0 : ri % 2 ? 28 : -16}px)` }}
-          >
-            {row.map(([uid, user]) => {
-              const vote = votes[uid];
-              const hasVoted = vote !== undefined;
-              const isMe = uid === myUserId;
-              const state = revealed
-                ? 'revealed'
-                : hasVoted
-                  ? 'voted'
-                  : user.online
-                    ? 'thinking'
-                    : 'away';
-              const s = scatter(uid);
-              return (
-                <div
-                  key={uid}
-                  ref={(el) => {
-                    if (el) seatEls.current.set(uid, el);
-                    else seatEls.current.delete(uid);
-                  }}
-                  className={`seat seat-${state} ${hasVoted ? 'seat-has-vote' : ''} ${
-                    isMe ? 'seat-me' : ''
-                  } identity`}
-                  style={{
-                    ...identityVars(user.identity),
-                    marginLeft: grouped ? 0 : s.gap,
-                  }}
-                >
+        <div
+          className="seats-inner"
+          ref={innerRef}
+          style={{ transform: fitScale < 1 ? `scale(${fitScale})` : undefined }}
+        >
+          {rows.map((row, ri) => (
+            <div
+              key={ri}
+              className="seat-row"
+              style={{ transform: `translateX(${ri % 2 ? 12 : -12}px)` }}
+            >
+              {row.map(([uid, user]) => {
+                const vote = votes[uid];
+                const hasVoted = vote !== undefined;
+                const isMe = uid === myUserId;
+                const state = revealed
+                  ? 'revealed'
+                  : hasVoted
+                    ? 'voted'
+                    : user.online
+                      ? 'thinking'
+                      : 'away';
+                const s = scatter(uid);
+                return (
                   <div
-                    className="seat-unit"
-                    style={
-                      {
-                        '--tilt': grouped ? '0deg' : `${s.tilt}deg`,
-                        '--dx': grouped ? '0px' : `${s.dx}px`,
-                        '--dy': grouped ? '0px' : `${s.dy}px`,
-                      } as React.CSSProperties
-                    }
+                    key={uid}
+                    className={`seat seat-${state} ${hasVoted ? 'seat-has-vote' : ''} ${
+                      isMe ? 'seat-me' : ''
+                    } identity`}
+                    style={{
+                      ...identityVars(user.identity),
+                      marginLeft: s.gap,
+                    }}
                   >
-                    <div className={`seat-card ${revealed ? 'flipped' : ''}`}>
-                      <div className="seat-card-inner">
-                        <div className="seat-card-back">
-                          <PixelAvatar
-                            identity={user.identity}
-                            size={38}
-                            ink={hasVoted ? 'var(--bg)' : 'var(--dim)'}
-                          />
-                        </div>
-                        <div className="seat-card-front">
-                          {/* Vote values stay out of the DOM until the flip. */}
-                          {revealed ? hasVoted ? <VoteGlyph value={vote} /> : '?' : ''}
+                    <div
+                      className="seat-unit"
+                      style={
+                        {
+                          '--tilt': `${s.tilt}deg`,
+                          '--dx': `${s.dx}px`,
+                          '--dy': `${s.dy}px`,
+                        } as React.CSSProperties
+                      }
+                    >
+                      <div className={`seat-card ${revealed ? 'flipped' : ''}`}>
+                        <div className="seat-card-inner">
+                          <div className="seat-card-back">
+                            <PixelAvatar
+                              identity={user.identity}
+                              size={38}
+                              ink={hasVoted ? 'var(--bg)' : 'var(--dim)'}
+                            />
+                          </div>
+                          <div className="seat-card-front">
+                            {/* Vote values stay out of the DOM until the flip. */}
+                            {revealed ? hasVoted ? <VoteGlyph value={vote} /> : '?' : ''}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="seat-label">
-                      <span className="seat-name">{user.name}</span>
+                      <div className="seat-label">
+                        <span className="seat-name">{user.name}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        ))}
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

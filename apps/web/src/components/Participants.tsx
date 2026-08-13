@@ -19,7 +19,7 @@ export function Participants({ session, myUserId }: Props) {
   const rows = Object.entries(users).sort(([, a], [, b]) => a.joinedAt - b.joinedAt);
 
   return (
-    <div className="rail-section rail-card">
+    <div className="rail-section rail-card team-card">
       <div className="eyebrow">team · {rows.length}</div>
       <ul className="user-list">
         {rows.map(([uid, user]) => {
