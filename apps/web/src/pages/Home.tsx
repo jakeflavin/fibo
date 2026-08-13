@@ -6,6 +6,7 @@ import { getLastName, saveLastName } from '../lib/storage';
 import { SettingsMenu } from '../components/ThemeToggle';
 import { useToast } from '../components/Toast';
 
+/** Landing page: name prompt that creates a session and enters it. */
 export function Home() {
   const navigate = useNavigate();
   const toast = useToast();
@@ -45,7 +46,7 @@ export function Home() {
           <form className="home-form" onSubmit={submit}>
             <label className="field">
               <span className="field-label">Your name *</span>
-              <div className="prompt-input">
+              <div className="text-field">
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}

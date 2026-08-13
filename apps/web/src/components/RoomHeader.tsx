@@ -16,6 +16,10 @@ interface Props {
   onShare: () => void;
 }
 
+/**
+ * The app bar: brand plus the gear menu (share, export/import, new
+ * session, theme, leave session).
+ */
 export function RoomHeader({ session, myUserId, canLead, onShare }: Props) {
   const toast = useToast();
   const navigate = useNavigate();
@@ -51,14 +55,14 @@ export function RoomHeader({ session, myUserId, canLead, onShare }: Props) {
     a.download = `fibo-session-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast('session exported');
+    toast('Session exported');
   };
 
   const doImport = async (file: File) => {
     try {
       const doc = parseSessionExport(await file.text());
       await importStories(session, doc);
-      toast(`imported ${doc.stories.length} stories`);
+      toast(`Imported ${doc.stories.length} stories`);
     } catch (err) {
       toast(err instanceof ImportError ? err.message : 'Import failed.', 'error');
     }

@@ -11,6 +11,7 @@ interface Props {
   onJoined: (userId: string) => void;
 }
 
+/** Name prompt shown to visitors who open a session they haven't joined. */
 export function JoinGate({ session, onJoined }: Props) {
   const toast = useToast();
   const [name, setName] = useState(getLastName);
@@ -50,7 +51,7 @@ export function JoinGate({ session, onJoined }: Props) {
           <form className="home-form" onSubmit={submit}>
             <label className="field">
               <span className="field-label">Your name *</span>
-              <div className="prompt-input">
+              <div className="text-field">
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}

@@ -10,10 +10,12 @@ type PushToast = (message: string, kind?: Toast['kind']) => void;
 
 const ToastContext = createContext<PushToast>(() => {});
 
+/** Push transient toasts (info by default, or 'error'). */
 export function useToast(): PushToast {
   return useContext(ToastContext);
 }
 
+/** Renders the toast stack and provides `useToast` to the tree below. */
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const nextId = useRef(1);

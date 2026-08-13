@@ -15,6 +15,7 @@ import { Participants } from '../components/Participants';
 import { StoryQueue } from '../components/StoryQueue';
 import { ShareModal } from '../components/ShareModal';
 
+/** The session route: resolves identity, then renders the room. */
 export function Room() {
   // Remount per session id: navigating from one room straight to
   // another (e.g. "New session") must not carry over identity state or
@@ -28,7 +29,10 @@ function RoomInner({ sessionId }: { sessionId: string }) {
   const [myUserId, setMyUserId] = useState<string | null>(() => getMyUserId(sessionId));
   const [shareOpen, setShareOpen] = useState(false);
 
-  const me = myUserId ? session?.users?.[myUserId] : undefined;
+  // A partial record (e.g. a stray presence write after a kick) is not a
+  // membership: without a name, this browser has not joined.
+  const record = myUserId ? session?.users?.[myUserId] : undefined;
+  const me = record?.name ? record : undefined;
   const canLead = me?.role === 'owner' || me?.role === 'leader';
 
   // Keep my online flag in sync with the realtime connection.
@@ -54,7 +58,7 @@ function RoomInner({ sessionId }: { sessionId: string }) {
     return (
       <div className="room-empty">
         <p className="dim">
-          connecting
+          Connecting…
         </p>
       </div>
     );
@@ -64,12 +68,12 @@ function RoomInner({ sessionId }: { sessionId: string }) {
     return (
       <div className="room-empty">
         <div className="notfound">
-          <div className="eyebrow">session not found</div>
+          <div className="eyebrow">Session not found</div>
           <p className="dim">
             This session doesn't exist (or has expired). Sessions on fibo are temporary.
           </p>
           <a className="btn btn-primary" href="/">
-            start a new session
+            Start a new session
           </a>
         </div>
       </div>

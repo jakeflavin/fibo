@@ -13,6 +13,11 @@ interface Props {
   canLead: boolean;
 }
 
+/**
+ * The stage: the active story's title (with lead-only inline edit and
+ * delete), every player's seat card packed to fit the space, and the
+ * round's reveal state.
+ */
 export function CardTable({ session, myUserId, canLead }: Props) {
   const users = session.users ?? {};
   const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
@@ -167,7 +172,7 @@ export function CardTable({ session, myUserId, canLead }: Props) {
               if (!e.currentTarget.contains(e.relatedTarget)) setEditingTitle(null);
             }}
           >
-            <div className="prompt-input title-edit-field">
+            <div className="text-field title-edit-field">
               <input
                 value={editingTitle}
                 onChange={(e) => setEditingTitle(e.target.value)}

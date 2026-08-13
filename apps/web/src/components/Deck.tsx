@@ -8,6 +8,11 @@ interface Props {
   myUserId: string;
 }
 
+/**
+ * The player's hand: one card per deck value, played face-down with a
+ * second click to take it back. Locks while no story is on the table or
+ * after the flip.
+ */
 export function Deck({ session, myUserId }: Props) {
   const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
   const myVote = story?.votes?.[myUserId];

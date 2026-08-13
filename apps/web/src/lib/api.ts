@@ -25,6 +25,7 @@ import { saveMyUserId } from './storage';
 
 const sessionRef = (sessionId: string) => ref(db, `sessions/${sessionId}`);
 
+/** Create a session owned by the given user; returns the session id. */
 export async function createSession(ownerName: string): Promise<string> {
   const sessionId = newSessionId();
   const userId = newUserId();
@@ -49,6 +50,7 @@ export async function createSession(ownerName: string): Promise<string> {
   return sessionId;
 }
 
+/** Add a participant with a free identity; returns their user id. */
 export async function joinSession(sessionId: string, name: string): Promise<string> {
   const usersSnap = await get(ref(db, `sessions/${sessionId}/users`));
   const users = (usersSnap.val() ?? {}) as Record<string, { identity: number }>;
@@ -65,24 +67,30 @@ export async function joinSession(sessionId: string, name: string): Promise<stri
   return userId;
 }
 
-/** Keep users/{userId}/online in sync with the realtime connection. */
+/**
+ * Keep users/{userId}/online in sync with the realtime connection.
+ * Going offline REMOVES the flag rather than writing false: a write
+ * against a user the admin just removed would resurrect the record as a
+ * partial ghost, while removing a field of a deleted record is a no-op.
+ */
 export function trackPresence(sessionId: string, userId: string): () => void {
   const onlineRef = ref(db, `sessions/${sessionId}/users/${userId}/online`);
   const connectedRef = ref(db, '.info/connected');
   const unsubscribe = onValue(connectedRef, (snap) => {
     if (snap.val() === true) {
       void onDisconnect(onlineRef)
-        .set(false)
+        .remove()
         .then(() => set(onlineRef, true));
     }
   });
   return () => {
     unsubscribe();
     void onDisconnect(onlineRef).cancel();
-    void set(onlineRef, false);
+    void remove(onlineRef);
   };
 }
 
+/** Live-subscribe to a session; the callback gets null when it vanishes. */
 export function subscribeSession(
   sessionId: string,
   callback: (session: Session | null) => void,
@@ -92,6 +100,7 @@ export function subscribeSession(
   });
 }
 
+/** Change a user's role (admin action: make/remove lead). */
 export async function setRole(sessionId: string, userId: string, role: Role): Promise<void> {
   await set(ref(db, `sessions/${sessionId}/users/${userId}/role`), role);
 }
@@ -104,6 +113,7 @@ export async function removeUser(session: Session, userId: string): Promise<void
   await update(sessionRef(session.id), updates);
 }
 
+/** Append a story to the queue; returns its id. */
 export async function addStory(sessionId: string, title: string, order: number): Promise<string> {
   const id = newStoryId();
   const story: Story = {
@@ -118,6 +128,7 @@ export async function addStory(sessionId: string, title: string, order: number):
   return id;
 }
 
+/** Delete a story; deleting the active story also clears the table. */
 export async function deleteStory(session: Session, storyId: string): Promise<void> {
   if (session.currentStoryId === storyId) {
     await update(sessionRef(session.id), {
@@ -163,6 +174,7 @@ export async function activateStory(session: Session, storyId: string): Promise<
   await update(sessionRef(session.id), updates);
 }
 
+/** Play (or with null, take back) a card for the current round. */
 export async function castVote(
   sessionId: string,
   storyId: string,
@@ -216,6 +228,7 @@ export async function revote(session: Session): Promise<void> {
   });
 }
 
+/** Start the shared countdown; cards auto-flip when it ends. */
 export async function startTimer(sessionId: string, seconds: number): Promise<void> {
   await set(ref(db, `sessions/${sessionId}/timer`), {
     endsAt: Date.now() + seconds * 1000,

@@ -7,6 +7,7 @@ export interface SessionState {
   loading: boolean;
 }
 
+/** Subscribe to a session for the component's lifetime. */
 export function useSession(sessionId: string): SessionState {
   const [state, setState] = useState<SessionState>({ session: null, loading: true });
 

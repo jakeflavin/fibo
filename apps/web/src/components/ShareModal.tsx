@@ -9,6 +9,7 @@ interface Props {
   onClose: () => void;
 }
 
+/** Invite modal: the session link as text and as a scannable QR code. */
 export function ShareModal({ session, onClose }: Props) {
   const toast = useToast();
   const url = `${window.location.origin}/s/${session.id}`;

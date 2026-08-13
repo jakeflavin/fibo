@@ -8,6 +8,10 @@ interface Props {
   canLead: boolean;
 }
 
+/**
+ * The session's story list: leads add stories (straight onto the table)
+ * and click rows to switch or reopen; every row shows its points.
+ */
 export function StoryQueue({ session, canLead }: Props) {
   const [title, setTitle] = useState('');
   const stories = Object.values(session.stories ?? {}).sort((a, b) => a.order - b.order);
@@ -28,7 +32,7 @@ export function StoryQueue({ session, canLead }: Props) {
       <div className="eyebrow">Queue · {stories.length}</div>
       {canLead && (
         <form className="story-add" onSubmit={submit}>
-          <div className="prompt-input">
+          <div className="text-field">
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}

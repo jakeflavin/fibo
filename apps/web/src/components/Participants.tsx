@@ -13,6 +13,11 @@ interface Props {
 
 const ROLE_TAG = { owner: 'Admin', leader: 'Lead', participant: '' } as const;
 
+/**
+ * The team list: presence, identity, role lozenges, and vote status per
+ * player, plus the admin-only row actions menu (make/remove lead,
+ * remove from session).
+ */
 export function Participants({ session, myUserId }: Props) {
   const users = session.users ?? {};
   const iAmOwner = users[myUserId]?.role === 'owner';

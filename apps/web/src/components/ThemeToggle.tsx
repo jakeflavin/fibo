@@ -7,6 +7,7 @@ function effectiveTheme(): 'light' | 'dark' {
   return getTheme() === 'light' ? 'light' : 'dark';
 }
 
+/** Current theme plus a toggle; the choice persists in localStorage. */
 export function useTheme() {
   const [theme, setTheme] = useState<'light' | 'dark'>(effectiveTheme);
 
