@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { Play, X } from 'lucide-react';
-import type { Session, Story } from '@fibo/shared';
-import { activateStory, addStory, deleteStory } from '../lib/api';
-import { ConfirmModal } from './ConfirmModal';
+import type { Session } from '@fibo/shared';
+import { activateStory, addStory } from '../lib/api';
 import { VoteGlyph } from './VoteGlyph';
 
 interface Props {
@@ -12,7 +10,6 @@ interface Props {
 
 export function StoryQueue({ session, canLead }: Props) {
   const [title, setTitle] = useState('');
-  const [pendingDelete, setPendingDelete] = useState<Story | null>(null);
   const stories = Object.values(session.stories ?? {}).sort((a, b) => a.order - b.order);
   const maxOrder = stories.reduce((m, s) => Math.max(m, s.order), -1);
 
@@ -75,51 +72,15 @@ export function StoryQueue({ session, canLead }: Props) {
               }
             >
               <span className="story-badge">
-                {s.status === 'done' ? (
-                  <VoteGlyph value={s.result ?? null} />
-                ) : s.status === 'active' ? (
-                  <Play size={10} fill="currentColor" aria-label="on the table" />
-                ) : (
-                  '?'
-                )}
+                <VoteGlyph value={s.result ?? null} />
               </span>
               <span className="story-row-title" title={s.title}>
                 {s.title}
               </span>
-              {canLead && (
-                <span className="story-actions">
-                  <button
-                    className="chip chip-small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setPendingDelete(s);
-                    }}
-                    title="Remove story"
-                  >
-                    <X size={11} />
-                  </button>
-                </span>
-              )}
             </li>
           );
         })}
       </ul>
-      {pendingDelete && (
-        <ConfirmModal
-          title="Delete story"
-          message={
-            <>
-              Remove <strong>{pendingDelete.title}</strong> from the queue?
-            </>
-          }
-          confirmLabel="Delete"
-          onConfirm={() => {
-            void deleteStory(session, pendingDelete.id);
-            setPendingDelete(null);
-          }}
-          onClose={() => setPendingDelete(null)}
-        />
-      )}
     </div>
   );
 }

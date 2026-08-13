@@ -648,6 +648,47 @@ svg.lucide {
 .story-line {
   padding: 8px 12px 4px;
   text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+}
+
+/* Jira-style hover-reveal actions on the story title. */
+.title-actions {
+  display: inline-flex;
+  gap: 2px;
+  flex: none;
+}
+
+.title-action {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dim);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.story-line:hover .title-action,
+.story-line:focus-within .title-action {
+  opacity: 1;
+}
+
+.title-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.title-edit-field {
+  flex: 1;
+  min-width: 0;
 }
 
 .story-title {

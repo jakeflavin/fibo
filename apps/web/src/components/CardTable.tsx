@@ -1,5 +1,8 @@
 import { useLayoutEffect, useRef, useState } from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
 import type { Session } from '@fibo/shared';
+import { deleteStory, updateStoryTitle } from '../lib/api';
+import { ConfirmModal } from './ConfirmModal';
 import { identityVars, PixelAvatar } from './PixelAvatar';
 import { VoteGlyph } from './VoteGlyph';
 
@@ -22,6 +25,9 @@ export function CardTable({ session, myUserId, canLead }: Props) {
   const seatsRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const [stage, setStage] = useState<{ w: number; h: number } | null>(null);
+  // Inline title editing + delete confirmation (leads only).
+  const [editingTitle, setEditingTitle] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [fitScale, setFitScale] = useState(1);
   useLayoutEffect(() => {
     const fit = () => {
@@ -109,10 +115,80 @@ export function CardTable({ session, myUserId, canLead }: Props) {
   return (
     <div className="table-panel">
       <div className="story-line">
-        <h2 className="story-title" title={story.title}>
-          {story.title}
-        </h2>
+        {editingTitle === null ? (
+          <>
+            <h2 className="story-title" title={story.title}>
+              {story.title}
+            </h2>
+            {canLead && (
+              <span className="title-actions">
+                <button
+                  className="btn btn-ghost title-action"
+                  aria-label="Edit story title"
+                  onClick={() => setEditingTitle(story.title)}
+                >
+                  <Pencil size={14} />
+                </button>
+                <button
+                  className="btn btn-ghost title-action"
+                  aria-label="Delete story"
+                  onClick={() => setConfirmDelete(true)}
+                >
+                  <Trash2 size={14} />
+                </button>
+              </span>
+            )}
+          </>
+        ) : (
+          <form
+            className="title-edit"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const t = editingTitle.trim();
+              if (t && t !== story.title) void updateStoryTitle(session.id, story.id, t);
+              setEditingTitle(null);
+            }}
+            onBlur={(e) => {
+              // Clicking anywhere outside the editor cancels.
+              if (!e.currentTarget.contains(e.relatedTarget)) setEditingTitle(null);
+            }}
+          >
+            <div className="prompt-input title-edit-field">
+              <input
+                value={editingTitle}
+                onChange={(e) => setEditingTitle(e.target.value)}
+                maxLength={200}
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') setEditingTitle(null);
+                }}
+              />
+            </div>
+            <button className="btn btn-primary" type="submit" disabled={!editingTitle.trim()}>
+              Save
+            </button>
+            <button className="btn" type="button" onClick={() => setEditingTitle(null)}>
+              Cancel
+            </button>
+          </form>
+        )}
       </div>
+      {confirmDelete && (
+        <ConfirmModal
+          title="Delete story"
+          message={
+            <>
+              Remove <strong>{story.title}</strong> from the queue?
+            </>
+          }
+          confirmLabel="Delete"
+          onConfirm={() => {
+            setConfirmDelete(false);
+            void deleteStory(session, story.id);
+          }}
+          onClose={() => setConfirmDelete(false)}
+        />
+      )}
 
       <div
         className="seats"

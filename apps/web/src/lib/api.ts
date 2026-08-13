@@ -186,6 +186,15 @@ export async function revealCards(session: Session): Promise<void> {
   });
 }
 
+/** Rename a story (from the inline title editor). */
+export async function updateStoryTitle(
+  sessionId: string,
+  storyId: string,
+  title: string,
+): Promise<void> {
+  await set(ref(db, `sessions/${sessionId}/stories/${storyId}/title`), title.trim());
+}
+
 /** Leaders can override the winning value after the flip. */
 export async function setResult(
   sessionId: string,
