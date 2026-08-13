@@ -19,10 +19,17 @@ export function PixelAvatar({ identity, size = 32, className, ink }: Props) {
   set.pixels.forEach((row, y) => {
     Array.from(row).forEach((ch, x) => {
       if (ch === '.') return;
+      // Inked (stamped) rendering keeps the details: eye pixels ('O') punch
+      // through to whatever the avatar sits on, light pixels ('W') print at
+      // partial opacity.
+      if (ink && ch === 'O') return;
       const fill =
         ink ??
         (ch === 'X' ? 'var(--idc)' : ch === 'O' ? set.shade : 'var(--avatar-light, #f2f2f2)');
-      rects.push(<rect key={`${x}.${y}`} x={x} y={y} width={1} height={1} fill={fill} />);
+      const opacity = ink && ch === 'W' ? 0.55 : undefined;
+      rects.push(
+        <rect key={`${x}.${y}`} x={x} y={y} width={1} height={1} fill={fill} opacity={opacity} />,
+      );
     });
   });
   return (
