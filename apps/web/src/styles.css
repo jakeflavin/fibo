@@ -558,11 +558,11 @@ a {
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
-  gap: 12px;
+  gap: 20px;
 }
 
 .seat-row + .seat-row {
-  margin-top: -6px;
+  margin-top: 12px;
 }
 
 .seat {
@@ -1161,7 +1161,7 @@ a {
   }
 
   .seat-row {
-    gap: 8px;
+    gap: 14px;
   }
 
   .seat {

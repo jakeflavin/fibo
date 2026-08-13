@@ -17,11 +17,15 @@ interface Props {
 function scatter(uid: string) {
   let h = 0;
   for (const c of uid) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  // Ranges are sized against the row gap so rotated card corners can never
+  // reach a neighbor: max |dx| 3px + ~6px of rotation spread stays inside
+  // the 20px gap; vertical jitter stays inside the 12px row spacing plus the
+  // name-label zone.
   return {
-    tilt: (h % 15) - 7,
-    dx: ((h >> 4) % 11) - 5,
-    dy: ((h >> 8) % 13) - 4,
-    gap: (h >> 12) % 12,
+    tilt: (h % 13) - 6,
+    dx: ((h >> 4) % 7) - 3,
+    dy: ((h >> 8) % 8) - 3,
+    gap: (h >> 12) % 9,
   };
 }
 
