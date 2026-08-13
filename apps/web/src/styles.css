@@ -1485,10 +1485,6 @@ svg.lucide {
 /* Short windows: compress the stage instead of scrolling or clipping.
    Only applies to the desktop shell (mobile reverts to a scrolling page). */
 @media (max-height: 800px) and (min-width: 861px) {
-  .room {
-    padding-top: 56px;
-  }
-
   .room-table {
     gap: 16px;
   }
