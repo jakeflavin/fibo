@@ -22,10 +22,14 @@ async function createAbandonedSession(browser: Browser): Promise<{ id: string; u
   // aging patch below can't be overwritten by them.
   await ctx.close();
   await expect
-    .poll(async () => {
-      const users = (await emulator(`${id}/users`)) ?? {};
-      return Object.values(users as Record<string, { online?: boolean }>).some((u) => u?.online);
-    })
+    .poll(
+      async () => {
+        const users = (await emulator(`${id}/users`)) ?? {};
+        return Object.values(users as Record<string, { online?: boolean }>).some((u) => u?.online);
+      },
+      // The emulator can take a while to notice a closed socket in CI.
+      { timeout: 45_000 },
+    )
     .toBe(false);
   return { id, url };
 }
