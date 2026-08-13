@@ -1,4 +1,4 @@
-import type { Session, VoteValue } from '@fibo/shared';
+import type { Session } from '@fibo/shared';
 import { formatVote } from '@fibo/shared';
 import { identityVars, PixelAvatar } from './PixelAvatar';
 import { TimerBar } from './TimerBar';
@@ -94,11 +94,7 @@ export function CardTable({ session, myUserId, canLead }: Props) {
                       ink={hasVoted ? 'var(--bg)' : 'var(--dim)'}
                     />
                   </div>
-                  <div
-                    className={`seat-card-front ${
-                      revealed && hasVoted && vote === story.result ? 'card-winner' : ''
-                    }`}
-                  >
+                  <div className="seat-card-front">
                     {/* Vote values stay out of the DOM until the flip. */}
                     {revealed ? (hasVoted ? formatVote(vote) : '—') : ''}
                   </div>
@@ -112,30 +108,6 @@ export function CardTable({ session, myUserId, canLead }: Props) {
         })}
       </div>
 
-      {revealed && <ResultPanel session={session} canLead={canLead} />}
-    </div>
-  );
-}
-
-function ResultPanel({ session, canLead }: { session: Session; canLead: boolean }) {
-  const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
-  if (!story) return null;
-  const votes = Object.values(story.votes ?? {});
-  const counts = new Map<VoteValue, number>();
-  for (const v of votes) counts.set(v, (counts.get(v) ?? 0) + 1);
-  const summary = [...counts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .map(([v, n]) => `${formatVote(v)}×${n}`)
-    .join(' · ');
-
-  return (
-    <div className="result-panel">
-      <div className="result-headline">
-        <span className="dim">consensus:</span>
-        <span className="result-value">{formatVote(story.result ?? null)}</span>
-        {summary && <span className="result-summary dim">({summary})</span>}
-      </div>
-      {!canLead && <p className="dim">waiting for a leader to accept the result…</p>}
     </div>
   );
 }

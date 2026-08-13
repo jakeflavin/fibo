@@ -1,4 +1,5 @@
 import type { Session } from '@fibo/shared';
+import { formatVote } from '@fibo/shared';
 import { setRole } from '../lib/api';
 import { identityVars, PixelAvatar } from './PixelAvatar';
 
@@ -21,7 +22,8 @@ export function Participants({ session, myUserId }: Props) {
       <div className="eyebrow">team · {rows.length}</div>
       <ul className="user-list">
         {rows.map(([uid, user]) => {
-          const voted = story ? votes[uid] !== undefined : false;
+          const vote = story ? votes[uid] : undefined;
+          const voted = vote !== undefined;
           return (
             <li key={uid} className={`user-row ${user.online ? '' : 'user-offline'}`}>
               <span className={`presence-dot ${user.online ? 'on' : 'off'}`} />
@@ -32,7 +34,13 @@ export function Participants({ session, myUserId }: Props) {
               </span>
               <span className="user-role dim">{ROLE_TAG[user.role]}</span>
               <span className={`user-vote ${voted ? 'user-voted' : ''}`}>
-                {story ? (voted ? '✓' : '·') : ''}
+                {story
+                  ? session.revealed
+                    ? formatVote(vote ?? null)
+                    : voted
+                      ? '✓'
+                      : '·'
+                  : ''}
               </span>
               {iAmOwner && user.role !== 'owner' && (
                 <button

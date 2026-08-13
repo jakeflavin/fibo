@@ -82,7 +82,8 @@ test('full sprint planning session with three users', async ({ browser }) => {
   await ada.getByRole('button', { name: /flip cards/ }).click();
   await expect(ada.locator('.result-value')).toHaveText('5');
   await expect(bob.locator('.result-value')).toHaveText('5');
-  await expect(bob.getByText(/waiting for a leader to accept/)).toBeVisible();
+  // the team rail shows everyone's revealed points
+  await expect(bob.locator('.user-row', { hasText: 'Cy' }).locator('.user-vote')).toHaveText('8');
   await ada.waitForTimeout(700); // let the flip animation finish
   await shot(ada, '04-revealed');
 

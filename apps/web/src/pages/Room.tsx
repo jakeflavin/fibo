@@ -7,6 +7,7 @@ import { useSession } from '../lib/useSession';
 import { RoomHeader } from '../components/RoomHeader';
 import { JoinGate } from '../components/JoinGate';
 import { CardTable } from '../components/CardTable';
+import { RoundResult } from '../components/RoundResult';
 import { LeaderControls } from '../components/LeaderControls';
 import { Deck } from '../components/Deck';
 import { Participants } from '../components/Participants';
@@ -80,6 +81,7 @@ export function Room() {
           <Deck session={session} myUserId={myUserId!} />
         </section>
         <aside className="room-side">
+          <RoundResult session={session} />
           {canLead && <LeaderControls session={session} />}
           <Participants session={session} myUserId={myUserId!} />
           <StoryQueue session={session} canLead={canLead} />
