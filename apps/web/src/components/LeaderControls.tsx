@@ -32,19 +32,17 @@ export function LeaderControls({ session }: { session: Session }) {
         >
           Flip
         </button>
-        <div className="seg">
-          {PRESETS.map((p) => (
-            <button
-              key={p.seconds}
-              className="btn"
-              disabled={!story || revealed || !!timer}
-              onClick={() => void startTimer(session.id, p.seconds)}
-              title={`Start a ${p.label} countdown — cards auto-flip at zero`}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
+        {PRESETS.map((p) => (
+          <button
+            key={p.seconds}
+            className="btn"
+            disabled={!story || revealed || !!timer}
+            onClick={() => void startTimer(session.id, p.seconds)}
+            title={`Start a ${p.label} countdown — cards auto-flip at zero`}
+          >
+            {p.label}
+          </button>
+        ))}
         <div className="controls-sep" />
         <div className="result-edit">
           {DECK.map((v) => (

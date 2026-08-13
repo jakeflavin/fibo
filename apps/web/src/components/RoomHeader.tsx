@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Ellipsis, FileDown, FileUp, Moon, Share2, Sun } from 'lucide-react';
+import { FileDown, FileUp, Moon, Settings, Share2, Sun } from 'lucide-react';
 import type { Session } from '@fibo/shared';
 import { exportSession, parseSessionExport, ImportError } from '@fibo/shared';
 import { importStories } from '../lib/api';
@@ -76,7 +76,7 @@ export function RoomHeader({ session, canLead, onShare }: Props) {
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
         >
-          <Ellipsis size={18} />
+          <Settings size={18} />
         </button>
         {open && (
           <div className="menu" role="menu">

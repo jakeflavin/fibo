@@ -663,7 +663,6 @@ svg.lucide {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
-  min-height: 2.5em; /* 2 lines × 1.25 line-height */
 }
 
 .seats {
@@ -973,31 +972,6 @@ svg.lucide {
   font-size: 13px;
 }
 
-/* Joined segment: the timer presets are a pick-one instrument. Same
-   hairline chrome as the point ruler so the two read as siblings. */
-.seg {
-  display: flex;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.seg .btn {
-  border: none;
-  border-radius: 0;
-  height: 32px;
-  padding: 0 10px;
-  min-width: 38px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-}
-
-.seg .btn + .btn {
-  border-left: 1px solid var(--line);
-}
-
 /* Vertical hairline between the round zone and the result zone — only
    one of the two is usable at a time. */
 .controls-sep {
@@ -1009,8 +983,8 @@ svg.lucide {
 
 /* Square icon actions. */
 .btn-icon {
-  height: 34px;
-  width: 34px;
+  height: 32px;
+  width: 32px;
   padding: 0;
   display: inline-flex;
   align-items: center;
@@ -1031,7 +1005,7 @@ svg.lucide {
 .result-edit .chip {
   flex: 1;
   min-width: 0;
-  height: 32px;
+  height: 30px;
   padding: 0;
   border: none;
   border-radius: 0;
