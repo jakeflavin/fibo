@@ -66,9 +66,9 @@ export function RoomHeader({ session, canLead, onShare }: Props) {
   return (
     <header className="room-header">
       <a className="brand" href="/" title="fibo home">
-        fibo<span className="cursor">▊</span>
+        <span className="brand-name">fibo</span>
+        <span className="brand-version">v{__APP_VERSION__}</span>
       </a>
-      <span className="room-name">{session.name}</span>
       <div className="menu-wrap" ref={menuRef}>
         <button
           className="btn btn-ghost menu-button"

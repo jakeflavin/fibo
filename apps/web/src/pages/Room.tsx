@@ -84,6 +84,7 @@ export function Room() {
           <Deck session={session} myUserId={myUserId!} />
         </section>
         <aside className="room-side">
+          <div className="rail-session">{session.name}</div>
           <Participants session={session} myUserId={myUserId!} />
           <StoryQueue session={session} canLead={canLead} />
         </aside>
