@@ -1,7 +1,6 @@
 import type { Session } from '@fibo/shared';
-import { IDENTITY_SETS } from '@fibo/shared';
 import { setRole } from '../lib/api';
-import { PixelAvatar } from './PixelAvatar';
+import { identityVars, PixelAvatar } from './PixelAvatar';
 
 interface Props {
   session: Session;
@@ -22,13 +21,12 @@ export function Participants({ session, myUserId }: Props) {
       <div className="eyebrow">team · {rows.length}</div>
       <ul className="user-list">
         {rows.map(([uid, user]) => {
-          const set = IDENTITY_SETS[user.identity % IDENTITY_SETS.length];
           const voted = story ? votes[uid] !== undefined : false;
           return (
             <li key={uid} className={`user-row ${user.online ? '' : 'user-offline'}`}>
               <span className={`presence-dot ${user.online ? 'on' : 'off'}`} />
               <PixelAvatar identity={user.identity} size={22} />
-              <span className="user-name" style={{ color: set.color }}>
+              <span className="user-name identity" style={identityVars(user.identity)}>
                 {user.name}
                 {uid === myUserId && <span className="dim"> (you)</span>}
               </span>

@@ -1,6 +1,6 @@
 import type { Session, VoteValue } from '@fibo/shared';
-import { formatVote, IDENTITY_SETS } from '@fibo/shared';
-import { PixelAvatar } from './PixelAvatar';
+import { formatVote } from '@fibo/shared';
+import { identityVars, PixelAvatar } from './PixelAvatar';
 import { TimerBar } from './TimerBar';
 
 interface Props {
@@ -72,10 +72,7 @@ export function CardTable({ session, myUserId, canLead }: Props) {
               </div>
               <div className="seat-label">
                 <PixelAvatar identity={user.identity} size={18} />
-                <span
-                  className="seat-name"
-                  style={{ color: IDENTITY_SETS[user.identity % IDENTITY_SETS.length].color }}
-                >
+                <span className="seat-name identity" style={identityVars(user.identity)}>
                   {user.name}
                 </span>
               </div>

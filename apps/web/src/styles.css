@@ -13,17 +13,19 @@
   --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Menlo, Consolas,
     'Liberation Mono', monospace;
 
-  --bg: #0a0f0c;
-  --surface: #111915;
-  --surface-hi: #1b231f;
+  --bg: #0d0f12;
+  --surface: #14171c;
+  --surface-hi: #212428;
   --line: rgba(255, 255, 255, 0.08);
   --line-strong: rgba(255, 255, 255, 0.16);
   --control: rgba(255, 255, 255, 0.32);
-  --text: #e9edeb;
-  --dim: #87928c;
-  --accent: #6fcf97;
-  --accent-ink: #0a0f0c;
-  --accent-dim: rgba(111, 207, 151, 0.14);
+  --text: #e9ebed;
+  --dim: #878d94;
+  --accent: #aab4bf;
+  --accent-ink: #0d0f12;
+  --accent-dim: rgba(170, 180, 191, 0.14);
+  --success: #6fcf97;
+  --success-dim: rgba(111, 207, 151, 0.14);
   --danger: #f0909e;
   --warn: #e2c069;
   --backdrop: rgba(0, 0, 0, 0.65);
@@ -33,23 +35,39 @@
 }
 
 :root[data-theme='light'] {
-  --bg: #ebf1ec;
-  --surface: #f9fcfa;
-  --surface-hi: #e0e7e1;
+  --bg: #eff0eb;
+  --surface: #fbfbf9;
+  --surface-hi: #e3e4df;
   --line: rgba(0, 0, 0, 0.1);
   --line-strong: rgba(0, 0, 0, 0.2);
   --control: rgba(0, 0, 0, 0.34);
-  --text: #191c1a;
-  --dim: #67716b;
-  --accent: #1f7a4d;
-  --accent-ink: #ebf1ec;
-  --accent-dim: rgba(31, 122, 77, 0.1);
+  --text: #1a1b1c;
+  --dim: #6b7075;
+  --accent: #4a5560;
+  --accent-ink: #eff0eb;
+  --accent-dim: rgba(74, 85, 96, 0.12);
+  --success: #1f7a4d;
+  --success-dim: rgba(31, 122, 77, 0.12);
   --danger: #b23a54;
   --warn: #9a6a0c;
-  --backdrop: rgba(20, 22, 20, 0.4);
+  --backdrop: rgba(20, 20, 20, 0.4);
   --avatar-light: #fbfbf9;
 
   color-scheme: light;
+}
+
+/* Identity colors resolve to their dark or light variant with the theme. */
+.identity {
+  --idc: var(--id-dark);
+}
+
+:root[data-theme='light'] .identity {
+  --idc: var(--id-light);
+}
+
+.seat-name.identity,
+.user-name.identity {
+  color: var(--idc);
 }
 
 * {
@@ -592,13 +610,13 @@ a {
 
 .seat-voted .seat-card-back {
   background: var(--surface-hi);
-  border: 1px solid var(--accent);
-  box-shadow: 0 0 20px var(--accent-dim);
+  border: 1px solid var(--success);
+  box-shadow: 0 0 20px var(--success-dim);
 }
 
 .card-check {
   font-size: 16px;
-  color: var(--accent);
+  color: var(--success);
 }
 
 .seat-voted .seat-card {
@@ -618,9 +636,9 @@ a {
 }
 
 .card-winner {
-  border-color: var(--accent);
-  color: var(--accent);
-  box-shadow: 0 0 24px var(--accent-dim);
+  border-color: var(--success);
+  color: var(--success);
+  box-shadow: 0 0 24px var(--success-dim);
 }
 
 .seat-label {
@@ -667,7 +685,7 @@ a {
   font-size: 52px;
   font-weight: 800;
   line-height: 1;
-  color: var(--accent);
+  color: var(--success);
   animation: pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.4) both;
 }
 
@@ -876,7 +894,7 @@ a {
 }
 
 .presence-dot.on {
-  background: var(--accent);
+  background: var(--success);
 }
 
 .presence-dot.off {
@@ -908,7 +926,7 @@ a {
 }
 
 .user-voted {
-  color: var(--accent);
+  color: var(--success);
   font-weight: 700;
   animation: pop 0.3s ease-out both;
 }
