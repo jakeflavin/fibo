@@ -617,7 +617,10 @@ svg.lucide {
   gap: 8px;
   min-height: 0;
   min-width: 0;
-  padding: 8px;
+  /* Horizontal padding matches the app bar and toolbar (20px), so the
+     title and felt regions sit on the same left gutter as the brand,
+     the Controls label, and Flip. */
+  padding: 8px 20px 12px;
 }
 
 /* The panel fills its row: title pinned at the top, cards centered in
@@ -648,9 +651,9 @@ svg.lucide {
 .story-line {
   /* No horizontal padding: the title's left edge lines up with the
      felt region below it. */
-  padding: 8px 0 4px;
+  padding: 8px 0;
   text-align: left;
-  min-height: 40px;
+  min-height: 44px;
 }
 
 /* Jira-style hover-reveal actions, inline right after the last
