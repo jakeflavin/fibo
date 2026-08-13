@@ -1,7 +1,8 @@
+import { Check } from 'lucide-react';
 import type { Session } from '@fibo/shared';
-import { formatVote } from '@fibo/shared';
 import { setRole } from '../lib/api';
 import { identityVars, PixelAvatar } from './PixelAvatar';
+import { VoteGlyph } from './VoteGlyph';
 
 interface Props {
   session: Session;
@@ -18,41 +19,58 @@ export function Participants({ session, myUserId }: Props) {
   const rows = Object.entries(users).sort(([, a], [, b]) => a.joinedAt - b.joinedAt);
 
   return (
-    <div className="rail-section">
+    <div className="rail-section rail-card">
       <div className="eyebrow">team · {rows.length}</div>
       <ul className="user-list">
         {rows.map(([uid, user]) => {
           const vote = story ? votes[uid] : undefined;
           const voted = vote !== undefined;
+          // Admins manage leads with a button that stands in for the
+          // [lead] tag; everyone else sees the tag itself.
+          const canManage = iAmOwner && user.role !== 'owner';
           return (
             <li key={uid} className={`user-row ${user.online ? '' : 'user-offline'}`}>
               <span className={`presence-dot ${user.online ? 'on' : 'off'}`} />
               <PixelAvatar identity={user.identity} size={22} />
-              <span className="user-name identity" style={identityVars(user.identity)}>
-                {user.name}
-                {uid === myUserId && <span className="dim"> (you)</span>}
+              <span className="user-main">
+                <span className="user-name identity" style={identityVars(user.identity)}>
+                  {user.name}
+                  {uid === myUserId && <span className="user-tag dim"> [you]</span>}
+                  {!canManage && ROLE_TAG[user.role] && (
+                    <span className="user-tag dim"> {ROLE_TAG[user.role]}</span>
+                  )}
+                </span>
+                {canManage && (
+                  <button
+                    className="chip chip-small"
+                    onClick={() =>
+                      void setRole(
+                        session.id,
+                        uid,
+                        user.role === 'leader' ? 'participant' : 'leader',
+                      )
+                    }
+                    title={
+                      user.role === 'leader' ? 'Demote to participant' : 'Promote to leader'
+                    }
+                  >
+                    {user.role === 'leader' ? 'remove lead' : 'add lead'}
+                  </button>
+                )}
               </span>
-              <span className="user-role dim">{ROLE_TAG[user.role]}</span>
               <span className={`user-vote ${voted ? 'user-voted' : ''}`}>
-                {story
-                  ? session.revealed
-                    ? formatVote(vote ?? null)
-                    : voted
-                      ? '✓'
-                      : '·'
-                  : ''}
+                {story ? (
+                  session.revealed ? (
+                    <VoteGlyph value={vote ?? null} />
+                  ) : voted ? (
+                    <Check size={13} aria-label="voted" />
+                  ) : (
+                    '?'
+                  )
+                ) : (
+                  ''
+                )}
               </span>
-              {iAmOwner && user.role !== 'owner' && (
-                <button
-                  className="chip chip-small"
-                  onClick={() =>
-                    void setRole(session.id, uid, user.role === 'leader' ? 'participant' : 'leader')
-                  }
-                  title={user.role === 'leader' ? 'Demote to participant' : 'Promote to leader'}
-                >
-                  {user.role === 'leader' ? '−lead' : '+lead'}
-                </button>
-              )}
             </li>
           );
         })}

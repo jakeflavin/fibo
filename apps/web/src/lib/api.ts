@@ -123,20 +123,35 @@ export async function deleteStory(session: Session, storyId: string): Promise<vo
   }
 }
 
-/** Put a story on the table: it becomes the single story in discussion. */
+/**
+ * Put a story on the table: it becomes the single story in discussion.
+ * A fresh story starts a clean round; a pointed story reopens revealed, with
+ * everyone's cards and the consensus intact (revote clears it for a new round).
+ */
 export async function activateStory(session: Session, storyId: string): Promise<void> {
+  const reopen = session.stories?.[storyId]?.status === 'done';
   const updates: Record<string, unknown> = {
     currentStoryId: storyId,
-    revealed: false,
+    revealed: reopen,
+    grouped: false,
     timer: null,
     [`stories/${storyId}/status`]: 'active',
-    [`stories/${storyId}/votes`]: null,
-    [`stories/${storyId}/result`]: null,
   };
+  if (!reopen) {
+    updates[`stories/${storyId}/votes`] = null;
+    updates[`stories/${storyId}/result`] = null;
+  }
   const previousId = session.currentStoryId;
-  if (previousId && previousId !== storyId && session.stories?.[previousId]) {
-    updates[`stories/${previousId}/status`] = 'queued';
-    updates[`stories/${previousId}/votes`] = null;
+  const previous = previousId ? session.stories?.[previousId] : undefined;
+  if (previous && previousId !== storyId) {
+    if (session.revealed && previous.result != null) {
+      // Cards were flipped and a result stands: switching away accepts it.
+      updates[`stories/${previousId}/status`] = 'done';
+      updates[`stories/${previousId}/pointedAt`] = Date.now();
+    } else {
+      updates[`stories/${previousId}/status`] = 'queued';
+      updates[`stories/${previousId}/votes`] = null;
+    }
   }
   await update(sessionRef(session.id), updates);
 }
@@ -159,9 +174,15 @@ export async function revealCards(session: Session): Promise<void> {
   const votes = session.stories?.[storyId]?.votes ?? {};
   await update(sessionRef(session.id), {
     revealed: true,
+    grouped: false,
     timer: null,
     [`stories/${storyId}/result`]: computeWinner(votes),
   });
+}
+
+/** Leaders can toggle the revealed cards into the grouped distribution view. */
+export async function setGrouped(sessionId: string, grouped: boolean): Promise<void> {
+  await set(ref(db, `sessions/${sessionId}/grouped`), grouped);
 }
 
 /** Leaders can override the winning value after the flip. */
@@ -179,33 +200,11 @@ export async function revote(session: Session): Promise<void> {
   if (!storyId) return;
   await update(sessionRef(session.id), {
     revealed: false,
+    grouped: false,
     timer: null,
     [`stories/${storyId}/votes`]: null,
     [`stories/${storyId}/result`]: null,
   });
-}
-
-/** Accept the result, archive the story, and pull the next one from the queue. */
-export async function finalizeStory(session: Session): Promise<void> {
-  const storyId = session.currentStoryId;
-  if (!storyId) return;
-  const stories = session.stories ?? {};
-  const next = Object.values(stories)
-    .filter((s) => s.status === 'queued')
-    .sort((a, b) => a.order - b.order)[0];
-  const updates: Record<string, unknown> = {
-    revealed: false,
-    timer: null,
-    currentStoryId: next?.id ?? null,
-    [`stories/${storyId}/status`]: 'done',
-    [`stories/${storyId}/pointedAt`]: Date.now(),
-  };
-  if (next) {
-    updates[`stories/${next.id}/status`] = 'active';
-    updates[`stories/${next.id}/votes`] = null;
-    updates[`stories/${next.id}/result`] = null;
-  }
-  await update(sessionRef(session.id), updates);
 }
 
 export async function startTimer(sessionId: string, seconds: number): Promise<void> {
@@ -213,10 +212,6 @@ export async function startTimer(sessionId: string, seconds: number): Promise<vo
     endsAt: Date.now() + seconds * 1000,
     seconds,
   });
-}
-
-export async function clearTimer(sessionId: string): Promise<void> {
-  await remove(ref(db, `sessions/${sessionId}/timer`));
 }
 
 /** Replace the story list with an imported export document. */

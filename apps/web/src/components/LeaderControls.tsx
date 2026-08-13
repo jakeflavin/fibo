@@ -1,13 +1,8 @@
+import { ChartBar, RotateCcw } from 'lucide-react';
 import type { Session } from '@fibo/shared';
-import { DECK, formatVote } from '@fibo/shared';
-import {
-  clearTimer,
-  finalizeStory,
-  revealCards,
-  revote,
-  setResult,
-  startTimer,
-} from '../lib/api';
+import { DECK } from '@fibo/shared';
+import { revealCards, revote, setGrouped, setResult, startTimer } from '../lib/api';
+import { VoteGlyph } from './VoteGlyph';
 
 const PRESETS = [
   { label: '30s', seconds: 30 },
@@ -23,66 +18,66 @@ const PRESETS = [
 export function LeaderControls({ session }: { session: Session }) {
   const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
   const revealed = session.revealed && !!story;
-  const votes = story?.votes ?? {};
-  const voteCount = Object.keys(votes).length;
-  const onlineCount = Object.values(session.users ?? {}).filter((u) => u.online).length;
-  const everyoneVoted = voteCount > 0 && voteCount >= onlineCount;
   const timer = session.timer ?? null;
 
   return (
-    <div className="rail-section leader-controls">
+    <div className="rail-section rail-card leader-controls">
       <div className="eyebrow">controls</div>
-      <button
-        className={`btn ${everyoneVoted && !revealed ? 'btn-primary' : ''}`}
-        disabled={!story || revealed || voteCount === 0}
-        onClick={() => void revealCards(session)}
-      >
-        flip cards
-      </button>
-      <div className="controls-row">
-        <span className="dim">timer:</span>
-        {timer && !revealed ? (
-          <button className="chip" onClick={() => void clearTimer(session.id)}>
-            cancel
-          </button>
-        ) : (
-          PRESETS.map((p) => (
+      {/* One toolbar row: round zone | result zone. */}
+      <div className="controls-row controls-bar">
+        <button
+          className="btn btn-primary btn-flip"
+          disabled={!story || revealed}
+          onClick={() => void revealCards(session)}
+        >
+          flip
+        </button>
+        <div className="seg">
+          {PRESETS.map((p) => (
             <button
               key={p.seconds}
-              className="chip"
-              disabled={!story || revealed}
+              className="btn"
+              disabled={!story || revealed || !!timer}
               onClick={() => void startTimer(session.id, p.seconds)}
               title={`Start a ${p.label} countdown — cards auto-flip at zero`}
             >
               {p.label}
             </button>
-          ))
-        )}
-      </div>
-      <div className="result-edit">
-        <span className="dim">override:</span>
-        {DECK.map((v) => (
+          ))}
+        </div>
+        <div className="controls-sep" />
+        <div className="result-edit">
+          {DECK.map((v) => (
+            <button
+              key={String(v)}
+              className={`chip ${revealed && story?.result === v ? 'chip-active' : ''}`}
+              disabled={!revealed}
+              onClick={() => story && void setResult(session.id, story.id, v)}
+            >
+              <VoteGlyph value={v} />
+            </button>
+          ))}
+        </div>
+        <div className="controls-actions">
           <button
-            key={String(v)}
-            className={`chip ${revealed && story?.result === v ? 'chip-active' : ''}`}
+            className={`btn btn-icon ${session.grouped ? 'btn-toggled' : ''}`}
             disabled={!revealed}
-            onClick={() => story && void setResult(session.id, story.id, v)}
+            onClick={() => void setGrouped(session.id, !session.grouped)}
+            title="Group the flipped cards by point value"
+            aria-label="Toggle distribution view"
           >
-            {formatVote(v)}
+            <ChartBar size={15} />
           </button>
-        ))}
-      </div>
-      <div className="result-actions">
-        <button className="btn" disabled={!revealed} onClick={() => void revote(session)}>
-          revote
-        </button>
-        <button
-          className="btn btn-primary"
-          disabled={!revealed}
-          onClick={() => void finalizeStory(session)}
-        >
-          accept &amp; next
-        </button>
+          <button
+            className="btn btn-icon"
+            disabled={!revealed}
+            onClick={() => void revote(session)}
+            title="Clear votes and go another round"
+            aria-label="Repoint this story"
+          >
+            <RotateCcw size={15} />
+          </button>
+        </div>
       </div>
     </div>
   );

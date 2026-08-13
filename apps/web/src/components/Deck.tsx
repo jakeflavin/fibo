@@ -1,6 +1,7 @@
 import type { Session } from '@fibo/shared';
-import { DECK, formatVote } from '@fibo/shared';
+import { DECK } from '@fibo/shared';
 import { castVote } from '../lib/api';
+import { VoteGlyph } from './VoteGlyph';
 
 interface Props {
   session: Session;
@@ -24,16 +25,24 @@ export function Deck({ session, myUserId }: Props) {
             <button
               key={String(value)}
               className={`play-card ${selected ? 'play-card-selected' : ''} ${
-                value === 'skip' ? 'play-card-skip' : ''
+                typeof value !== 'number' ? 'play-card-skip' : ''
               }`}
               disabled={disabled}
               onClick={() =>
                 void castVote(session.id, story!.id, myUserId, selected ? null : value)
               }
               aria-pressed={selected}
-              title={value === 'skip' ? 'Skip this story' : `${value} points`}
+              title={
+                value === 'skip'
+                  ? 'Skip this story'
+                  : value === 'coffee'
+                    ? 'Coffee break'
+                    : `${value} points`
+              }
             >
-              <span className="play-card-value">{formatVote(value)}</span>
+              <span className="play-card-value">
+                <VoteGlyph value={value} />
+              </span>
             </button>
           );
         })}

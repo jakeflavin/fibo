@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import type { Session } from '@fibo/shared';
 import { useToast } from './Toast';
@@ -41,7 +42,7 @@ export function ShareModal({ session, onClose }: Props) {
         <div className="modal-title">
           <span className="eyebrow">invite your team</span>
           <button className="btn btn-ghost modal-close" onClick={onClose} aria-label="Close">
-            ×
+            <X size={15} />
           </button>
         </div>
         <div className="qr-box">

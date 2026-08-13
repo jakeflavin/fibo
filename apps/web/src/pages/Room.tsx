@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Heart } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import type { Session } from '@fibo/shared';
 import { revealCards, trackPresence } from '../lib/api';
@@ -46,7 +47,7 @@ export function Room() {
     return (
       <div className="room-empty">
         <p className="dim">
-          connecting<span className="cursor">▊</span>
+          connecting
         </p>
       </div>
     );
@@ -76,17 +77,22 @@ export function Room() {
     <div className="room">
       <RoomHeader session={session} canLead={canLead} onShare={() => setShareOpen(true)} />
       <main className="room-grid">
-        <section className="room-table">
-          <CardTable session={session} myUserId={myUserId!} canLead={canLead} />
-          <Deck session={session} myUserId={myUserId!} />
+        <section className="room-main">
+          {canLead && <LeaderControls session={session} />}
+          <section className="room-table">
+            <CardTable session={session} myUserId={myUserId!} canLead={canLead} />
+            <Deck session={session} myUserId={myUserId!} />
+          </section>
         </section>
         <aside className="room-side">
-          {canLead && <LeaderControls session={session} />}
           <RoundResult session={session} />
           <Participants session={session} myUserId={myUserId!} />
           <StoryQueue session={session} canLead={canLead} />
         </aside>
       </main>
+      <footer className="room-footer dim">
+        made with <Heart size={11} aria-label="love" /> by jake
+      </footer>
       {shareOpen && <ShareModal session={session} onClose={() => setShareOpen(false)} />}
     </div>
   );

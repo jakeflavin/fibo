@@ -38,7 +38,7 @@ export function JoinGate({ session, onJoined }: Props) {
       </div>
       <main className="home-main">
         <p className="tagline">
-          you've been invited to point some stories<span className="cursor">▊</span>
+          you've been invited to point some stories
         </p>
         <form className="home-form" onSubmit={submit}>
           <div className="form-label">$ fibo join</div>

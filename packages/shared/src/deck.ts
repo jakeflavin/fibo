@@ -4,14 +4,21 @@ import type { VoteValue } from './types';
 export const DECK_NUMBERS = [0, 1, 2, 3, 5, 8, 13, 21] as const;
 
 export const SKIP: VoteValue = 'skip';
+export const COFFEE: VoteValue = 'coffee';
 
-export const DECK: VoteValue[] = [...DECK_NUMBERS, SKIP];
+export const DECK: VoteValue[] = [...DECK_NUMBERS, SKIP, COFFEE];
 
 export function isValidVote(value: unknown): value is VoteValue {
-  return value === 'skip' || DECK_NUMBERS.includes(value as (typeof DECK_NUMBERS)[number]);
+  return (
+    value === 'skip' ||
+    value === 'coffee' ||
+    DECK_NUMBERS.includes(value as (typeof DECK_NUMBERS)[number])
+  );
 }
 
 export function formatVote(value: VoteValue | null | undefined): string {
-  if (value === null || value === undefined) return '·';
-  return value === 'skip' ? '»' : String(value);
+  if (value === null || value === undefined) return '?';
+  if (value === 'skip') return '?';
+  if (value === 'coffee') return '‖';
+  return String(value);
 }

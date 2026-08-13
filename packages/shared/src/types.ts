@@ -1,8 +1,9 @@
 /** Roles a user can hold within a session. The owner is the session admin. */
 export type Role = 'owner' | 'leader' | 'participant';
 
-/** A card a user can play: a Fibonacci number or an explicit skip. */
-export type VoteValue = number | 'skip';
+/** A card a user can play: a Fibonacci number, an explicit skip ("?"),
+ *  or a coffee-break request. */
+export type VoteValue = number | 'skip' | 'coffee';
 
 export interface SessionUser {
   name: string;
@@ -45,6 +46,8 @@ export interface Session {
   currentStoryId?: string | null;
   /** Whether the current round's cards are face-up. */
   revealed: boolean;
+  /** Whether revealed cards are grouped by value into the distribution view. */
+  grouped?: boolean;
   timer?: SessionTimer | null;
   users?: Record<string, SessionUser>;
   stories?: Record<string, Story>;

@@ -22,7 +22,7 @@ export const IDENTITY_SETS: IdentitySet[] = [
   {
     name: 'bot', // rose
     color: '#F0909E',
-    colorLight: '#B23A54',
+    colorLight: '#C42D52',
     pixels: [
       '...XX...',
       '.XXXXXX.',
@@ -37,7 +37,7 @@ export const IDENTITY_SETS: IdentitySet[] = [
   {
     name: 'invader', // green
     color: '#6FCF97',
-    colorLight: '#1F7A4D',
+    colorLight: '#178552',
     pixels: [
       '..X..X..',
       '...XX...',
@@ -52,7 +52,7 @@ export const IDENTITY_SETS: IdentitySet[] = [
   {
     name: 'ghost', // cyan
     color: '#5CC9DE',
-    colorLight: '#0E7C90',
+    colorLight: '#06809E',
     pixels: [
       '..XXXX..',
       '.XXXXXX.',
@@ -67,7 +67,7 @@ export const IDENTITY_SETS: IdentitySet[] = [
   {
     name: 'cat', // amber
     color: '#E2C069',
-    colorLight: '#9A6A0C',
+    colorLight: '#A06E00',
     pixels: [
       '.X....X.',
       '.XX..XX.',
@@ -82,7 +82,7 @@ export const IDENTITY_SETS: IdentitySet[] = [
   {
     name: 'skull', // violet
     color: '#B49CF0',
-    colorLight: '#6B4FC4',
+    colorLight: '#6A48D2',
     pixels: [
       '..XXXX..',
       '.XXXXXX.',
@@ -97,7 +97,7 @@ export const IDENTITY_SETS: IdentitySet[] = [
   {
     name: 'slime', // lime
     color: '#B9D46E',
-    colorLight: '#68791B',
+    colorLight: '#6B8710',
     pixels: [
       '........',
       '...XX...',
@@ -112,7 +112,7 @@ export const IDENTITY_SETS: IdentitySet[] = [
   {
     name: 'shroom', // coral
     color: '#F09A82',
-    colorLight: '#B2502E',
+    colorLight: '#C24E24',
     pixels: [
       '..XXXX..',
       '.XXXXXX.',
@@ -127,7 +127,7 @@ export const IDENTITY_SETS: IdentitySet[] = [
   {
     name: 'fox', // orange
     color: '#E89A5C',
-    colorLight: '#B2611E',
+    colorLight: '#BC6410',
     pixels: [
       'X......X',
       'XX....XX',
@@ -142,7 +142,7 @@ export const IDENTITY_SETS: IdentitySet[] = [
   {
     name: 'frog', // teal
     color: '#6FD0C7',
-    colorLight: '#12766B',
+    colorLight: '#0B8073',
     pixels: [
       '.XX..XX.',
       'XOXXXXOX',
@@ -157,7 +157,7 @@ export const IDENTITY_SETS: IdentitySet[] = [
   {
     name: 'alien', // sky
     color: '#7FB5F0',
-    colorLight: '#2E62B2',
+    colorLight: '#2361C4',
     pixels: [
       '...XX...',
       '..XXXX..',
@@ -172,7 +172,7 @@ export const IDENTITY_SETS: IdentitySet[] = [
   {
     name: 'crab', // magenta
     color: '#E093DC',
-    colorLight: '#9C2F96',
+    colorLight: '#AC28A4',
     pixels: [
       'X..XX..X',
       '.X.XX.X.',
@@ -187,7 +187,7 @@ export const IDENTITY_SETS: IdentitySet[] = [
   {
     name: 'owl', // periwinkle
     color: '#94A4F0',
-    colorLight: '#4053C0',
+    colorLight: '#4653D2',
     pixels: [
       '.X....X.',
       '.XXXXXX.',

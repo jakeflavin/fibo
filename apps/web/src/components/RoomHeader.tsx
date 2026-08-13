@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Ellipsis, FileDown, FileUp, Moon, Share2, Sun } from 'lucide-react';
 import type { Session } from '@fibo/shared';
 import { exportSession, parseSessionExport, ImportError } from '@fibo/shared';
 import { importStories } from '../lib/api';
@@ -75,15 +76,15 @@ export function RoomHeader({ session, canLead, onShare }: Props) {
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
         >
-          ⋯
+          <Ellipsis size={18} />
         </button>
         {open && (
           <div className="menu" role="menu">
             <button className="menu-item" role="menuitem" onClick={pick(onShare)}>
-              share / QR
+              <Share2 size={14} /> share / QR
             </button>
             <button className="menu-item" role="menuitem" onClick={pick(doExport)}>
-              export json
+              <FileDown size={14} /> export json
             </button>
             {canLead && (
               <button
@@ -91,12 +92,13 @@ export function RoomHeader({ session, canLead, onShare }: Props) {
                 role="menuitem"
                 onClick={pick(() => fileInput.current?.click())}
               >
-                import json
+                <FileUp size={14} /> import json
               </button>
             )}
             <div className="menu-sep" />
             <button className="menu-item" role="menuitem" onClick={pick(toggle)}>
-              switch to {theme === 'dark' ? 'light' : 'dark'} mode
+              {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />} switch to{' '}
+              {theme === 'dark' ? 'light' : 'dark'} mode
             </button>
           </div>
         )}

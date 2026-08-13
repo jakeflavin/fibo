@@ -30,26 +30,49 @@
   --warn: #e2c069;
   --backdrop: rgba(0, 0, 0, 0.65);
 
+  /* Dark mode separates surfaces with hairlines; shadows stay subtle. */
+  --shadow-card: none;
+  --shadow-vote: 0 6px 18px rgba(0, 0, 0, 0.25);
+  --shadow-float: 0 16px 48px rgba(0, 0, 0, 0.4);
+  /* Face + lift for the playable hand cards. */
+  --card-face: #1b2026;
+  --shadow-play: 0 2px 10px rgba(0, 0, 0, 0.35);
+  --shadow-play-hover: 0 8px 20px rgba(0, 0, 0, 0.45);
+
   color-scheme: dark;
 }
 
 :root[data-theme='light'] {
-  --bg: #eff0eb;
-  --surface: #fbfbf9;
-  --surface-hi: #e3e4df;
-  --line: rgba(0, 0, 0, 0.1);
-  --line-strong: rgba(0, 0, 0, 0.2);
-  --control: rgba(0, 0, 0, 0.34);
+  --bg: #edece6;
+  --surface: #fdfdfb;
+  --surface-hi: #e4e3dc;
+  --line: rgba(30, 32, 30, 0.13);
+  --line-strong: rgba(30, 32, 30, 0.26);
+  --control: rgba(30, 32, 30, 0.4);
   --text: #1a1b1c;
-  --dim: #6b7075;
-  --accent: #4a5560;
-  --accent-ink: #eff0eb;
-  --accent-dim: rgba(74, 85, 96, 0.12);
+  --dim: #63686e;
+  --accent: #414c57;
+  --accent-ink: #f6f6f2;
+  --accent-dim: rgba(65, 76, 87, 0.14);
   --success: #1f7a4d;
   --success-dim: rgba(31, 122, 77, 0.12);
   --danger: #b23a54;
   --warn: #9a6a0c;
   --backdrop: rgba(20, 20, 20, 0.4);
+
+  /* Light surfaces need shadow to separate from the near-white canvas;
+     dark mode carries structure with hairlines instead. */
+  --shadow-card:
+    0 1px 2px rgba(25, 28, 25, 0.05),
+    0 8px 24px rgba(25, 28, 25, 0.08);
+  --shadow-vote: 0 4px 14px rgba(25, 28, 25, 0.18);
+  --shadow-float: 0 16px 48px rgba(25, 28, 25, 0.2);
+  /* Face + lift for the playable hand cards. */
+  --card-face: #ffffff;
+  --shadow-play:
+    0 1px 2px rgba(25, 28, 25, 0.08),
+    0 4px 12px rgba(25, 28, 25, 0.1);
+  --shadow-play-hover: 0 10px 24px rgba(25, 28, 25, 0.18);
 
   color-scheme: light;
 }
@@ -113,13 +136,6 @@ a {
 
 /* ── primitives ──────────────────────────────────────────────── */
 
-.cursor {
-  display: inline-block;
-  margin-left: 2px;
-  color: var(--accent);
-  animation: blink 1.1s steps(1) infinite;
-}
-
 @keyframes blink {
   50% {
     opacity: 0;
@@ -152,6 +168,7 @@ a {
   border: 1px solid var(--control);
   border-radius: 8px;
   padding: 8px 16px;
+  font-size: 13px;
   cursor: pointer;
   color: var(--text);
   transition:
@@ -175,6 +192,29 @@ a {
 .btn:disabled {
   opacity: 0.35;
   cursor: not-allowed;
+}
+
+/* Disabled filled buttons drop their fill: a washed-out solid reads as a
+   stuck state, an outline reads as "not yet". */
+.btn-primary:disabled,
+.btn-toggled:disabled {
+  background: transparent;
+  border-color: var(--control);
+  color: var(--text);
+  font-weight: 400;
+}
+
+/* Keyboard focus is always visible. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Lucide icons ride the text baseline in inline contexts; flex parents
+   center them on their own. */
+svg.lucide {
+  vertical-align: -0.15em;
+  flex-shrink: 0;
 }
 
 .btn-primary {
@@ -253,14 +293,9 @@ a {
 }
 
 .chip-small {
-  padding: 0 7px;
-  font-size: 11px;
+  padding: 0 6px;
 }
 
-.chip-danger:hover {
-  border-color: var(--danger);
-  color: var(--danger);
-}
 
 .field {
   display: block;
@@ -281,8 +316,9 @@ a {
   gap: 8px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 10px 14px;
+  font-size: 13px;
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
@@ -330,8 +366,8 @@ a {
   background: var(--surface-hi);
   border: 1px solid var(--line-strong);
   border-radius: 10px;
-  padding: 9px 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  padding: 8px 16px;
+  box-shadow: var(--shadow-float);
   animation: rise 0.2s ease-out both;
 }
 
@@ -343,11 +379,23 @@ a {
 /* ── home / join ─────────────────────────────────────────────── */
 
 .home {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  padding: 24px 24px 14px;
+}
+
+/* Auto margins center the content block in the leftover space, keeping
+   the footer on the floor. */
+.home-main {
+  margin: auto;
+}
+
+.home-card {
   padding: 24px;
+  text-align: left;
+  margin-bottom: 20px;
 }
 
 .home-corner {
@@ -382,7 +430,7 @@ a {
 
 .tagline {
   color: var(--dim);
-  margin: 0 0 48px;
+  margin: 0 0 32px;
   font-size: 13px;
 }
 
@@ -399,11 +447,14 @@ a {
 .home-form .btn-primary {
   margin-top: 4px;
   padding: 12px 16px;
-  border-radius: 10px;
+}
+
+.home-form .field {
+  margin-bottom: 12px;
 }
 
 .home-notes {
-  margin: 40px 0 0;
+  margin: 0;
   color: var(--dim);
   font-size: 12px;
   text-align: center;
@@ -418,10 +469,16 @@ a {
 
 /* ── room layout ─────────────────────────────────────────────── */
 
+/* The room is an app shell: it owns the viewport and never scrolls the
+   page — long content (the queue) scrolls inside its own pane. */
 .room {
   max-width: 1160px;
   margin: 0 auto;
-  padding: 72px 24px 48px;
+  height: 100dvh;
+  padding: 14px 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .room-empty {
@@ -440,12 +497,15 @@ a {
   max-width: 380px;
 }
 
-/* No app bar: brand and menu are pinned to the corners, out of flow. */
+/* The header shares the content column, flush with the card edges. */
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
 .brand {
-  position: fixed;
-  top: 16px;
-  left: 20px;
-  z-index: 45;
   display: flex;
   flex-direction: column;
   line-height: 1.25;
@@ -466,9 +526,7 @@ a {
 /* ── header menu ─────────────────────────────────────────────── */
 
 .menu-wrap {
-  position: fixed;
-  top: 12px;
-  right: 20px;
+  position: relative;
   z-index: 60;
 }
 
@@ -488,7 +546,7 @@ a {
   border: 1px solid var(--line-strong);
   border-radius: 12px;
   padding: 6px;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-float);
   z-index: 60;
   animation: rise 0.15s ease-out both;
 }
@@ -500,7 +558,7 @@ a {
   background: transparent;
   border: none;
   border-radius: 8px;
-  padding: 9px 12px;
+  padding: 8px 12px;
   font-size: 13px;
   color: var(--text);
   cursor: pointer;
@@ -519,14 +577,59 @@ a {
 
 .room-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 236px;
-  gap: 64px;
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.room-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding-top: 10px;
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+/* Stage rows: cards flex and center, the deck keeps its size at the
+   bottom. The stage never scrolls — its content compresses to fit. */
+/* Left column: the controls toolbar (leads only) stacked over the stage. */
+.room-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
 }
 
 .room-table {
+  flex: 1;
   display: grid;
-  gap: 48px;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 24px;
+  min-height: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+}
+
+/* The panel fills its row: title pinned at the top, cards centered in
+   the space that remains. */
+.room-table > .table-panel {
+  align-self: stretch;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.room-table .seats {
+  flex: 1;
+  justify-content: center;
 }
 
 /* ── the stage ───────────────────────────────────────────────── */
@@ -552,13 +655,39 @@ a {
   max-width: 640px;
   overflow-wrap: anywhere;
   line-height: 1.25;
+  /* Long titles can't eat the stage: clamp to two lines (full text in
+     the title attribute). The two-line slot is always reserved, so the
+     table never bumps when titles change length. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  min-height: 2.5em; /* 2 lines × 1.25 line-height */
 }
 
 .seats {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 0 12px;
+  justify-content: center;
+  padding: 16px 0 8px;
+  /* Size container: cards measure the room they have with cq units. */
+  container-type: size;
+}
+
+/* Cards grow into the stage: height is bounded by the vertical room split
+   across the dealt rows AND the horizontal room split across the widest
+   row (via the card's 0.72 aspect), so few cards get genuinely big. */
+.seat,
+.seat-card {
+  --card-h: clamp(
+    84px,
+    min(
+      calc((100cqh - 48px) / var(--rows, 1) - 40px),
+      calc((100cqw / var(--cols, 1) - 46px) / 0.72)
+    ),
+    260px
+  );
 }
 
 .seat-row {
@@ -573,29 +702,55 @@ a {
   margin-top: 12px;
 }
 
+/* Grouped distribution reads as a horizontal bar chart: rows start at
+   the left edge instead of centering. */
+.seats-grouped {
+  align-items: stretch;
+}
+
+.seats-grouped .seat-row {
+  justify-content: flex-start;
+}
+
 .seat {
-  width: 104px;
+  width: calc(var(--card-h) * 0.72 + 26px);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
   animation: rise 0.25s ease-out both;
+  transition:
+    width 0.45s ease,
+    margin-left 0.45s ease;
 }
 
 .seat-away {
   opacity: 0.35;
 }
 
-.seat-card {
-  width: 78px;
-  height: 108px;
-  perspective: 700px;
-  transform: rotate(var(--tilt, 0deg));
-  transition: transform 0.25s ease;
+/* Card and name tilt (and un-tilt on hover) as one unit, so the label
+   always sits square beneath its card. The scatter offset lives here too,
+   leaving the .seat element free for FLIP position animations. */
+.seat-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(var(--tilt, 0deg));
+  transition: transform 0.45s ease;
 }
 
-.seat:hover .seat-card {
-  transform: rotate(0deg) scale(1.04);
+.seat:hover .seat-unit {
+  transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(0deg) scale(1.04);
+}
+
+.seat-card {
+  width: calc(var(--card-h) * 0.72);
+  height: var(--card-h);
+  perspective: 700px;
+  transition:
+    width 0.45s ease,
+    height 0.45s ease;
 }
 
 .seat-card-inner {
@@ -619,8 +774,9 @@ a {
   justify-content: center;
   border-radius: 12px;
   backface-visibility: hidden;
-  font-size: 30px;
+  font-size: calc(var(--card-h) * 0.28);
   font-weight: 700;
+  transition: font-size 0.45s ease;
 }
 
 .seat-card-back {
@@ -631,16 +787,16 @@ a {
 .seat-has-vote .seat-card-back {
   background: var(--idc);
   border: 1px solid transparent;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-vote);
 }
 
-.seat-has-vote .seat-card {
+.seat-has-vote .seat-unit {
   animation: lockin 0.25s ease-out;
 }
 
 @keyframes lockin {
   40% {
-    transform: rotate(var(--tilt, 0deg)) translateY(-6px);
+    transform: translate(var(--dx, 0px), calc(var(--dy, 0px) - 6px)) rotate(var(--tilt, 0deg));
   }
 }
 
@@ -650,10 +806,12 @@ a {
   transform: rotateY(180deg);
 }
 
-.seat-has-vote .seat-card-front {
+.seat-has-vote .seat-card-front,
+.seat-revealed .seat-card-front {
   background: var(--idc);
   border-color: transparent;
   color: var(--bg);
+  box-shadow: var(--shadow-vote);
 }
 
 .seat-label {
@@ -673,24 +831,24 @@ a {
   text-overflow: ellipsis;
 }
 
-/* ── consensus (rail) ────────────────────────────────────────── */
+/* ── consensus (stage) ───────────────────────────────────────── */
 
 .round-result {
   animation: rise 0.25s ease-out both;
 }
 
+/* Tally sits to the right of the value so its arrival never shifts the
+   block's height or the value's position. */
 .result-headline {
   display: flex;
   align-items: baseline;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .result-value {
-  font-size: 34px;
+  font-size: 28px;
   font-weight: 800;
   line-height: 1;
-  color: var(--success);
   animation: pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.4) both;
 }
 
@@ -706,64 +864,146 @@ a {
 
 /* ── leader controls (top of the rail) ───────────────────────── */
 
+/* The controls card: header eyebrow, then one toolbar row with the round
+   zone and result zone split by a vertical hairline. */
 .leader-controls {
-  display: grid;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
-.leader-controls > .btn {
-  width: 100%;
+/* Outweigh the generic rail eyebrow margin: the flex gap is the rhythm. */
+.rail-section.leader-controls > .eyebrow {
+  margin-bottom: 0;
 }
 
 .controls-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
   font-size: 12px;
 }
 
-.controls-hint {
-  margin: 0;
+.controls-bar .btn-flip {
+  height: 34px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+/* Joined segment: the timer presets are a pick-one instrument. Same
+   hairline chrome as the point ruler so the two read as siblings. */
+.seg {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.seg .btn {
+  border: none;
+  border-radius: 0;
+  height: 32px;
+  padding: 0 10px;
+  min-width: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 12px;
 }
 
+.seg .btn + .btn {
+  border-left: 1px solid var(--line);
+}
+
+/* Vertical hairline between the round zone and the result zone — only
+   one of the two is usable at a time. */
+.controls-sep {
+  width: 1px;
+  height: 26px;
+  background: var(--line);
+  flex-shrink: 0;
+}
+
+/* Square icon actions. */
+.btn-icon {
+  height: 34px;
+  width: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+/* Pressed state for the distribution-view toggle. */
+.btn-toggled {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-toggled:hover:not(:disabled) {
+  color: var(--accent-ink);
+}
+
+/* Override values: one joined ruler of points; the standing result is
+   the filled notch. Shares its row with the result actions. */
 .result-edit {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.result-edit > .dim {
+.result-edit .chip {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 12px;
 }
 
-.result-actions {
-  display: flex;
-  gap: 8px;
+.result-edit .chip + .chip {
+  border-left: 1px solid var(--line);
 }
 
-.result-actions .btn {
-  flex: 1;
-  padding-left: 0;
-  padding-right: 0;
+/* Distribution + repoint sit with the ruler they act on. */
+.controls-actions {
+  display: flex;
+  gap: 6px;
 }
+
+.controls-actions .btn {
+  height: 32px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
 
 /* ── timer ───────────────────────────────────────────────────── */
 
 .timer-row {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
-  margin: 14px auto 0;
-  max-width: 420px;
-  flex-wrap: wrap;
-}
-
-.timer-row > .dim {
-  font-size: 12px;
+  margin: 14px 0 0;
+  width: 100%;
+  /* Fixed height: the slot is reserved even when no timer is running. */
+  height: 18px;
 }
 
 .timer-clock {
@@ -798,10 +1038,13 @@ a {
 
 /* ── deck (my hand) ──────────────────────────────────────────── */
 
+/* Inside the stage card the hand is a full-bleed footer tray. */
 .deck {
   display: grid;
   gap: 12px;
   justify-items: center;
+  margin: 0 -24px -24px;
+  padding: 16px 24px 20px;
 }
 
 .deck-label {
@@ -812,16 +1055,19 @@ a {
 .deck-cards {
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
+  width: 100%;
 }
 
+/* Cards share the stage width equally, so the hand always spans the
+   same width as the title above it. */
 .play-card {
-  width: 54px;
+  flex: 1;
+  min-width: 0;
   height: 76px;
-  background: transparent;
-  border: 1px solid var(--control);
+  background: var(--card-face);
+  border: 1px solid var(--line);
   border-radius: 10px;
+  box-shadow: var(--shadow-play);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -836,7 +1082,7 @@ a {
 .play-card:hover:not(:disabled) {
   transform: translateY(-5px);
   border-color: var(--accent);
-  background: var(--surface);
+  box-shadow: var(--shadow-play-hover);
 }
 
 .play-card:active:not(:disabled) {
@@ -862,20 +1108,46 @@ a {
   font-weight: 700;
 }
 
-.play-card-skip:not(.play-card-selected) .play-card-value {
-  color: var(--warn);
-}
-
 /* ── right rail ──────────────────────────────────────────────── */
 
 .room-side {
-  display: grid;
-  gap: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   font-size: 13px;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* The queue (last section) takes the leftover height; its list scrolls. */
+.room-side > .rail-section:last-child {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.room-side > .rail-section:last-child > .eyebrow {
+  flex-shrink: 0;
+}
+
+/* Grid items default to min-width:auto, which lets one long unbreakable
+   line (e.g. a story title) blow out the whole rail. */
+.rail-section {
+  min-width: 0;
+}
+
+/* Every rail section sits on its own raised card. */
+.rail-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  padding: 16px;
 }
 
 .rail-section > .eyebrow {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .user-list {
@@ -887,10 +1159,21 @@ a {
 }
 
 .user-row {
+  /* Fixed columns so votes line up across rows:
+     dot | avatar | name + tags + lead action | vote */
+  display: grid;
+  grid-template-columns: 6px 22px minmax(0, 1fr) 2ch;
+  align-items: center;
+  gap: 6px;
+  animation: rise 0.25s ease-out both;
+}
+
+/* Name, tags, and the admin's lead button share the flexible column. */
+.user-main {
   display: flex;
   align-items: center;
   gap: 8px;
-  animation: rise 0.25s ease-out both;
+  min-width: 0;
 }
 
 .user-offline {
@@ -918,50 +1201,45 @@ a {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   line-height: 22px; /* matches the rail avatar height */
-  flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.user-role {
-  font-size: 10px;
+.user-tag {
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .user-vote {
-  width: 14px;
   text-align: center;
   color: var(--dim);
   font-size: 12px;
 }
 
 .user-voted {
-  color: var(--success);
+  color: var(--text);
   font-weight: 700;
   animation: pop 0.3s ease-out both;
 }
 
-.user-row .chip {
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.user-row:hover .chip,
-.user-row:focus-within .chip {
-  opacity: 1;
+.user-main .chip-small {
+  flex-shrink: 0;
+  padding: 0 6px;
 }
 
 /* ── story queue ─────────────────────────────────────────────── */
 
 .story-add {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
 .story-add .prompt-input {
-  padding: 7px 11px;
-  border-radius: 8px;
-  font-size: 12px;
+  padding: 6px 10px;
 }
 
 .story-list {
@@ -970,7 +1248,9 @@ a {
   padding: 0;
   display: grid;
   gap: 2px;
-  max-height: 44vh;
+  align-content: start;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
 }
 
@@ -978,14 +1258,29 @@ a {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 8px;
+  padding: 6px 8px;
   border-left: 2px solid transparent;
   border-radius: 0 6px 6px 0;
   animation: rise 0.2s ease-out both;
+  min-width: 0;
 }
 
 .story-row:hover {
-  background: var(--surface);
+  background: var(--surface-hi);
+}
+
+.story-clickable {
+  cursor: pointer;
+}
+
+.story-clickable:hover .story-row-title,
+.story-clickable:focus-visible .story-row-title {
+  color: var(--accent);
+}
+
+.story-clickable:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
 }
 
 .story-badge {
@@ -995,9 +1290,9 @@ a {
   min-width: 26px;
 }
 
+/* The story on the table: tinted row, visible on the card surface. */
 .story-active {
-  border-left-color: var(--accent);
-  background: var(--surface);
+  background: var(--accent-dim);
 }
 
 .story-active .story-badge,
@@ -1007,8 +1302,6 @@ a {
 
 .story-done .story-row-title {
   color: var(--dim);
-  text-decoration: line-through;
-  text-decoration-color: var(--line-strong);
 }
 
 .story-row-title {
@@ -1023,13 +1316,6 @@ a {
 .story-actions {
   display: flex;
   gap: 4px;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.story-row:hover .story-actions,
-.story-row:focus-within .story-actions {
-  opacity: 1;
 }
 
 .panel-body {
@@ -1059,7 +1345,7 @@ a {
   border: 1px solid var(--line);
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--shadow-float);
   animation: rise 0.2s ease-out both;
 }
 
@@ -1080,6 +1366,30 @@ a {
   margin: 10px 0 0;
 }
 
+.modal .panel-body {
+  margin: 0 0 20px;
+  overflow-wrap: break-word;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
+.btn-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.btn-danger:hover {
+  background: var(--danger);
+  color: var(--bg);
+}
+
 .qr-box {
   display: inline-block;
   background: #ffffff;
@@ -1093,7 +1403,7 @@ a {
   display: block;
   background: var(--surface-hi);
   border-radius: 8px;
-  padding: 9px 12px;
+  padding: 8px 12px;
   font-size: 12px;
   overflow-wrap: anywhere;
   margin-bottom: 12px;
@@ -1103,25 +1413,85 @@ a {
 
 /* ── responsive ──────────────────────────────────────────────── */
 
-@media (max-width: 980px) {
-  .room-grid {
-    gap: 40px;
+/* Short windows: compress the stage instead of scrolling or clipping.
+   Only applies to the desktop shell (mobile reverts to a scrolling page). */
+@media (max-height: 800px) and (min-width: 861px) {
+  .room {
+    padding-top: 56px;
+  }
+
+  .room-table {
+    gap: 16px;
+  }
+
+  .story-title {
+    font-size: clamp(18px, 2.4vw, 24px);
+  }
+
+  .seats {
+    padding: 12px 0 4px;
+  }
+
+  .result-value {
+    font-size: 24px;
+  }
+
+  .play-card {
+    height: 68px;
+  }
+
+  .play-card-value {
+    font-size: 18px;
   }
 }
 
 @media (max-width: 860px) {
+  /* Stacked layout goes back to a normally scrolling page. */
+  .room {
+    height: auto;
+    overflow: visible;
+    padding-bottom: 160px;
+  }
+
   .room-grid {
     grid-template-columns: minmax(0, 1fr);
+    height: auto;
+  }
+
+  .room-table {
+    grid-template-rows: none;
+  }
+
+  .room-table > .table-panel {
+    max-height: none;
+    overflow-y: visible;
   }
 
   .room-side {
+    display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     border-top: 1px solid var(--line);
     padding-top: 28px;
   }
 
-  .room {
-    padding-bottom: 160px;
+  .room-side > .rail-section:last-child {
+    flex: none;
+    display: block;
+  }
+
+  .story-list {
+    max-height: 44vh;
+  }
+
+  /* The stacked page has no fixed stage height for a size container to
+     measure — cards go back to fixed dimensions. */
+  .seats {
+    container-type: normal;
+  }
+
+  .seat,
+  .seat-card {
+    --card-h: 108px;
   }
 
   .table-empty {
@@ -1133,6 +1503,7 @@ a {
     left: 0;
     right: 0;
     bottom: 0;
+    margin: 0;
     background: var(--surface);
     border-top: 1px solid var(--line);
     padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
@@ -1155,9 +1526,9 @@ a {
   }
 
   .play-card {
-    width: 46px;
+    /* Back to fixed-size cards in the scrolling mobile hand. */
+    flex: 0 0 46px;
     height: 66px;
-    flex-shrink: 0;
   }
 
   .play-card-value {
@@ -1171,22 +1542,17 @@ a {
   }
 
   .room {
-    padding: 64px 16px 160px;
+    padding: 12px 16px 160px;
   }
 
   .seat-row {
     gap: 14px;
   }
 
-  .seat {
-    width: 84px;
-  }
-
+  .seat,
   .seat-card {
-    width: 64px;
-    height: 90px;
+    --card-h: 90px;
   }
-
 }
 
 /* ── motion preferences ──────────────────────────────────────── */
