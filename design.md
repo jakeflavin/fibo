@@ -132,8 +132,16 @@ join pages, where the form card floats).
 - **List rows** (team, queue): 32px min height, 4px radius hover
   (`--surface-hi`), selected/active = `--accent-dim` bg with `--accent`
   text accents — the Jira selected-row pattern.
-- **Seat & hand cards**: geometry, packing, and identity colors unchanged;
-  radius 8px, raised shadow, sans-serif weights per §2.
+- **Story title**: left-aligned like a Jira issue summary — 20–24px,
+  weight 600, no display-face theatrics.
+- **Seat cards**: a straight, evenly-spaced grid (no tilt, scatter, or
+  hover sway). Face-down cards are quiet surface tiles (card-face fill,
+  hairline border, raised shadow); a locked-in or revealed card takes the
+  player's identity color. Packing/sizing logic unchanged.
+- **Hand cards**: surface tiles with hairline borders; the selected card
+  uses the Jira selection pattern — `--accent-dim` fill, 2px `--accent`
+  border, accent text — never a solid dark fill. Hover is a subtle 2px
+  lift, not a launch.
 
 ## 6. Voice & content
 

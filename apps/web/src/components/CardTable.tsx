@@ -9,26 +9,6 @@ interface Props {
   canLead: boolean;
 }
 
-/**
- * Deterministic per-user "thrown on the table" scatter: tilt, offset, and
- * irregular spacing derived from the user id, so cards never reshuffle
- * mid-round.
- */
-function scatter(uid: string) {
-  let h = 0;
-  for (const c of uid) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-  // Ranges are sized against the row gap so rotated card corners can never
-  // reach a neighbor: max |dx| 3px + ~6px of rotation spread stays inside
-  // the 20px gap; vertical jitter stays inside the 12px row spacing plus the
-  // name-label zone.
-  return {
-    tilt: (h % 13) - 6,
-    dx: ((h >> 4) % 7) - 3,
-    dy: ((h >> 8) % 8) - 3,
-    gap: (h >> 12) % 9,
-  };
-}
-
 export function CardTable({ session, myUserId, canLead }: Props) {
   const users = session.users ?? {};
   const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
@@ -54,11 +34,10 @@ export function CardTable({ session, myUserId, canLead }: Props) {
         return prev && prev.w === w && prev.h === h ? prev : { w, h };
       });
       // Last-resort uniform shrink for layouts no packing can fit.
-      // +24 covers the alternating row stagger offsets.
       const s = Math.min(
         1,
         outer.clientHeight / inner.offsetHeight,
-        outer.clientWidth / (inner.offsetWidth + 24),
+        outer.clientWidth / inner.offsetWidth,
       );
       setFitScale((prev) => (Math.abs(prev - s) > 0.01 ? s : prev));
     };
@@ -146,11 +125,7 @@ export function CardTable({ session, myUserId, canLead }: Props) {
           style={{ transform: fitScale < 1 ? `scale(${fitScale})` : undefined }}
         >
           {rows.map((row, ri) => (
-            <div
-              key={ri}
-              className="seat-row"
-              style={{ transform: `translateX(${ri % 2 ? 12 : -12}px)` }}
-            >
+            <div key={ri} className="seat-row">
               {row.map(([uid, user]) => {
                 const vote = votes[uid];
                 const hasVoted = vote !== undefined;
@@ -162,28 +137,15 @@ export function CardTable({ session, myUserId, canLead }: Props) {
                     : user.online
                       ? 'thinking'
                       : 'away';
-                const s = scatter(uid);
                 return (
                   <div
                     key={uid}
                     className={`seat seat-${state} ${hasVoted ? 'seat-has-vote' : ''} ${
                       isMe ? 'seat-me' : ''
                     } identity`}
-                    style={{
-                      ...identityVars(user.identity),
-                      marginLeft: s.gap,
-                    }}
+                    style={identityVars(user.identity)}
                   >
-                    <div
-                      className="seat-unit"
-                      style={
-                        {
-                          '--tilt': `${s.tilt}deg`,
-                          '--dx': `${s.dx}px`,
-                          '--dy': `${s.dy}px`,
-                        } as React.CSSProperties
-                      }
-                    >
+                    <div className="seat-unit">
                       <div className={`seat-card ${revealed ? 'flipped' : ''}`}>
                         <div className="seat-card-inner">
                           <div className="seat-card-back">

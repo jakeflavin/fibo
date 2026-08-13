@@ -647,12 +647,12 @@ svg.lucide {
 
 .story-line {
   margin-bottom: 8px;
+  text-align: left;
 }
 
 .story-title {
-  font-size: clamp(22px, 3.2vw, 32px);
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-size: clamp(20px, 2.2vw, 24px);
+  font-weight: 600;
   margin: 0;
   overflow-wrap: anywhere;
   line-height: 1.25;
@@ -739,9 +739,7 @@ svg.lucide {
   opacity: 0.35;
 }
 
-/* Card and name tilt (and un-tilt on hover) as one unit, so the label
-   always sits square beneath its card. The scatter offset lives here too,
-   leaving the .seat element free for FLIP position animations. */
+/* Card and name move as one unit; the label sits square beneath its card. */
 .seat-unit {
   display: flex;
   flex-direction: column;
@@ -749,12 +747,6 @@ svg.lucide {
   gap: 8px;
   /* Constrain to the seat so long names ellipsize instead of colliding. */
   max-width: 100%;
-  transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(var(--tilt, 0deg));
-  transition: transform 0.45s ease;
-}
-
-.seat:hover .seat-unit {
-  transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(0deg) scale(1.04);
 }
 
 .seat-card {
@@ -793,7 +785,9 @@ svg.lucide {
 }
 
 .seat-card-back {
-  border: 1px dashed var(--line-strong);
+  background: var(--card-face);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-play);
 }
 
 /* A played card takes the user's color; the avatar is stamped in canvas ink. */
@@ -809,7 +803,7 @@ svg.lucide {
 
 @keyframes lockin {
   40% {
-    transform: translate(var(--dx, 0px), calc(var(--dy, 0px) - 6px)) rotate(var(--tilt, 0deg));
+    transform: translateY(-4px);
   }
 }
 
@@ -1105,13 +1099,13 @@ svg.lucide {
 }
 
 .play-card:hover:not(:disabled) {
-  transform: translateY(-5px);
-  border-color: var(--accent);
+  transform: translateY(-2px);
+  border-color: var(--control);
   box-shadow: var(--shadow-play-hover);
 }
 
 .play-card:active:not(:disabled) {
-  transform: translateY(-2px) scale(0.97);
+  transform: none;
 }
 
 .play-card:disabled {
@@ -1119,18 +1113,19 @@ svg.lucide {
   cursor: not-allowed;
 }
 
+/* Jira selection: quiet blue fill with a 2px selected border. */
 .play-card-selected,
 .play-card-selected:hover:not(:disabled) {
-  transform: translateY(-7px);
-  border-color: transparent;
-  background: var(--accent);
-  color: var(--accent-ink);
-  box-shadow: 0 10px 28px var(--accent-dim);
+  transform: none;
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
 .play-card-value {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 /* ── right rail ──────────────────────────────────────────────── */
