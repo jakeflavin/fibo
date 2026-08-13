@@ -1724,13 +1724,18 @@ svg.lucide {
     padding-bottom: 12px;
   }
 
-  /* The toolbar wraps: the point ruler takes its own full-width line. */
+  /* The toolbar wraps into two full rows: Flip stretches beside the
+     timers, and the point ruler shares its line with repoint. */
   .controls-bar {
     flex-wrap: wrap;
   }
 
+  .controls-bar .btn-flip {
+    flex: 1;
+  }
+
   .controls-bar .result-edit {
-    flex-basis: 100%;
+    flex: 1 1 calc(100% - 44px);
   }
 
   .controls-bar .controls-sep {
