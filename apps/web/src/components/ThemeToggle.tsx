@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Bot, Moon, Settings, Sun } from 'lucide-react';
+import { Bot, GitBranch, Moon, Settings, Sun } from 'lucide-react';
 import { getTheme, saveTheme } from '../lib/storage';
 import { ConnectClaudeModal } from './ConnectClaudeModal';
 
@@ -65,22 +65,33 @@ export function SettingsMenu() {
             role="menuitem"
             onClick={() => {
               setOpen(false);
-              setConnectOpen(true);
-            }}
-          >
-            <Bot size={14} /> Connect Claude
-          </button>
-          <button
-            className="menu-item"
-            role="menuitem"
-            onClick={() => {
-              setOpen(false);
               toggle();
             }}
           >
             {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />} Switch to{' '}
             {theme === 'dark' ? 'light' : 'dark'} mode
           </button>
+          <div className="menu-sep" />
+          <button
+            className="menu-item"
+            role="menuitem"
+            onClick={() => {
+              setOpen(false);
+              setConnectOpen(true);
+            }}
+          >
+            <Bot size={14} /> Connect Claude
+          </button>
+          <a
+            className="menu-item"
+            role="menuitem"
+            href="https://github.com/jakeflavin/fibo"
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => setOpen(false)}
+          >
+            <GitBranch size={14} /> View on GitHub
+          </a>
         </div>
       )}
       {connectOpen && <ConnectClaudeModal onClose={() => setConnectOpen(false)} />}

@@ -5,6 +5,7 @@ import {
   ClipboardList,
   FileDown,
   FileUp,
+  GitBranch,
   Keyboard,
   Layers,
   LogOut,
@@ -131,14 +132,17 @@ export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }:
         </button>
         {open && (
           <div className="menu" role="menu">
+            {/* Sharing */}
             <button className="menu-item" role="menuitem" onClick={pick(onShare)}>
               <Share2 size={14} /> Share / QR
             </button>
-            <button className="menu-item" role="menuitem" onClick={pick(doExport)}>
-              <FileDown size={14} /> Export JSON
-            </button>
+            <div className="menu-sep" />
+            {/* Stories in and out */}
             <button className="menu-item" role="menuitem" onClick={pick(() => void copyResults())}>
               <ClipboardList size={14} /> Copy results
+            </button>
+            <button className="menu-item" role="menuitem" onClick={pick(doExport)}>
+              <FileDown size={14} /> Export JSON
             </button>
             {canLead && (
               <button
@@ -150,6 +154,7 @@ export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }:
               </button>
             )}
             <div className="menu-sep" />
+            {/* Session setup */}
             {isAdmin && (
               <button
                 className="menu-item"
@@ -162,17 +167,30 @@ export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }:
             <button className="menu-item" role="menuitem" onClick={pick(() => void newSession())}>
               <Plus size={14} /> New session
             </button>
+            <div className="menu-sep" />
+            {/* App: preferences and help */}
+            <button className="menu-item" role="menuitem" onClick={pick(toggle)}>
+              {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />} Switch to{' '}
+              {theme === 'dark' ? 'light' : 'dark'} mode
+            </button>
             <button className="menu-item" role="menuitem" onClick={pick(onShortcuts)}>
               <Keyboard size={14} /> Keyboard shortcuts
             </button>
             <button className="menu-item" role="menuitem" onClick={pick(() => setConnectOpen(true))}>
               <Bot size={14} /> Connect Claude
             </button>
-            <button className="menu-item" role="menuitem" onClick={pick(toggle)}>
-              {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />} Switch to{' '}
-              {theme === 'dark' ? 'light' : 'dark'} mode
-            </button>
+            <a
+              className="menu-item"
+              role="menuitem"
+              href="https://github.com/jakeflavin/fibo"
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setOpen(false)}
+            >
+              <GitBranch size={14} /> View on GitHub
+            </a>
             <div className="menu-sep" />
+            {/* Destructive, last and alone */}
             <button
               className="menu-item menu-item-danger"
               role="menuitem"
