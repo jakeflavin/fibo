@@ -128,6 +128,23 @@ The controls toolbar sits under the app bar:
 - **Repoint** — the circular-arrow button clears votes and flips cards
   back down for another round on the same story.
 
+## Keyboard shortcuts
+
+Fixed bindings, listed in-app via gear menu → "Keyboard shortcuts" (or
+the `?` key). Keys never fire while typing in a field or with a
+modifier held.
+
+| Key | Action |
+| --- | ------ |
+| `1`–`9`, `0` | Play the nth card of the deck (press again to take it back) |
+| `S` | Play the skip card |
+| `C` | Play the coffee card |
+| `F` | Flip the cards (leads) |
+| `R` | Repoint the story (leads) |
+| `?` | Open the cheat sheet |
+
+Spectators see only the rows that apply to them.
+
 ## Export / Import
 
 - **Copy results** — gear menu; puts the queue on the clipboard as a

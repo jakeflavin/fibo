@@ -15,6 +15,7 @@ import { Deck } from '../components/Deck';
 import { Participants } from '../components/Participants';
 import { StoryQueue } from '../components/StoryQueue';
 import { ShareModal } from '../components/ShareModal';
+import { Shortcuts } from '../components/Shortcuts';
 
 /** The session route: resolves identity, then renders the room. */
 export function Room() {
@@ -40,6 +41,7 @@ function RoomInner({ sessionId }: { sessionId: string }) {
   }, [session, sessionId]);
   const [myUserId, setMyUserId] = useState<string | null>(() => getMyUserId(sessionId));
   const [shareOpen, setShareOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
   // A partial record (e.g. a stray presence write after a kick) is not a
   // membership: without a name, this browser has not joined.
@@ -126,6 +128,16 @@ function RoomInner({ sessionId }: { sessionId: string }) {
         myUserId={myUserId!}
         canLead={canLead}
         onShare={() => setShareOpen(true)}
+        onShortcuts={() => setShortcutsOpen(true)}
+      />
+      <Shortcuts
+        session={session}
+        myUserId={myUserId!}
+        canLead={canLead}
+        canVote={me.role !== 'spectator'}
+        open={shortcutsOpen}
+        onOpen={() => setShortcutsOpen(true)}
+        onClose={() => setShortcutsOpen(false)}
       />
       <main className="room-grid">
         <section className="room-main">

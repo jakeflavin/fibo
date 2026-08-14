@@ -4,6 +4,7 @@ import {
   ClipboardList,
   FileDown,
   FileUp,
+  Keyboard,
   Layers,
   LogOut,
   Moon,
@@ -26,13 +27,14 @@ interface Props {
   myUserId: string;
   canLead: boolean;
   onShare: () => void;
+  onShortcuts: () => void;
 }
 
 /**
  * The app bar: brand plus the gear menu (share, export/import, new
  * session, theme, leave session).
  */
-export function RoomHeader({ session, myUserId, canLead, onShare }: Props) {
+export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }: Props) {
   const toast = useToast();
   const navigate = useNavigate();
   const [confirmLeave, setConfirmLeave] = useState(false);
@@ -156,6 +158,9 @@ export function RoomHeader({ session, myUserId, canLead, onShare }: Props) {
             )}
             <button className="menu-item" role="menuitem" onClick={pick(() => void newSession())}>
               <Plus size={14} /> New session
+            </button>
+            <button className="menu-item" role="menuitem" onClick={pick(onShortcuts)}>
+              <Keyboard size={14} /> Keyboard shortcuts
             </button>
             <button className="menu-item" role="menuitem" onClick={pick(toggle)}>
               {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />} Switch to{' '}
