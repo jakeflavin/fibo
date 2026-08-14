@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  Bot,
   ClipboardList,
   FileDown,
   FileUp,
@@ -18,6 +19,7 @@ import { exportSession, parseSessionExport, resultsTable, ImportError } from '@f
 import { createSession, importStories, removeUser } from '../lib/api';
 import { clearMyUserId } from '../lib/storage';
 import { ConfirmModal } from './ConfirmModal';
+import { ConnectClaudeModal } from './ConnectClaudeModal';
 import { DeckModal } from './DeckModal';
 import { useTheme } from './ThemeToggle';
 import { useToast } from './Toast';
@@ -39,6 +41,7 @@ export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }:
   const navigate = useNavigate();
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [deckOpen, setDeckOpen] = useState(false);
+  const [connectOpen, setConnectOpen] = useState(false);
   const isAdmin = session.users?.[myUserId]?.role === 'owner';
   const { theme, toggle } = useTheme();
   const fileInput = useRef<HTMLInputElement>(null);
@@ -162,6 +165,9 @@ export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }:
             <button className="menu-item" role="menuitem" onClick={pick(onShortcuts)}>
               <Keyboard size={14} /> Keyboard shortcuts
             </button>
+            <button className="menu-item" role="menuitem" onClick={pick(() => setConnectOpen(true))}>
+              <Bot size={14} /> Connect Claude
+            </button>
             <button className="menu-item" role="menuitem" onClick={pick(toggle)}>
               {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />} Switch to{' '}
               {theme === 'dark' ? 'light' : 'dark'} mode
@@ -178,6 +184,7 @@ export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }:
         )}
       </div>
       {deckOpen && <DeckModal session={session} onClose={() => setDeckOpen(false)} />}
+      {connectOpen && <ConnectClaudeModal onClose={() => setConnectOpen(false)} />}
       {confirmLeave && (
         <ConfirmModal
           title="Leave session"

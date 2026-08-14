@@ -5,6 +5,8 @@ import { getDatabase } from 'firebase-admin/database';
 
 initializeApp();
 
+export { mcp } from './mcp';
+
 /**
  * Expiry rules — a small mirror of packages/shared/src/expiry.ts (the
  * canonical, unit-tested version; Cloud Functions can't import the

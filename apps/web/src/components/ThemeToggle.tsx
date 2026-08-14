@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Moon, Settings, Sun } from 'lucide-react';
+import { Bot, Moon, Settings, Sun } from 'lucide-react';
 import { getTheme, saveTheme } from '../lib/storage';
+import { ConnectClaudeModal } from './ConnectClaudeModal';
 
 function effectiveTheme(): 'light' | 'dark' {
   // Dark-first: dark unless the user explicitly chose light.
@@ -29,6 +30,7 @@ export function SettingsMenu() {
   const { theme, toggle } = useTheme();
   const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
+  const [connectOpen, setConnectOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -63,6 +65,16 @@ export function SettingsMenu() {
             role="menuitem"
             onClick={() => {
               setOpen(false);
+              setConnectOpen(true);
+            }}
+          >
+            <Bot size={14} /> Connect Claude
+          </button>
+          <button
+            className="menu-item"
+            role="menuitem"
+            onClick={() => {
+              setOpen(false);
               toggle();
             }}
           >
@@ -71,6 +83,7 @@ export function SettingsMenu() {
           </button>
         </div>
       )}
+      {connectOpen && <ConnectClaudeModal onClose={() => setConnectOpen(false)} />}
     </div>
   );
 }

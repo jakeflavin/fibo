@@ -43,7 +43,10 @@ works. The app lives at https://fibo-49d58.web.app.
 | Spectator   | `Spectator` | Watch and export only: no seat card, no hand, never counted in the tally or auto-flip |
 
 - The session creator is the Admin. There is exactly one — and only a
-  deliberate handoff moves the seat: **Transfer admin** in a team row's
+  deliberate handoff moves the seat (with one exception: joining a
+  session that has **no admin at all** — created headlessly via MCP, or
+  abandoned by its admin — seats the first arriving player as Admin;
+  spectators never inherit it). Otherwise: **Transfer admin** in a team row's
   `…` menu (confirmed first) makes that user the Admin and steps the
   previous one down to Lead.
 - Your own row carries a `You` lozenge.
@@ -127,6 +130,28 @@ The controls toolbar sits under the app bar:
   value uses the solid primary fill.
 - **Repoint** — the circular-arrow button clears votes and flips cards
   back down for another round on the same story.
+
+## Connect Claude (MCP)
+
+fibo ships a remote MCP endpoint at **`https://fibo-49d58.web.app/mcp`**
+so Claude (Code, Desktop, claude.ai/CoWork) can drive sessions — no fibo
+account involved; the unguessable session link is the only credential,
+exactly like the browser app. Setup is once per user, from either
+settings menu → **"Connect Claude"**:
+
+- **Claude Desktop / claude.ai** — Settings → Connectors → Add custom
+  connector → paste the URL.
+- **Claude Code** —
+  `claude mcp add --transport http --scope user fibo https://fibo-49d58.web.app/mcp`
+
+Claude gets four tools: **create_session** (stories + deck; returns the
+join link — the first person to open it becomes the Admin),
+**add_stories** (append to the queue), **get_session** (live roster,
+deck, table, queue), and **get_results** (points as JSON plus the
+title/points table). Typical prompts: "take these Jira tickets and
+start a fibo session" · "add these stories to the current fibo session"
+· "read the fibo results and update Jira." The endpoint is
+rate-limited (per IP: 60 requests/min, 10 session creations/hour).
 
 ## Keyboard shortcuts
 

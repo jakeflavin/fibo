@@ -42,6 +42,9 @@ jobs:
           npx firebase-tools emulators:start --project demo-fibo --only database &
           timeout 60 bash -c 'until curl -s http://127.0.0.1:9000/ > /dev/null; do sleep 1; done'
 
+      - name: Functions unit + integration tests (against the emulator)
+        run: npm --prefix functions test
+
       - run: npm run test:e2e
 
       - name: Upload test artifacts on failure

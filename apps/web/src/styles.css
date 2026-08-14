@@ -391,6 +391,35 @@ svg.lucide {
   }
 }
 
+/* Connect Claude: copyable URL/command rows. */
+.connect-modal {
+  text-align: left;
+  max-width: 440px;
+}
+
+.connect-row {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+  min-width: 0;
+  text-align: left;
+}
+
+.connect-copy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.connect-copy .share-url {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  display: block;
+}
+
 /* Shortcut cheat sheet: key chip + description rows. */
 .shortcut-list {
   list-style: none;

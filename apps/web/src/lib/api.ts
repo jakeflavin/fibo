@@ -74,12 +74,17 @@ export async function joinSession(
   role: Extract<Role, 'participant' | 'spectator'> = 'participant',
 ): Promise<string> {
   const usersSnap = await get(ref(db, `sessions/${sessionId}/users`));
-  const users = (usersSnap.val() ?? {}) as Record<string, { identity: number }>;
+  const users = (usersSnap.val() ?? {}) as Record<string, { identity: number; name?: string; role?: string }>;
   const taken = Object.values(users).map((u) => u.identity);
+  // Ownerless sessions (created headlessly via MCP, or whose admin
+  // left) seat their first arriving player as the admin. Spectators
+  // never inherit the seat.
+  const hasOwner = Object.values(users).some((u) => u?.name && u.role === 'owner');
+  const effectiveRole = !hasOwner && role === 'participant' ? 'owner' : role;
   const userId = newUserId();
   await set(ref(db, `sessions/${sessionId}/users/${userId}`), {
     name: name.trim(),
-    role,
+    role: effectiveRole,
     identity: pickIdentity(taken),
     online: true,
     joinedAt: Date.now(),

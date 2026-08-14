@@ -22,9 +22,12 @@ polish, and carefully considered additions.
 - `apps/web/src/` — the app. `lib/api.ts` owns every database read/write;
   components never touch Firebase directly. `styles.css` is the single
   stylesheet.
-- `functions/` — the scheduled session-cleanup Cloud Function
-  (standalone package, not an npm workspace; mirrors
-  `packages/shared/src/expiry.ts` — keep them in sync).
+- `functions/` — Cloud Functions (standalone package, not an npm
+  workspace): the scheduled session cleanup and the remote MCP endpoint
+  served at `/mcp` via a Hosting rewrite. Both mirror small pieces of
+  `packages/shared` (expiry, deck, results table) — keep them in sync.
+  `npm --prefix functions test` runs its vitest suite (the integration
+  tests need the DB emulator running).
 - `scripts/` — one-time ops scripts (deploy service-account setup).
 
 ## Commands

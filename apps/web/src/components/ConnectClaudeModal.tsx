@@ -1,0 +1,88 @@
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { Copy, X } from 'lucide-react';
+import { useToast } from './Toast';
+
+/**
+ * Setup instructions for the remote MCP endpoint: connect once and
+ * Claude (Code / Desktop / claude.ai) can create fibo sessions, append
+ * stories, and read results — no fibo account involved.
+ */
+export function ConnectClaudeModal({ onClose }: { onClose: () => void }) {
+  const toast = useToast();
+  const url = `${window.location.origin}/mcp`;
+  const command = `claude mcp add --transport http --scope user fibo ${url}`;
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const copy = (value: string, what: string) => async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      toast(`${what} copied`);
+    } catch {
+      toast('Could not access the clipboard.', 'error');
+    }
+  };
+
+  // Portaled: the settings menus live inside fixed-position wrappers
+  // whose stacking contexts would trap the backdrop under page content.
+  return createPortal(
+    <div className="modal-backdrop" onClick={onClose}>
+      <div
+        className="modal connect-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Connect Claude"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="modal-title">
+          <span className="eyebrow">Connect Claude</span>
+          <button className="btn btn-ghost modal-close" onClick={onClose} aria-label="Close">
+            <X size={15} />
+          </button>
+        </div>
+        <p className="panel-body">
+          Add fibo as a connector once, and Claude can start sessions from your backlog, add
+          stories mid-meeting, and read the points back out — no account needed.
+        </p>
+
+        <div className="connect-row">
+          <span className="field-label">Connector URL — Claude Desktop &amp; claude.ai</span>
+          <div className="connect-copy">
+            <code className="share-url">{url}</code>
+            <button className="btn btn-icon" onClick={copy(url, 'URL')} aria-label="Copy the URL">
+              <Copy size={14} />
+            </button>
+          </div>
+          <p className="panel-hint dim">Settings → Connectors → Add custom connector → paste the URL.</p>
+        </div>
+
+        <div className="connect-row">
+          <span className="field-label">Claude Code — one command</span>
+          <div className="connect-copy">
+            <code className="share-url">{command}</code>
+            <button
+              className="btn btn-icon"
+              onClick={copy(command, 'Command')}
+              aria-label="Copy the command"
+            >
+              <Copy size={14} />
+            </button>
+          </div>
+        </div>
+
+        <p className="panel-hint dim">
+          Claude gets four tools: create a session, add stories, read the room, and read results.
+          Whoever opens a Claude-created session first becomes its admin.
+        </p>
+      </div>
+    </div>,
+    document.body,
+  );
+}

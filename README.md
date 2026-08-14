@@ -31,6 +31,18 @@ System so Jira users feel at home.
 Sessions are temporary: state lives in Firebase Realtime Database keyed by
 an unguessable session id, with no user accounts anywhere.
 
+## Connect Claude (MCP)
+
+A remote MCP endpoint lives at `https://fibo-49d58.web.app/mcp` (an HTTP
+Cloud Function behind a Hosting rewrite). Add it once as a connector —
+Claude Desktop/claude.ai: Settings → Connectors → Add custom connector;
+Claude Code: `claude mcp add --transport http --scope user fibo <url>` —
+and Claude can create sessions from a backlog, append stories, and read
+the results back for Jira. No accounts: the session link is the only
+credential, and whoever opens a Claude-created session first becomes its
+admin. In-app setup instructions live under the gear menu → "Connect
+Claude".
+
 ## Documentation
 
 - [FEATURES.md](FEATURES.md) — the complete feature list and how to use
@@ -110,6 +122,10 @@ access is denied).
   per-session database rules and no server code, a determined teammate
   could read votes from the wire before the flip. Fine for planning
   poker; don't use it for salary votes.
+- **The MCP endpoint is public.** It's rate-limited and can only do
+  what the public per-session REST surface already allows — nothing
+  without a session link — but anyone can create empty sessions with
+  it; the weekly cleanup eats them.
 - **Session deletion is best-effort weekly.** A session expires once
   everyone is offline and nothing has touched it for 48 hours; a
   scheduled Cloud Function sweeps expired sessions every Sunday, and the
