@@ -84,7 +84,7 @@ export function Home() {
             </label>
             <div className="field">
               <span className="field-label">Deck</span>
-              <DeckPicker value={deck ?? { preset: 'custom', cards: [] }} onChange={setDeck} preview={false} />
+              <DeckPicker value={deck ?? { preset: 'custom', cards: [] }} onChange={setDeck} />
             </div>
             <button className="btn btn-primary btn-block" disabled={!name.trim() || !deck || busy}>
               {busy ? 'Creating…' : 'Create session'}
