@@ -1476,9 +1476,11 @@ svg.lucide {
 .user-row {
   min-height: 32px;
   /* Fixed columns so votes line up across rows:
-     dot | avatar | name + tags + actions | vote */
+     dot | avatar | name + tags + actions | vote. The vote column fits
+     the longest possible card label (4 chars, e.g. "XXXL") so wide
+     values can never stretch the rail into a horizontal scroll. */
   display: grid;
-  grid-template-columns: 6px 28px minmax(0, 1fr) 2ch;
+  grid-template-columns: 6px 28px minmax(0, 1fr) 4ch;
   align-items: center;
   gap: 8px;
   animation: rise 0.25s ease-out both;
@@ -1578,6 +1580,7 @@ svg.lucide {
   text-align: center;
   color: var(--dim);
   font-size: var(--font-body);
+  white-space: nowrap;
 }
 
 .user-voted {

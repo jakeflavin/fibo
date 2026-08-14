@@ -179,10 +179,11 @@ Spectators see only the rows that apply to them.
   session's deck (`fibo-session-YYYY-MM-DD.json`, format v3; v1/v2 files
   import fine). Available to everyone.
 - **Import JSON** — gear menu, leads only; replaces the story list with
-  the imported document and clears the table. The session's deck is not
-  changed by an in-session import (deck changes are the Admin's, via
-  "Change deck"); importing on the **home page** applies the file's deck
-  to the new session.
+  the imported document, applies the file's deck, and clears the table
+  — an import recreates the exported session. Points from earlier deck
+  eras survive the trip (the codec validates them for sanity, not deck
+  membership), and a flipped active story's standing result exports as
+  its points.
 
 ## Appearance
 

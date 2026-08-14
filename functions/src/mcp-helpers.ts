@@ -92,7 +92,6 @@ export function buildSessionDoc(
   deck: SessionDoc['deck'] | null,
   now: number = Date.now(),
 ): SessionDoc {
-  const cards = deck?.cards ?? DECK_PRESETS.fib;
   const doc: SessionDoc = {
     id: newSessionId(),
     createdAt: now,
@@ -104,8 +103,14 @@ export function buildSessionDoc(
   };
   stories.forEach((s, i) => {
     const id = newStoryId();
-    const points =
-      s.points != null && (cards.includes(s.points) || s.points === 'skip') ? s.points : null;
+    // Sanity, not deck membership — mirrors shared isStoredPoints
+    // (sessions legitimately hold points from earlier decks).
+    const p = s.points;
+    const sane =
+      (typeof p === 'number' && Number.isFinite(p)) ||
+      p === 'skip' ||
+      (typeof p === 'string' && p.length >= 1 && p.length <= MAX_CARD_LABEL);
+    const points = p != null && sane ? p : null;
     doc.stories[id] = {
       id,
       title: s.title.trim().slice(0, 200),

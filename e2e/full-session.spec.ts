@@ -159,9 +159,13 @@ test('full sprint planning session with three users', async ({ browser }) => {
     ada.locator('.story-row', { hasText: 'FIBO-1' }).locator('.story-badge'),
   ).toHaveText('8');
 
-  // ── clicking a queue row puts it on the table; repoint ─────
+  // ── clicking a pointed queue row reopens it revealed ───────
+  // (FIBO-2's skip round exported as points, so it imported done.)
   await ada.locator('.story-row', { hasText: 'FIBO-2' }).click();
   await expect(ada.locator('.story-title')).toContainText('FIBO-2 signup form');
+  await expect(ada.locator('.result-value')).toHaveText('?');
+  // Repoint clears the standing skip for a fresh round.
+  await ada.getByRole('button', { name: 'Repoint this story' }).click();
   await ada.getByTitle('3 points', { exact: true }).click();
   await ada.getByRole('button', { name: 'Flip', exact: true }).click();
   await expect(ada.locator('.result-value')).toHaveText('3');

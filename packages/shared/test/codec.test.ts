@@ -47,6 +47,13 @@ describe('exportSession', () => {
   it('handles a session with no stories', () => {
     expect(exportSession(session([])).stories).toEqual([]);
   });
+
+  it('counts a flipped active story\'s standing result', () => {
+    const s = session([story({ id: 'a', title: 'live', order: 0, status: 'active', result: 8 })]);
+    expect(exportSession(s).stories).toEqual([{ title: 'live' }]);
+    s.revealed = true;
+    expect(exportSession(s).stories).toEqual([{ title: 'live', points: 8 }]);
+  });
 });
 
 describe('parseSessionExport', () => {
@@ -73,16 +80,24 @@ describe('parseSessionExport', () => {
     expect(parsed.stories).toEqual([{ title: 'pointed', points: 5 }, { title: 'open' }]);
   });
 
-  it('drops invalid point values instead of importing garbage', () => {
+  it('drops garbage point values but keeps any sane ones', () => {
     const parsed = parseSessionExport(
       JSON.stringify({
         app: 'fibo',
         version: 2,
         exportedAt: new Date().toISOString(),
-        stories: [{ title: 'weird', points: 99 }],
+        stories: [
+          { title: 'object points', points: { nope: true } },
+          { title: 'too long', points: 'ENORMOUS' },
+          { title: 'off-deck number', points: 99 },
+        ],
       }),
     );
-    expect(parsed.stories).toEqual([{ title: 'weird' }]);
+    expect(parsed.stories).toEqual([
+      { title: 'object points' },
+      { title: 'too long' },
+      { title: 'off-deck number', points: 99 },
+    ]);
   });
 
   it.each([
@@ -112,17 +127,25 @@ describe('parseSessionExport deck handling', () => {
     expect(parsed.stories).toEqual([{ title: 'sized', points: 'XL' }]);
   });
 
-  it('drops points that are not in the imported deck', () => {
+  it('keeps points pointed under earlier decks (mixed-era sessions)', () => {
     const parsed = parseSessionExport(
       JSON.stringify({
         app: 'fibo',
         version: 3,
         exportedAt: new Date().toISOString(),
-        deck: { preset: 'custom', cards: ['A', 'B'] },
-        stories: [{ title: 'stray', points: 5 }],
+        deck: { preset: 'tshirt' },
+        stories: [
+          { title: 'fib era', points: 5 },
+          { title: 'tshirt era', points: 'XL' },
+          { title: 'skipped', points: 'skip' },
+        ],
       }),
     );
-    expect(parsed.stories).toEqual([{ title: 'stray' }]);
+    expect(parsed.stories).toEqual([
+      { title: 'fib era', points: 5 },
+      { title: 'tshirt era', points: 'XL' },
+      { title: 'skipped', points: 'skip' },
+    ]);
   });
 });
 

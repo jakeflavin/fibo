@@ -381,10 +381,15 @@ export async function deleteSession(sessionId: string): Promise<void> {
   await remove(sessionRef(sessionId));
 }
 
-/** Replace the story list with an imported export document. */
+/**
+ * Replace the story list with an imported export document. The file's
+ * deck comes with it (absent means the Fibonacci default) — an import
+ * recreates the exported session, deck and all.
+ */
 export async function importStories(session: Session, doc: SessionExport): Promise<void> {
   await update(sessionRef(session.id), {
     stories: storiesFromExport(doc, newStoryId),
+    deck: doc.deck && doc.deck.preset !== 'fib' ? doc.deck : null,
     currentStoryId: null,
     revealed: false,
     timer: null,

@@ -53,9 +53,16 @@ describe('buildSessionDoc', () => {
     ]);
   });
 
-  it('drops points that are not in the deck', () => {
-    const doc = buildSessionDoc([{ title: 'X', points: 99 }], null, 1);
-    expect(Object.values(doc.stories)[0].status).toBe('queued');
+  it('keeps sane points from any deck era, drops garbage', () => {
+    const doc = buildSessionDoc(
+      [{ title: 'off-deck', points: 99 }, { title: 'junk', points: 'ENORMOUS' }],
+      null,
+      1,
+    );
+    const stories = Object.values(doc.stories).sort((a, b) => a.order - b.order);
+    expect(stories[0].status).toBe('done');
+    expect(stories[0].result).toBe(99);
+    expect(stories[1].status).toBe('queued');
   });
 });
 

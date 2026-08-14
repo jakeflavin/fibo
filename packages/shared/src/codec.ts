@@ -1,5 +1,6 @@
-import type { Session, SessionExport, Story, VoteValue } from './types';
-import { deckCards, isValidVote, sanitizeDeck } from './deck';
+import type { Session, SessionExport, Story } from './types';
+import { deckCards, isStoredPoints, sanitizeDeck } from './deck';
+import { committedPoints } from './clipboard';
 
 /** Serialize a session to the portable export document (stories + points). */
 export function exportSession(session: Session): SessionExport {
@@ -10,7 +11,9 @@ export function exportSession(session: Session): SessionExport {
     exportedAt: new Date().toISOString(),
     deck: sanitizeDeck(session.deck) ?? { preset: 'fib', cards: deckCards(session) },
     stories: stories.map((s) => {
-      const points = s.status === 'done' && s.result != null ? s.result : null;
+      // A flipped active story's standing result counts (the app
+      // commits it when switching away).
+      const points = committedPoints(s, session);
       return points != null ? { title: s.title, points } : { title: s.title };
     }),
   };
@@ -42,7 +45,6 @@ export function parseSessionExport(json: string): SessionExport {
   }
   // v1/v2 predate deck choices and were always Fibonacci.
   const deck = doc.version === 3 ? sanitizeDeck(doc.deck) : null;
-  const cards = deck?.cards;
   const stories = doc.stories.map((raw, i) => {
     if (typeof raw !== 'object' || raw === null) {
       throw new ImportError(`Story #${i + 1} is malformed.`);
@@ -52,9 +54,11 @@ export function parseSessionExport(json: string): SessionExport {
       throw new ImportError(`Story #${i + 1} is missing a title.`);
     }
     // v2+ store points; v1 stored result (+ status, which points implies).
+    // Points are validated for sanity, not against the deck: a session
+    // can hold results pointed under earlier decks.
     const rawPoints =
       (doc.version as number) >= 2 ? s.points : s.status === 'done' ? s.result : null;
-    const points = isValidVote(rawPoints, cards) ? (rawPoints as VoteValue) : null;
+    const points = isStoredPoints(rawPoints) ? rawPoints : null;
     return points != null ? { title: s.title, points } : { title: s.title };
   });
   return {

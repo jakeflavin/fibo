@@ -46,6 +46,18 @@ export function parseCustomDeck(input: string): VoteValue[] | null {
   return cards.length >= 2 ? cards : null;
 }
 
+/**
+ * Whether a value is acceptable as STORED story points. Deliberately
+ * deck-agnostic: the app keeps results pointed under earlier decks
+ * ("changing the deck doesn't affect pointed stories"), so exports can
+ * legitimately mix eras. Numbers, skip, and short card labels pass.
+ */
+export function isStoredPoints(value: unknown): value is VoteValue {
+  if (typeof value === 'number') return Number.isFinite(value);
+  if (value === SKIP) return true;
+  return typeof value === 'string' && value.length >= 1 && value.length <= MAX_CARD_LABEL;
+}
+
 /** Whether a value is playable in the given deck (or a skip/coffee card). */
 export function isValidVote(value: unknown, cards: VoteValue[] = DECK_PRESETS.fib): boolean {
   if (value === SKIP || value === COFFEE) return true;
