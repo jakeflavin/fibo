@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resultsTable, splitPastedTitles } from '../src/clipboard';
+import { committedPoints, resultsTable, splitPastedTitles } from '../src/clipboard';
 import type { Session, Story } from '../src/types';
 
 const story = (over: Partial<Story>): Story => ({
@@ -30,7 +30,7 @@ describe('resultsTable', () => {
     expect(out).toBe('first\tM\nsecond\t8');
   });
 
-  it('leaves unpointed and mid-round stories blank', () => {
+  it('leaves unpointed and face-down mid-round stories blank', () => {
     const out = resultsTable(
       session([
         story({ id: 'a', title: 'open', order: 0 }),
@@ -40,11 +40,27 @@ describe('resultsTable', () => {
     expect(out).toBe('open\t\nactive\t');
   });
 
+  it('counts the active story once its cards are flipped with a result', () => {
+    const s = session([story({ id: 'a', title: 'active', order: 0, status: 'active', result: 8 })]);
+    s.revealed = true;
+    expect(resultsTable(s)).toBe('active\t8');
+  });
+
   it('renders a skipped story as ?', () => {
     const out = resultsTable(
       session([story({ id: 'a', title: 'skipped', order: 0, status: 'done', result: 'skip' })]),
     );
     expect(out).toBe('skipped\t?');
+  });
+});
+
+describe('committedPoints', () => {
+  it('done stories always count; active only when revealed with a result', () => {
+    expect(committedPoints({ status: 'done', result: 5 }, { revealed: false })).toBe(5);
+    expect(committedPoints({ status: 'active', result: 5 }, { revealed: false })).toBeNull();
+    expect(committedPoints({ status: 'active', result: 5 }, { revealed: true })).toBe(5);
+    expect(committedPoints({ status: 'active', result: null }, { revealed: true })).toBeNull();
+    expect(committedPoints({ status: 'queued', result: 5 }, { revealed: true })).toBeNull();
   });
 });
 

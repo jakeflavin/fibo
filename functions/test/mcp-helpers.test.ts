@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildSessionDoc,
+  committedPoints,
   parseSessionRef,
   RateLimiter,
   resolveDeck,
@@ -64,7 +65,23 @@ describe('resultsTable', () => {
       b: { id: 'b', title: 'second', status: 'queued', order: 1, result: null, createdAt: 0 },
       a: { id: 'a', title: 'first', status: 'done', order: 0, result: 'skip', createdAt: 0 },
     };
-    expect(resultsTable(stories)).toBe('first\t?\nsecond\t');
+    expect(resultsTable(stories, false)).toBe('first\t?\nsecond\t');
+  });
+
+  it('counts a revealed active story\'s standing result', () => {
+    const stories: Record<string, StoryRecord> = {
+      a: { id: 'a', title: 'live one', status: 'active', order: 0, result: 8, createdAt: 0 },
+    };
+    expect(resultsTable(stories, false)).toBe('live one\t');
+    expect(resultsTable(stories, true)).toBe('live one\t8');
+  });
+});
+
+describe('committedPoints', () => {
+  it('done always counts; active needs the flip', () => {
+    expect(committedPoints({ status: 'done', result: 5 }, false)).toBe(5);
+    expect(committedPoints({ status: 'active', result: 5 }, false)).toBeNull();
+    expect(committedPoints({ status: 'active', result: 5 }, true)).toBe(5);
   });
 });
 

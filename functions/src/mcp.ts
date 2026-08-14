@@ -6,6 +6,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { z } from 'zod';
 import {
   buildSessionDoc,
+  committedPoints,
   newStoryId,
   parseSessionRef,
   RateLimiter,
@@ -158,11 +159,12 @@ function buildServer(): McpServer {
     async ({ session }) => {
       const found = await loadSession(session);
       if (!found) return fail('No session found for that link or id (it may have expired).');
+      const revealed = !!found.data.revealed;
       const stories = Object.values(found.data.stories ?? {})
         .filter((s): s is StoryRecord => !!s)
         .sort((a, b) => a.order - b.order)
-        .map((s) => ({ title: s.title, points: s.status === 'done' ? (s.result ?? null) : null }));
-      return text({ stories, table: resultsTable(found.data.stories) });
+        .map((s) => ({ title: s.title, points: committedPoints(s, revealed) }));
+      return text({ stories, table: resultsTable(found.data.stories, revealed) });
     },
   );
 

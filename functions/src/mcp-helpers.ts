@@ -118,17 +118,33 @@ export function buildSessionDoc(
   return doc;
 }
 
+/**
+ * A story's committed points — mirrors shared committedPoints: done
+ * stories keep theirs, and the active story counts once the cards are
+ * flipped with a standing result (the app accepts that result when
+ * switching away).
+ */
+export function committedPoints(
+  story: Pick<StoryRecord, 'status' | 'result'>,
+  revealed: boolean,
+): VoteValue | null {
+  if (story.result == null) return null;
+  if (story.status === 'done') return story.result;
+  if (story.status === 'active' && revealed) return story.result;
+  return null;
+}
+
 /** The queue as title<TAB>points rows in order — mirrors shared resultsTable. */
 export function resultsTable(
   stories: Record<string, StoryRecord | undefined> | undefined,
+  revealed: boolean,
 ): string {
   return Object.values(stories ?? {})
     .filter((s): s is StoryRecord => !!s)
     .sort((a, b) => a.order - b.order)
     .map((s) => {
-      const points =
-        s.status === 'done' && s.result != null ? (s.result === 'skip' ? '?' : String(s.result)) : '';
-      return `${s.title}\t${points}`;
+      const points = committedPoints(s, revealed);
+      return `${s.title}\t${points != null ? (points === 'skip' ? '?' : String(points)) : ''}`;
     })
     .join('\n');
 }
