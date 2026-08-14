@@ -1,73 +1,56 @@
 # fibo
 
-Ephemeral story-point planning sessions (planning poker). React 19 + Vite
-+ TypeScript monorepo on Firebase Realtime Database, styled after the
-Atlassian Design System. Feature complete — changes are maintenance,
-polish, and carefully considered additions.
+Ephemeral story-point planning (planning poker) for software teams: no
+accounts, sessions are temporary, the unguessable session link is the
+only credential. A React 19 + Vite SPA talks directly to Firebase
+Realtime Database (no app server); a small `packages/shared` package
+holds all pure domain logic; two Cloud Functions provide the weekly
+session cleanup and a remote MCP endpoint so Claude can drive sessions.
+Styled after the Atlassian Design System so Jira users feel at home.
+Full overview, directory structure, commands, and deployment live in
+[README.md](README.md).
 
-## Read these first
+## Rules (must follow)
 
-- **[FEATURES.md](FEATURES.md)** — every feature and how it behaves. Keep
-  it updated when behavior changes; never remove functionality.
-- **[STANDARDS.md](STANDARDS.md)** — coding standards (SOLID for React,
-  CSS token rules). All code must comply.
-- **[DESIGN.md](DESIGN.md)** — the design system: ADS token mapping,
-  typography, components, and the implementation conventions (§8). Any
-  UI/UX change must follow it; both themes must be verified.
+- **Never assume — your knowledge may be out of date.** Use the context7
+  MCP to fetch current docs whenever a question involves a library,
+  framework, or CLI (React, Vite, Firebase, firebase-tools, Playwright,
+  dnd-kit, lucide-react, the MCP SDK, …), even when you think you know
+  the answer.
+- **Read [STANDARDS.md](STANDARDS.md) before touching any code.** Its
+  rules are mandatory, including the testing bar and the realtime-data
+  rules (no overlapping multi-path writes, stamp `touchedAt`, guard
+  partial records).
+- **Read [DESIGN.md](DESIGN.md) before making any UI change.** Tokens,
+  type scale, component recipes, and the layout invariants in §8 are
+  binding; verify both themes.
+- **Read [FEATURES.md](FEATURES.md) when planning or touching an
+  existing feature** so you have its exact current behavior and edge
+  cases as background. Update it in the same commit when behavior
+  changes.
+- **Consult the README** for commands, project overview, and directory
+  structure — don't duplicate them here or guess at them.
+- **Keep the function mirrors in sync.** `functions/` cannot import
+  `packages/shared`, so it carries small marked mirrors (expiry, deck
+  rules, results table). A change to either side changes both.
+- **Never remove functionality.** fibo is feature complete; changes are
+  maintenance, polish, and deliberate additions.
 
-## Layout
+## Workflow
 
-- `packages/shared/src/` — domain types, deck, identity sets, winner
-  calculation, export/import codec, id generation. Pure, no Firebase.
-- `apps/web/src/` — the app. `lib/api.ts` owns every database read/write;
-  components never touch Firebase directly. `styles.css` is the single
-  stylesheet.
-- `functions/` — Cloud Functions (standalone package, not an npm
-  workspace): the scheduled session cleanup and the remote MCP endpoint
-  served at `/mcp` via a Hosting rewrite. Both mirror small pieces of
-  `packages/shared` (expiry, deck, results table) — keep them in sync.
-  `npm --prefix functions test` runs its vitest suite (the integration
-  tests need the DB emulator running).
-- `scripts/` — one-time ops scripts (deploy service-account setup).
-
-## Commands
-
-```bash
-npm run dev          # Vite dev server on :5173
-npm run emulators    # RTDB emulator (project demo-fibo, db port 9000) — run in a second terminal
-npm run typecheck    # both workspaces; must pass clean before any commit
-npm run test:unit    # vitest over packages/shared
-npm run build        # typecheck + production build
-npm run test:e2e     # Playwright against the emulator (needs `npm run emulators` running)
-```
-
-CI (`.github/workflows/deploy.yml`) runs typecheck + unit + e2e on every
-push and PR; `main` deploys only after they pass. Tests are part of any
-change — see the Testing section of STANDARDS.md.
-
-The app auto-connects to the emulator when served from `localhost` with no
-`VITE_FIREBASE_*` env vars. Inspect/poke emulator state over REST:
-`http://localhost:9000/sessions/<id>.json?ns=demo-fibo-default-rtdb`.
-
-## Deployment
-
-Pushes to `main` auto-deploy to Firebase Hosting + database rules
-(project `fibo-49d58`, live at https://fibo-49d58.web.app) via
-`.github/workflows/deploy.yml` and the `FIREBASE_SERVICE_ACCOUNT` secret.
-There are no manual deploy steps; don't run `firebase deploy` by hand
-unless CI is broken.
-
-## Working rules
-
-- Use the **context7** MCP to fetch current docs whenever a question
-  involves a library, framework, or CLI (React, Vite, Firebase,
-  firebase-tools, Playwright, lucide-react…) — even when the answer seems
-  known; training data goes stale.
-- Verify UI changes live in the browser preview, in **both themes**, and
-  at desktop / stacked (≤860px) / phone (≤480px) widths when layout is
-  touched. DESIGN.md §8 lists the layout invariants (card table never
-  scrolls, fixed strip heights, 16px inputs on touch widths…).
-- Realtime data can be partial — guard user records (`u && u.name`)
-  anywhere the user map is rendered.
-- Commit per logical change with an imperative subject and a why-body;
-  typecheck must be clean first.
+1. Follow all rules above and pull the relevant context (docs, code,
+   current library docs) before writing anything.
+2. **Ask follow-up questions** when the request is ambiguous — never
+   assume you understand what is being asked.
+3. Build with tests alongside the change (unit for pure logic, e2e for
+   user-visible behavior — see STANDARDS.md).
+4. **Always visually verify your changes as if you were a real user**:
+   drive the app in the browser preview against the emulator, in both
+   themes, and at the responsive breakpoints when layout is touched.
+   Restore any state you disturb in shared test sessions.
+5. Run the full test suites before pushing; CI gates the deploy on them.
+6. **Make small commits with detailed messages** — one logical change
+   per commit, imperative subject, a body that explains why.
+7. Unless specified otherwise, **work in and push directly to `main`**
+   (temporary while we build the first MVP). Pushes to `main` deploy
+   automatically once tests pass.

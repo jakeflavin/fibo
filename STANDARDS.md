@@ -107,6 +107,35 @@ if a component needs a new write, add a named function to `lib/api.ts`.
   `aria-label`, menus use `role="menu"`/`menuitem"`, dialogs close on
   Escape and backdrop click, focus is always visible.
 
+## Realtime data rules (Firebase RTDB)
+
+Hard-won; violations have all been real bugs in this repo.
+
+- **All database I/O goes through `apps/web/src/lib/api.ts`.** No
+  `ref()`/`onValue()` in components; a new write is a new named
+  function.
+- **A multi-path `update()` may never write a record and its own child
+  in one call** (`stories/x` + `stories/x/status` → the whole write is
+  rejected). Put the child value inside the object instead.
+- **Stamp `touchedAt` on every meaningful write** (bundled into the
+  update where one exists, one extra small write otherwise). The
+  expiry sweep and the on-open gate depend on it.
+- **`onDisconnect` handlers remove; they don't write values.** A queued
+  `set(false)` against a record deleted meanwhile resurrects it as a
+  partial ghost. Session-level stamps (e.g. `lastSeenAt`) are safe
+  because the rules' `id`/`createdAt` validation rejects writes against
+  deleted sessions.
+- **Guard partial records everywhere the user map renders or is
+  counted**: filter `u && u.name`, and treat a membership record
+  without a name as not-joined.
+- **Stateful views remount when their entity changes**
+  (`<RoomInner key={sessionId} />`): navigating room→room must not
+  carry identity state or presence subscriptions across.
+- `functions/` cannot import `packages/shared`; it carries small
+  mirrors (expiry, deck rules, committed points, results table) with
+  keep-in-sync comments on both sides. **Changing either side changes
+  both**, and the shared version is canonical and unit-tested.
+
 ## CSS rules
 
 - **Tokens only.** Every color, shadow, and radius comes from the
@@ -163,6 +192,10 @@ all three pass.
   Delete narration comments.
 - **Commits** are one logical change with a subject line in the
   imperative and a body explaining why. Typecheck and visually verify
-  both themes before committing UI work.
+  both themes before committing UI work. Work directly on `main` for
+  now (MVP phase); every push deploys once CI passes.
+- **Docs move with behavior**: a change that alters what the app does
+  updates FEATURES.md in the same commit; design-system changes update
+  DESIGN.md; new conventions land here.
 - **Destructive actions** always confirm first (modal), and their
   buttons/menu items use the danger treatment.
