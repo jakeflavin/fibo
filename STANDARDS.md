@@ -1,113 +1,147 @@
 # fibo — coding standards
 
-Strict standards for all code in this repo. PRs that violate them get
-rewritten, not merged. Examples are generic; apply the principle, not the
+Mandatory rules. Examples are generic; apply the principle, not the
 literal snippet.
 
-## SOLID, applied to React
+## SOLID
 
 ### Single responsibility
 
-A component renders one thing; a module owns one concern. Data access
-lives in `lib/api.ts`, shared game logic in `packages/shared`, styling in
-`styles.css`. A component that fetches, computes, and renders is three
-components (or a component plus helpers) waiting to be split.
+One reason to change per module. Components render; hooks fetch;
+`lib/api.ts` talks to the database; `packages/shared` holds domain
+rules; `styles.css` styles.
 
 ```tsx
-// Bad: one component owns fetching, business rules, and two UIs
+// Bad: fetching, business rules, and two UIs in one component
 function Panel() {
-  const [data, setData] = useState<Row[]>([]);
-  useEffect(() => { fetch('/rows').then(r => r.json()).then(setData); }, []);
-  const winner = data.reduce(/* 30 lines of scoring */);
+  const [rows, setRows] = useState<Row[]>([]);
+  useEffect(() => { fetch('/rows').then(r => r.json()).then(setRows); }, []);
+  const winner = rows.reduce(/* 30 lines of scoring */);
   return <>{/* table markup */}{/* summary markup */}</>;
 }
 
-// Good: data in a hook, rules in a pure module, one component per UI
+// Good: a hook, a pure rule, one component per UI
 function Panel() {
   const rows = useRows();
-  return (
-    <>
-      <RowTable rows={rows} />
-      <Summary winner={computeWinner(rows)} />
-    </>
-  );
+  return (<><RowTable rows={rows} /><Summary winner={computeWinner(rows)} /></>);
 }
 ```
 
+Don't: mix data access into components; put rendering into `lib/`;
+grow a component past one screenful before splitting.
+
 ### Open/closed
 
-Extend by adding data, not by editing every consumer. Deck values, roles,
-and identity colors are declared once in `packages/shared` and consumed
-generically — adding a card to `DECK` must not require touching a
-component.
+Extend by adding data or a new implementation, not by editing every
+consumer. Deck values, roles, and identity colors are declared once and
+consumed generically.
 
 ```tsx
 // Bad: every new value edits this component
 {v === 'coffee' ? <Coffee /> : v === 'skip' ? '?' : v === 21 ? '21' : …}
 
-// Good: one renderer owns the mapping; callers stay closed
+// Good: one renderer owns the mapping
 <VoteGlyph value={v} />
 ```
 
+Don't: switch on a type field in many places — add the case to the one
+table (deck presets, role lozenges, menu items) that owns it.
+
 ### Liskov substitution
 
-Components taking the same props shape must be interchangeable without
-callers special-casing which one they got. Don't make a variant that
-secretly ignores half its props or throws on inputs its sibling accepts.
+Anything accepting an interface must work with every implementation of
+it. A variant component takes the same props and honors all of them.
+
+```tsx
+// Bad: the compact variant silently ignores onSelect
+function CompactRow({ story, onSelect }: RowProps) {
+  return <li>{story.title}</li>; // onSelect dropped — callers can't swap variants
+}
+
+// Good: both variants honor the full contract
+function CompactRow({ story, onSelect }: RowProps) {
+  return <li onClick={() => onSelect(story.id)}>{story.title}</li>;
+}
+```
+
+Don't: throw on inputs a sibling accepts; narrow a prop's accepted
+values in an override; return a different shape than the base promises.
 
 ### Interface segregation
 
-Pass components only what they use. A component that takes `session` but
-reads one story should take the story.
+Take only what you use. Small prop types, small function signatures.
 
 ```tsx
 // Bad: forces every caller to have the whole world
 function TitleRow({ session, users, settings }: Everything) { … }
 
-// Good: minimal surface, trivial to test and reuse
+// Good: minimal surface
 function TitleRow({ title, canEdit, onRename }: TitleRowProps) { … }
 ```
 
+Don't: pass `session` where a story will do; export one giant "utils"
+interface; add a prop "for later".
+
 ### Dependency inversion
 
-UI depends on abstractions (`lib/api.ts` functions, shared types), never
-on Firebase primitives directly. No `ref()`/`onValue()` in components —
-if a component needs a new write, add a named function to `lib/api.ts`.
+Depend on abstractions. UI calls named `lib/api.ts` functions and
+shared types — never Firebase primitives.
 
-## React rules
+```tsx
+// Bad: component knows the database layout
+onClick={() => set(ref(db, `sessions/${id}/stories/${sid}/result`), v)}
 
-- **Derive, don't mirror.** State that can be computed from props or other
-  state is computed at render, not stored and synced.
+// Good: component knows the intent
+onClick={() => setResult(session.id, story.id, v)}
+```
+
+Don't: import `firebase/*` outside `lib/` and `firebase.ts`; reach into
+`import.meta.env` outside one config module.
+
+## React
+
+Do:
+
+- **Derive, don't mirror.** Compute from props/state at render.
 
   ```tsx
   // Bad
   const [count, setCount] = useState(0);
   useEffect(() => setCount(items.length), [items]);
-
   // Good
   const count = items.length;
   ```
 
-- **Effects are for the outside world only** (subscriptions, timers, DOM
-  measurement) and always return a cleanup. A subscription without an
-  unsubscribe is a bug even if nothing visibly breaks.
-- **Key remounts on identity changes.** When a route param names "which
-  thing" a stateful tree shows, remount it (`<Room key={sessionId} />`)
+- **Effects touch the outside world only** (subscriptions, timers, DOM
+  measurement) and always return a cleanup.
+- **Controlled inputs**: `value` + `onChange`, state owned by the
+  component or form.
+- **Stable keys from ids**, never array index for lists that reorder.
+- **Functional updates** when new state depends on old:
+  `setCount(c => c + 1)`.
+- **Key remounts on identity changes**: `<Room key={sessionId} />`
   instead of hand-resetting each piece of state.
-- **Guard external data.** Realtime records can be partial (concurrent
-  writes, kicked clients). Filter or default before rendering:
-  `Object.entries(users).filter(([, u]) => u && u.name)`. Never index into
-  a lookup table with an unvalidated value.
-- **No `any`, no `!` except at proven-narrow boundaries.** `npm run
-  typecheck` must pass clean; types for shared shapes live in
-  `packages/shared/src/types.ts` only.
-- **Events over polling.** Subscribe (`onValue`, `ResizeObserver`) rather
-  than `setInterval` checks.
-- **Accessibility is not optional:** every icon-only button has an
-  `aria-label`, menus use `role="menu"`/`menuitem"`, dialogs close on
-  Escape and backdrop click, focus is always visible.
+- **Custom hooks** for reused stateful logic (`useSession`, `useTheme`).
+- **Guard external data** before rendering:
+  `.filter(([, u]) => u && u.name)`.
+- **Accessibility always**: `aria-label` on icon-only buttons,
+  `role="menu"`/`menuitem`, Escape + backdrop close on dialogs, visible
+  focus.
 
-## Realtime data rules (Firebase RTDB)
+Don't:
+
+- Define a component inside another component (remounts every render).
+- Lie to dependency arrays or silence the lint rule without a comment.
+- Add `useMemo`/`useCallback` without a measured reason.
+- Use effects to transform data for rendering — that's a render-time
+  expression.
+- Poll with `setInterval` where a subscription exists (`onValue`,
+  `ResizeObserver`).
+- Use `any`, or `!` outside a proven-narrow boundary. Shared shapes
+  live in `packages/shared/src/types.ts` only.
+- Spread unknown props through components; declare what you accept.
+
+## Realtime data (Firebase RTDB)
 
 Every one of these was a real bug once.
 
@@ -124,65 +158,62 @@ Every one of these was a real bug once.
 - `functions/` carries marked mirrors of shared logic. Changing either
   side changes both; the shared version is canonical.
 
-## CSS rules
+## CSS
 
-- **Tokens only.** Every color, shadow, and radius comes from the
-  `:root` custom properties (see DESIGN.md). A hex literal outside the
-  token blocks is a defect.
-
-  ```css
-  /* Bad */  .note { color: #6b6e76; border-radius: 3px; }
-  /* Good */ .note { color: var(--dim); border-radius: 4px; }
-  ```
-
-- One stylesheet (`apps/web/src/styles.css`), sectioned by comment
-  banners; new rules go in the matching section. Mobile overrides live in
-  the existing media-query blocks, never scattered.
-- Watch selector specificity: don't stack competing selectors that
-  cancel each other; prefer adding a modifier class over `!important`
-  (which is banned).
-- **Layout invariants** (see DESIGN.md for the full list): the card table
-  never scrolls — content resizes to fit; fixed-height strips share their
-  height variable so borders stay flush; text inputs hold 16px at touch
-  widths.
+- Tokens only: every color, shadow, radius, and font size comes from
+  the `:root` custom properties (see DESIGN.md). A hex literal outside
+  the token blocks is a defect.
+- One stylesheet, sectioned by comment banners; mobile overrides live
+  in the existing media-query blocks.
+- Prefer a modifier class over specificity fights; `!important` is
+  banned.
+- Layout invariants (DESIGN.md §8): the card table never scrolls;
+  fixed-height strips share their height variable; inputs hold 16px at
+  touch widths.
 
 ## Testing
 
-Tests are part of the change, not a follow-up. CI runs typecheck, unit
-tests, and the e2e suite on every push and PR; deploys only happen when
-all three pass.
+Tests ship with the change. CI runs typecheck + unit + functions + e2e
+on every push and PR; deploys require all green.
 
-- **Unit tests (`npm run test:unit`, vitest)** cover `packages/shared`
-  exhaustively: every exported function gets happy-path, edge, and
-  rejection cases. Pure logic never ships untested — if a rule is hard to
-  test through the UI (tie-breaking, codec validation), that's exactly
-  why it lives in `packages/shared`.
-- **E2e tests (`npm run test:e2e`, Playwright against the emulator)**
-  cover user-visible behavior: the full multi-user session flow plus a
-  visual matrix (3 viewports × 2 themes). A new feature adds its steps to
-  the flow; a changed label updates the assertion in the same commit.
-- **Selectors:** prefer roles and accessible names
-  (`getByRole('button', { name: 'Flip' })`) over CSS classes; string
-  regexes are case-insensitive (`/add a story/i`) — copy is sentence
-  case and will bite you otherwise.
-- **No sleeps for state.** Await an assertion (`await expect(...)`),
-  never `waitForTimeout`, except to let a finished animation settle
-  before a screenshot.
-- A test that fails must describe a real defect. Flaky tests get fixed
-  or deleted the day they flake — never retried into submission.
+Do:
+
+- **Test behavior, not implementation**: assert what the user sees or
+  the function returns, not internal state or call counts.
+- Unit-test every `packages/shared` export: happy path, edges,
+  rejections. Hard-to-UI-test rules belong in shared for exactly this
+  reason.
+- E2e-test user-visible flows with real multi-browser sessions; a new
+  feature adds its steps, a changed label updates the assertion in the
+  same commit.
+- Select by role and accessible name:
+  `getByRole('button', { name: 'Flip' })`.
+- Await assertions (`await expect(...)`) — they retry until true.
+- Make tests deterministic: plant fixtures over emulator REST instead
+  of racing timing (disconnects, animations).
+
+Don't:
+
+- Sleep for state (`waitForTimeout`) — the only exception is letting a
+  finished animation settle before a screenshot.
+- Use case-sensitive text matchers; copy is sentence case
+  (`/add a story/i`).
+- Assert on CSS classes when a role or name exists.
+- Share mutable state between tests or depend on test order.
+- Write conditional assertions (`if (x) expect(...)`) — a test proves
+  one thing, always.
+- Retry a flaky test into submission: fix it or delete it the day it
+  flakes.
 
 ## General
 
-- **Voice:** sentence case everywhere; no terminal glyphs (`~ $`, `>`,
-  `[tags]`); labels say what the control does ("Delete story", not
-  "Submit").
-- **Comments** state a constraint the code can't show (why, not what).
-  Delete narration comments.
+- Sentence case everywhere; labels say what the control does ("Delete
+  story", not "Submit").
+- Comments state a constraint the code can't show — why, not what.
+- Destructive actions confirm first and use the danger treatment.
 - **Commits** are one logical change: imperative subject, a body that
   explains why. Typecheck and verify both themes before committing UI
   work.
 - **Docs move with behavior**: behavior changes update FEATURES.md in
   the same commit; design changes update DESIGN.md; new conventions
   land here.
-- **Destructive actions** always confirm first (modal), and their
-  buttons/menu items use the danger treatment.
