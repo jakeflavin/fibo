@@ -15,6 +15,9 @@ test('keyboard shortcuts vote, flip, repoint, and open the cheat sheet', async (
   await add.clear();
   await add.blur();
 
+  // The round must be live (deck enabled) before keys can play cards.
+  await expect(page.getByTitle('3 points', { exact: true })).toBeEnabled();
+
   // 4 plays the fourth card (3 in the Fibonacci deck); again takes it back.
   await page.keyboard.press('4');
   await expect(page.getByTitle('3 points', { exact: true })).toHaveAttribute(
