@@ -172,38 +172,26 @@ join pages, where the form card floats).
   is a subtle 2px lift, not a launch.
 
 - **Segmented pickers** (deck picker, timer segment): joined `--line`
-  group; the active cell uses the solid primary fill (`--accent` bg,
-  `--accent-ink` text) — the same treatment as the selected point on
-  the ruler and the Flip button.
-- **Key chips** (shortcut cheat sheet): `--font-small` 600 on
-  `--surface-hi`, 1px `--line` border, 4px radius, 40px min width,
-  centered.
-- **Copyable rows** (Connect Claude): label + `--surface-hi` code pill
-  (scrolls internally, never overflows the modal) + a 32px icon copy
-  button; each copy confirms with a toast.
-- **Timer bar**: replaces the consensus placeholder while running —
-  clock (tabular) + accent track/fill; the final 5 seconds go
-  `--danger` with a blink.
-- **Toasts**: bottom-centered stack, overlay surface + shadow, info and
-  error kinds; error text in `--danger`.
+  group; active cell = solid primary fill.
+- **Key chips** (cheat sheet): `--font-small` 600 on `--surface-hi`,
+  1px border, 4px radius, 40px min width.
+- **Copyable rows** (Connect Claude): label + code pill (scrolls
+  internally) + a 32px copy icon button; copies confirm with a toast.
+- **Timer bar**: clock (tabular) + accent track/fill in place of the
+  consensus; the final 5 seconds go `--danger` with a blink.
+- **Toasts**: bottom-centered stack, overlay surface + shadow; error
+  text in `--danger`.
 
 ## 5b. Motion
 
-Motion is quiet and purposeful; `prefers-reduced-motion` users get the
-reduced experience by relying only on these short transitions:
-
-- `rise` (fade + 6px up, 0.2–0.25s ease-out): list rows, cards, menus
-  entering.
-- `pop` (scale 0.5→1, 0.35s springy cubic-bezier): the consensus value.
-- Card flip: 3D `rotateY` on the seat card inner, 0.55s with a slight
-  overshoot curve; `lockin` bumps the seat 4px up for 0.25s when a vote
-  lands.
-- Seat scatter: each card carries a deterministic tilt (±5°) and drop
-  (0–5px) from its user id; hover straightens over 0.25s.
-- Drag-reorder: the row in flight lifts on `--shadow-float` above its
-  neighbors; drops settle with the sortable transition.
-- Hover-reveal actions fade in over 0.12s. Menus and modals appear with
-  `rise`; nothing bounces, slides across the screen, or loops.
+- `rise` (fade + 6px up, 0.2–0.25s): rows, cards, menus entering.
+- `pop` (scale 0.5→1, 0.35s spring): the consensus value.
+- Card flip: `rotateY` 0.55s with slight overshoot; `lockin` bumps the
+  seat 4px for 0.25s when a vote lands.
+- Seat scatter: deterministic tilt ±5° and drop 0–5px per user id;
+  hover straightens over 0.25s.
+- Drag-reorder: the row in flight lifts on `--shadow-float`.
+- Hover-reveal actions fade in over 0.12s. Nothing bounces or loops.
 
 ## 6. Voice & content
 
