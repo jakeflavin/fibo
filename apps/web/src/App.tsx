@@ -7,7 +7,8 @@ import { Room } from './pages/Room';
 export function App() {
   return (
     <ToastProvider>
-      <BrowserRouter>
+      {/* BASE_URL carries the trailing slash; react-router trims it. */}
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/s/:sessionId" element={<Room />} />

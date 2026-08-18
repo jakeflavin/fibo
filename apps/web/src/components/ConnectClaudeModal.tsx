@@ -10,7 +10,8 @@ import { useToast } from './Toast';
  */
 export function ConnectClaudeModal({ onClose }: { onClose: () => void }) {
   const toast = useToast();
-  const url = `${window.location.origin}/mcp`;
+  // The endpoint sits under the app's own base, so it moves with it.
+  const url = `${window.location.origin}${import.meta.env.BASE_URL}mcp`;
   const command = `claude mcp add --transport http --scope user fibo ${url}`;
 
   useEffect(() => {

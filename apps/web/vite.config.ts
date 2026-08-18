@@ -7,6 +7,12 @@ const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 
 };
 
 export default defineConfig({
+  /*
+   * Served from a sub-path of the portfolio rather than its own domain. Vite rewrites
+   * bundled imports and index.html attributes; anything built at runtime has to read
+   * import.meta.env.BASE_URL itself.
+   */
+  base: '/fibo/',
   plugins: [react()],
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
