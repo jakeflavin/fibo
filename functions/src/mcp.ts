@@ -177,10 +177,18 @@ function buildServer(): McpServer {
 const requestLimiter = new RateLimiter(60, 60 / 60_000); // 60/min
 const createLimiter = new RateLimiter(10, 10 / 3_600_000); // 10/hour
 
+/*
+ * Hosting forwards the original path to the function, so behind the portfolio the request
+ * arrives as /fibo/mcp rather than /mcp. Both are mounted: the bare path is what the
+ * function answers on directly, and the prefixed one is what every browser and MCP client
+ * actually calls.
+ */
+const MCP_PATHS = ['/mcp', '/fibo/mcp'];
+
 const app = express();
 app.use(express.json({ limit: '256kb' }));
 
-app.post('/mcp', async (req, res) => {
+app.post(MCP_PATHS, async (req, res) => {
   const ip = (req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim() ?? req.ip ?? 'unknown';
   if (!requestLimiter.allow(ip)) {
     res.status(429).json({
@@ -217,14 +225,14 @@ app.post('/mcp', async (req, res) => {
 });
 
 // Stateless server: no SSE stream to resume, no session to delete.
-app.get('/mcp', (_req, res) => {
+app.get(MCP_PATHS, (_req, res) => {
   res.status(405).json({
     jsonrpc: '2.0',
     error: { code: -32000, message: 'Method not allowed: this server is stateless (POST only).' },
     id: null,
   });
 });
-app.delete('/mcp', (_req, res) => {
+app.delete(MCP_PATHS, (_req, res) => {
   res.status(405).json({
     jsonrpc: '2.0',
     error: { code: -32000, message: 'Method not allowed: this server is stateless (POST only).' },
