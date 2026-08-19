@@ -6,13 +6,13 @@ import { getLastName, saveLastName } from '../lib/storage';
 import { useToast } from './Toast';
 import { SettingsMenu } from './ThemeToggle';
 
-interface Props {
+interface JoinGateProps {
   session: Session;
   onJoined: (userId: string) => void;
 }
 
 /** Name prompt shown to visitors who open a session they haven't joined. */
-export function JoinGate({ session, onJoined }: Props) {
+export function JoinGate({ session, onJoined }: JoinGateProps) {
   const toast = useToast();
   const [name, setName] = useState(getLastName);
   const [busy, setBusy] = useState(false);

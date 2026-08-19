@@ -21,7 +21,7 @@ import { splitPastedTitles } from '@fibo/shared';
 import { activateStory, addStories, addStory, reorderStories } from '../lib/api';
 import { VoteGlyph } from './VoteGlyph';
 
-interface Props {
+interface StoryQueueProps {
   session: Session;
   canLead: boolean;
 }
@@ -86,7 +86,7 @@ function StoryRow({ session, story: s, canLead }: RowProps) {
  * click rows to switch or reopen, and drag rows to reorder; every row
  * shows its points.
  */
-export function StoryQueue({ session, canLead }: Props) {
+export function StoryQueue({ session, canLead }: StoryQueueProps) {
   const [title, setTitle] = useState('');
   const stories = Object.values(session.stories ?? {}).sort((a, b) => a.order - b.order);
   const maxOrder = stories.reduce((m, s) => Math.max(m, s.order), -1);

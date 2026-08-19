@@ -4,13 +4,13 @@ import { QRCodeSVG } from 'qrcode.react';
 import type { Session } from '@fibo/shared';
 import { useToast } from './Toast';
 
-interface Props {
+interface ShareModalProps {
   session: Session;
   onClose: () => void;
 }
 
 /** Invite modal: the session link as text and as a scannable QR code. */
-export function ShareModal({ session, onClose }: Props) {
+export function ShareModal({ session, onClose }: ShareModalProps) {
   const toast = useToast();
   const url = `${window.location.origin}/s/${session.id}`;
 

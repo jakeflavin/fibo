@@ -25,7 +25,7 @@ import { DeckModal } from './DeckModal';
 import { useTheme } from './ThemeToggle';
 import { useToast } from './Toast';
 
-interface Props {
+interface RoomHeaderProps {
   session: Session;
   myUserId: string;
   canLead: boolean;
@@ -37,7 +37,7 @@ interface Props {
  * The app bar: brand plus the gear menu (share, export/import, new
  * session, theme, leave session).
  */
-export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }: Props) {
+export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }: RoomHeaderProps) {
   const toast = useToast();
   const navigate = useNavigate();
   const [confirmLeave, setConfirmLeave] = useState(false);

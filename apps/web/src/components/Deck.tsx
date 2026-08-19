@@ -3,7 +3,7 @@ import { COFFEE, deckCards, SKIP } from '@fibo/shared';
 import { castVote } from '../lib/api';
 import { VoteGlyph } from './VoteGlyph';
 
-interface Props {
+interface DeckProps {
   session: Session;
   myUserId: string;
 }
@@ -13,7 +13,7 @@ interface Props {
  * second click to take it back. Locks while no story is on the table or
  * after the flip.
  */
-export function Deck({ session, myUserId }: Props) {
+export function Deck({ session, myUserId }: DeckProps) {
   const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
   const myVote = story?.votes?.[myUserId];
   const disabled = !story || session.revealed;

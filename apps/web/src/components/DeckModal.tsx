@@ -5,7 +5,7 @@ import { deckCards } from '@fibo/shared';
 import { setDeck } from '../lib/api';
 import { DeckPicker } from './DeckPicker';
 
-interface Props {
+interface DeckModalProps {
   session: Session;
   onClose: () => void;
 }
@@ -15,7 +15,7 @@ interface Props {
  * point ruler for everyone; stories already pointed keep their values
  * until someone repoints them.
  */
-export function DeckModal({ session, onClose }: Props) {
+export function DeckModal({ session, onClose }: DeckModalProps) {
   const [choice, setChoice] = useState<DeckChoice | null>(() => ({
     preset: session.deck?.preset ?? 'fib',
     cards: deckCards(session),

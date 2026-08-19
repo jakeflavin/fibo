@@ -1,6 +1,6 @@
 import { IDENTITY_SETS } from '@fibo/shared';
 
-interface Props {
+interface PixelAvatarProps {
   identity: number;
   size?: number;
   className?: string;
@@ -24,7 +24,7 @@ function identitySet(identity: number) {
   return IDENTITY_SETS[((identity % count) + count) % count] ?? IDENTITY_SETS[0];
 }
 
-export function PixelAvatar({ identity, size = 32, className, ink }: Props) {
+export function PixelAvatar({ identity, size = 32, className, ink }: PixelAvatarProps) {
   const set = identitySet(identity);
   const fill = ink ?? 'var(--idc)';
   const rects: React.ReactElement[] = [];

@@ -7,7 +7,7 @@ import { ConfirmModal } from './ConfirmModal';
 import { identityVars, PixelAvatar } from './PixelAvatar';
 import { VoteGlyph } from './VoteGlyph';
 
-interface Props {
+interface CardTableProps {
   session: Session;
   myUserId: string;
   canLead: boolean;
@@ -29,7 +29,7 @@ function scatter(uid: string) {
   return { tilt: (h % 11) - 5, dy: (h >> 4) % 6 };
 }
 
-export function CardTable({ session, myUserId, canLead }: Props) {
+export function CardTable({ session, myUserId, canLead }: CardTableProps) {
   const users = session.users ?? {};
   const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
   const votes = story?.votes ?? {};

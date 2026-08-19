@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
 
-interface Props {
+interface ConfirmModalProps {
   title: string;
   message: React.ReactNode;
   confirmLabel: string;
@@ -10,7 +10,7 @@ interface Props {
 }
 
 /** Small confirmation dialog in the same shell as the share modal. */
-export function ConfirmModal({ title, message, confirmLabel, onConfirm, onClose }: Props) {
+export function ConfirmModal({ title, message, confirmLabel, onConfirm, onClose }: ConfirmModalProps) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();

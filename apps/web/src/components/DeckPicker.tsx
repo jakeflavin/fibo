@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { DeckChoice, DeckPreset } from '@fibo/shared';
 import { DECK_PRESETS, parseCustomDeck } from '@fibo/shared';
 
-interface Props {
+interface DeckPickerProps {
   value: DeckChoice;
   onChange: (deck: DeckChoice | null) => void;
 }
@@ -19,7 +19,7 @@ const PRESETS: Array<{ id: DeckPreset; label: string }> = [
  * live preview of the cards in rank order. Reports null while a custom
  * deck has fewer than two cards.
  */
-export function DeckPicker({ value, onChange }: Props) {
+export function DeckPicker({ value, onChange }: DeckPickerProps) {
   const [customText, setCustomText] = useState(
     value.preset === 'custom' ? value.cards.map(String).join(', ') : '',
   );

@@ -4,7 +4,7 @@ import type { Session } from '@fibo/shared';
 import { COFFEE, deckCards, SKIP } from '@fibo/shared';
 import { castVote, revealCards, revote } from '../lib/api';
 
-interface Props {
+interface ShortcutsProps {
   session: Session;
   myUserId: string;
   canLead: boolean;
@@ -20,7 +20,7 @@ interface Props {
  * (gear menu → "Keyboard shortcuts", or the ? key). Keys never fire
  * while typing in a field or with a modifier held.
  */
-export function Shortcuts({ session, myUserId, canLead, canVote, open, onOpen, onClose }: Props) {
+export function Shortcuts({ session, myUserId, canLead, canVote, open, onOpen, onClose }: ShortcutsProps) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;

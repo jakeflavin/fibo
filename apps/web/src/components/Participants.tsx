@@ -7,7 +7,7 @@ import { ConfirmModal } from './ConfirmModal';
 import { identityVars, PixelAvatar } from './PixelAvatar';
 import { VoteGlyph } from './VoteGlyph';
 
-interface Props {
+interface ParticipantsProps {
   session: Session;
   myUserId: string;
 }
@@ -19,7 +19,7 @@ const ROLE_TAG = { owner: 'Admin', leader: 'Lead', participant: '', spectator: '
  * player, plus the admin-only row actions menu (make/remove lead,
  * remove from session).
  */
-export function Participants({ session, myUserId }: Props) {
+export function Participants({ session, myUserId }: ParticipantsProps) {
   const users = session.users ?? {};
   const iAmOwner = users[myUserId]?.role === 'owner';
   const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
