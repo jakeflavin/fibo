@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Eye, Heart } from 'lucide-react'
 import type { Session } from '@fibo/shared'
-import { joinSession } from '../lib/api'
-import { getLastName, saveLastName } from '../lib/storage'
+import { joinSession } from '@/lib/api'
+import { getLastName, saveLastName } from '@/lib/storage'
 import { useToast } from './Toast'
 import { SettingsMenu } from './ThemeToggle'
 

@@ -9,11 +9,11 @@ import {
   parseSessionExport,
   storiesFromExport,
 } from '@fibo/shared'
-import { createSession } from '../lib/api'
-import { getLastName, saveLastName } from '../lib/storage'
-import { SettingsMenu } from '../components/ThemeToggle'
-import { DeckPicker } from '../components/DeckPicker'
-import { useToast } from '../components/Toast'
+import { createSession } from '@/lib/api'
+import { getLastName, saveLastName } from '@/lib/storage'
+import { SettingsMenu } from '@/components/ThemeToggle'
+import { DeckPicker } from '@/components/DeckPicker'
+import { useToast } from '@/components/Toast'
 
 /** Landing page: name prompt that creates a session and enters it. */
 export function Home() {

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { X } from 'lucide-react'
 import type { Session } from '@fibo/shared'
 import { COFFEE, deckCards, SKIP } from '@fibo/shared'
-import { castVote, revealCards, revote } from '../lib/api'
+import { castVote, revealCards, revote } from '@/lib/api'
 
 interface ShortcutsProps {
   session: Session

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Bot, GitBranch, Moon, Settings, Sun } from 'lucide-react'
-import { getTheme, saveTheme } from '../lib/storage'
+import { getTheme, saveTheme } from '@/lib/storage'
 import { ConnectClaudeModal } from './ConnectClaudeModal'
 
 function effectiveTheme(): 'light' | 'dark' {

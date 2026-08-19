@@ -1,7 +1,7 @@
 import { RotateCcw } from 'lucide-react'
 import type { Session } from '@fibo/shared'
 import { COFFEE, deckCards, SKIP } from '@fibo/shared'
-import { revealCards, revote, setAutoFlip, setResult, startTimer } from '../lib/api'
+import { revealCards, revote, setAutoFlip, setResult, startTimer } from '@/lib/api'
 import { VoteGlyph } from './VoteGlyph'
 
 const PRESETS = [

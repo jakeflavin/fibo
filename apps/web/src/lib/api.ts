@@ -23,7 +23,7 @@ import {
   type Story,
   type VoteValue,
 } from '@fibo/shared'
-import { db } from '../firebase'
+import { db } from '@/firebase'
 import { saveMyUserId } from './storage'
 
 const sessionRef = (sessionId: string) => ref(db, `sessions/${sessionId}`)

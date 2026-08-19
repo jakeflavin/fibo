@@ -1,6 +1,6 @@
 import type { Session } from '@fibo/shared'
 import { COFFEE, deckCards, SKIP } from '@fibo/shared'
-import { castVote } from '../lib/api'
+import { castVote } from '@/lib/api'
 import { VoteGlyph } from './VoteGlyph'
 
 interface DeckProps {

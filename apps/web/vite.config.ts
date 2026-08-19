@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
@@ -13,6 +14,9 @@ export default defineConfig({
    * import.meta.env.BASE_URL itself.
    */
   base: '/fibo/',
+  resolve: {
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+  },
   plugins: [react()],
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),

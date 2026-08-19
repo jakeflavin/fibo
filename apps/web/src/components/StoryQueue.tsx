@@ -18,7 +18,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import type { Session, Story } from '@fibo/shared'
 import { splitPastedTitles } from '@fibo/shared'
-import { activateStory, addStories, addStory, reorderStories } from '../lib/api'
+import { activateStory, addStories, addStory, reorderStories } from '@/lib/api'
 import { VoteGlyph } from './VoteGlyph'
 
 interface StoryQueueProps {

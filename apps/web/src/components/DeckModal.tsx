@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import type { DeckChoice, Session } from '@fibo/shared'
 import { deckCards } from '@fibo/shared'
-import { setDeck } from '../lib/api'
+import { setDeck } from '@/lib/api'
 import { DeckPicker } from './DeckPicker'
 
 interface DeckModalProps {

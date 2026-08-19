@@ -1,6 +1,6 @@
 import { Timer } from 'lucide-react'
 import type { Session } from '@fibo/shared'
-import { useNow } from '../lib/useSession'
+import { useNow } from '@/lib/useSession'
 
 /**
  * Countdown readout in the consensus card; starting a timer lives in
