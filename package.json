@@ -7,6 +7,9 @@
     "packages/*",
     "apps/*"
   ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "npm run dev -w apps/web",
     "build": "npm run build -w apps/web",
@@ -15,7 +18,8 @@
     "format": "prettier --write .",
     "typecheck": "npm run typecheck -w packages/shared && npm run typecheck -w apps/web",
     "test": "npm run test -w packages/shared && npm run test -w apps/web && npm --prefix functions test",
-    "emulators": "firebase emulators:start --project demo-fibo"
+    "emulators": "firebase emulators:start --project demo-fibo",
+    "icons": "node scripts/make-icons.mjs"
   },
   "devDependencies": {
     "oxlint": "^1.78.0",

@@ -4,7 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Fibo — ephemeral story-point planning for software teams. No accounts, just a link." />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cg transform='rotate%28-8 8 8%29'%3E%3Crect x='3.2' y='1.5' width='9.6' height='13' rx='2.2' fill='%231868DB'/%3E%3Crect x='4.6' y='2.9' width='6.8' height='10.2' rx='1.2' fill='none' stroke='rgba%28255,255,255,0.55%29' stroke-width='0.8'/%3E%3Ctext x='8' y='10.9' font-size='7.5' font-weight='700' text-anchor='middle' fill='%23ffffff' font-family='system-ui,-apple-system,sans-serif'%3E%3F%3C/text%3E%3C/g%3E%3C/svg%3E" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#18191a" />
+
+    <!-- iOS reads its own tags rather than the manifest, and ignores an SVG icon. -->
+    <link rel="apple-touch-icon" href="/icon-180.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- Link previews. The image is the app's own cover shot, served from the directory
+         that hosts it; crawlers need an absolute URL and will not follow a relative one. -->
+    <meta property="og:title" content="fibo — story points, no strings attached" />
+    <meta property="og:description" content="Fibo — ephemeral story-point planning for software teams. No accounts, just a link." />
+    <meta property="og:site_name" content="Jake's Portfolio" />
+    <meta property="og:image" content="https://portfolio-4b9fe.web.app/images/fibo-cover.jpg" />
+    <meta property="og:image:alt" content="Fibo" />
+    <meta property="og:url" content="https://portfolio-4b9fe.web.app/fibo/" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="fibo — story points, no strings attached" />
+    <meta name="twitter:description" content="Fibo — ephemeral story-point planning for software teams. No accounts, just a link." />
+    <meta name="twitter:image" content="https://portfolio-4b9fe.web.app/images/fibo-cover.jpg" />
+    <meta name="twitter:image:alt" content="Fibo" />
+    <link rel="canonical" href="https://portfolio-4b9fe.web.app/fibo/" />
     <title>fibo — story points, no strings attached</title>
     <script>
       // Apply the stored theme before first paint. fibo is dark-first:
