@@ -117,3 +117,7 @@ first person to open a Claude-created session becomes its admin.
 ## License
 
 [MIT](LICENSE) — © Jake Flavin.
+
+## Standards
+
+Code in this repo follows the [shared standards](https://github.com/jakeflavin/portfolio/blob/main/docs/STANDARDS.md) and [layout](https://github.com/jakeflavin/portfolio/blob/main/docs/LAYOUT.md) used across the directory, plus the app-specific rules in [STANDARDS.md](STANDARDS.md).
