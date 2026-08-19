@@ -20,7 +20,7 @@ Everything below is in addition to the shared standard, not instead of it.
   removing rather than writing — were written here and still apply first to this app.
 - **Layout invariants** are in [DESIGN.md](DESIGN.md) §8: the card table never scrolls,
   fixed-height strips share their height variable, inputs hold 16px at touch widths.
-- **Tests.** This is the only app with an e2e suite; it runs against emulators with real
-  multi-browser sessions. A new feature adds its steps and a changed label updates the
-  assertion in the same commit.
+- **Tests.** Unit tests only, beside the code they cover. The rules live in
+  `packages/shared`, which is where they are tested; components are tested through their
+  accessible names. A new feature ships its tests in the same commit.
 - **Behaviour changes update [FEATURES.md](FEATURES.md)** in the same commit.

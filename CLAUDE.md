@@ -10,7 +10,7 @@ System. Overview, commands, and structure: [README.md](README.md).
 
 - Never assume anything — your knowledge may be out of date. Use the
   context7 MCP for current docs whenever a question involves a library,
-  framework, or CLI (React, Vite, Firebase, firebase-tools, Playwright,
+  framework, or CLI (React, Vite, Firebase, firebase-tools, vitest,
   dnd-kit, lucide-react, …).
 - Read [STANDARDS.md](STANDARDS.md) before touching any code. Its rules
   are mandatory.

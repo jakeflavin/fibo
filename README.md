@@ -33,7 +33,6 @@ fibo/
 │       └── styles.css      # the single stylesheet
 ├── packages/shared/        # pure domain logic + vitest suite
 ├── functions/              # Cloud Functions: cleanup + MCP (standalone package)
-├── e2e/                    # Playwright specs
 ├── scripts/                # one-time ops scripts
 ├── firebase.json
 └── .github/workflows/      # test-then-deploy pipeline
@@ -70,9 +69,8 @@ REST: `http://localhost:9000/sessions/<id>.json?ns=demo-fibo-default-rtdb`.
 
 ```bash
 npm run typecheck
-npm run test:unit            # packages/shared
-npm --prefix functions test  # needs the emulator running
-npm run test:e2e             # needs the emulator running
+npm test                     # shared + functions
+npm run test -w apps/web     # components
 ```
 
 ## Deployment
