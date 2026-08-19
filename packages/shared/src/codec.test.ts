@@ -155,7 +155,9 @@ describe('storiesFromExport', () => {
     const out = storiesFromExport(
       {
         app: 'fibo',
-        version: 2,
+        // storiesFromExport takes a normalized doc; parseSessionExport is what
+        // accepts v1 and v2, and is tested on those above.
+        version: 3,
         exportedAt: new Date().toISOString(),
         stories: [{ title: 'done one', points: 8 }, { title: 'todo one' }],
       },
