@@ -1,6 +1,5 @@
-import { useEffect } from 'react'
-import { createPortal } from 'react-dom'
-import { Copy, X } from 'lucide-react'
+import { Copy } from 'lucide-react'
+import { Modal } from './Modal'
 import { useToast } from './Toast'
 
 /**
@@ -14,13 +13,6 @@ export function ConnectClaudeModal({ onClose }: { onClose: () => void }) {
   const url = `${window.location.origin}${import.meta.env.BASE_URL}mcp`
   const command = `claude mcp add --transport http --scope user fibo ${url}`
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
 
   const copy = (value: string, what: string) => async () => {
     try {
@@ -31,23 +23,13 @@ export function ConnectClaudeModal({ onClose }: { onClose: () => void }) {
     }
   }
 
-  // Portaled: the settings menus live inside fixed-position wrappers
-  // whose stacking contexts would trap the backdrop under page content.
-  return createPortal(
-    <div className="modal-backdrop" onClick={onClose}>
-      <div
-        className="modal connect-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Connect Claude"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="modal-title">
-          <span className="eyebrow">Connect Claude</span>
-          <button className="btn btn-ghost modal-close" onClick={onClose} aria-label="Close">
-            <X size={15} />
-          </button>
-        </div>
+  /*
+   * No portal any more. This modal is opened from menus inside fixed-position wrappers,
+   * whose stacking contexts used to trap the backdrop under page content; a dialog opened
+   * with showModal() is in the top layer, which no stacking context can contain.
+   */
+  return (
+    <Modal title="Connect Claude" onClose={onClose} className="connect-modal">
         <p className="panel-body">
           Add fibo as a connector once, and Claude can start sessions from your backlog, add stories
           mid-meeting, and read the points back out — no account needed.
@@ -84,8 +66,6 @@ export function ConnectClaudeModal({ onClose }: { onClose: () => void }) {
           Claude gets four tools: create a session, add stories, read the room, and read results.
           Whoever opens a Claude-created session first becomes its admin.
         </p>
-      </div>
-    </div>,
-    document.body,
+    </Modal>
   )
 }

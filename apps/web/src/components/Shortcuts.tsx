@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
-import { X } from 'lucide-react'
 import type { Session } from '@fibo/shared'
 import { COFFEE, deckCards, SKIP } from '@fibo/shared'
 import { castVote, revealCards, revote } from '@/lib/api'
+import { Modal } from './Modal'
 
 interface ShortcutsProps {
   session: Session
@@ -40,11 +40,6 @@ export function Shortcuts({
         onOpen()
         return
       }
-      if (e.key === 'Escape' && open) {
-        onClose()
-        return
-      }
-
       const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined
       const key = e.key.toLowerCase()
 
@@ -100,31 +95,17 @@ export function Shortcuts({
   ]
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div
-        className="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Keyboard shortcuts"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="modal-title">
-          <span className="eyebrow">Keyboard shortcuts</span>
-          <button className="btn btn-ghost modal-close" onClick={onClose} aria-label="Close">
-            <X size={15} />
-          </button>
-        </div>
-        <ul className="shortcut-list">
-          {rows
-            .filter(([, , show]) => show)
-            .map(([keys, what]) => (
-              <li key={keys} className="shortcut-row">
-                <kbd className="kbd">{keys}</kbd>
-                <span>{what}</span>
-              </li>
-            ))}
-        </ul>
-      </div>
-    </div>
+    <Modal title="Keyboard shortcuts" onClose={onClose}>
+      <ul className="shortcut-list">
+        {rows
+          .filter(([, , show]) => show)
+          .map(([keys, what]) => (
+            <li key={keys} className="shortcut-row">
+              <kbd className="kbd">{keys}</kbd>
+              <span>{what}</span>
+            </li>
+          ))}
+      </ul>
+    </Modal>
   )
 }
