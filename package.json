@@ -11,14 +11,18 @@
     "dev": "npm run dev -w apps/web",
     "build": "npm run build -w apps/web",
     "preview": "npm run preview -w apps/web",
+    "lint": "oxlint",
+    "format": "prettier --write .",
     "typecheck": "npm run typecheck -w packages/shared && npm run typecheck -w apps/web",
+    "test": "npm run test -w packages/shared",
     "emulators": "firebase emulators:start --project demo-fibo",
     "test:e2e": "playwright test",
-    "test:unit": "npm run test -w packages/shared",
     "e2e:serve": "npm run build:test -w apps/web && npm run preview -w apps/web"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.0",
-    "typescript": "^7.0.2"
+    "oxlint": "^1.78.0",
+    "prettier": "^3.6.2",
+    "typescript": "^6.0.2"
   }
 }
