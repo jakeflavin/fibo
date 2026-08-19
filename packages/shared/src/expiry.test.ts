@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { isSessionExpired, lastActivityAt, SESSION_TTL_MS } from '../src/expiry';
-import type { Session, SessionUser } from '../src/types';
+import { isSessionExpired, lastActivityAt, SESSION_TTL_MS } from './expiry';
+import type { Session, SessionUser } from './types';
 
 const HOUR = 60 * 60 * 1000;
 const NOW = 1_800_000_000_000;

@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
-import type { DeckChoice, Session } from '@fibo/shared';
-import { deckCards } from '@fibo/shared';
-import { setDeck } from '../lib/api';
-import { DeckPicker } from './DeckPicker';
+import { useEffect, useState } from 'react'
+import { X } from 'lucide-react'
+import type { DeckChoice, Session } from '@fibo/shared'
+import { deckCards } from '@fibo/shared'
+import { setDeck } from '../lib/api'
+import { DeckPicker } from './DeckPicker'
 
 interface DeckModalProps {
-  session: Session;
-  onClose: () => void;
+  session: Session
+  onClose: () => void
 }
 
 /**
@@ -19,15 +19,15 @@ export function DeckModal({ session, onClose }: DeckModalProps) {
   const [choice, setChoice] = useState<DeckChoice | null>(() => ({
     preset: session.deck?.preset ?? 'fib',
     cards: deckCards(session),
-  }));
+  }))
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -44,10 +44,7 @@ export function DeckModal({ session, onClose }: DeckModalProps) {
             <X size={15} />
           </button>
         </div>
-        <DeckPicker
-          value={choice ?? { preset: 'custom', cards: [] }}
-          onChange={setChoice}
-        />
+        <DeckPicker value={choice ?? { preset: 'custom', cards: [] }} onChange={setChoice} />
         <p className="panel-body dim">
           Stories already pointed keep their values unless they're repointed.
         </p>
@@ -59,9 +56,9 @@ export function DeckModal({ session, onClose }: DeckModalProps) {
             className="btn btn-primary"
             disabled={!choice}
             onClick={() => {
-              if (!choice) return;
-              void setDeck(session.id, choice);
-              onClose();
+              if (!choice) return
+              void setDeck(session.id, choice)
+              onClose()
             }}
           >
             Save deck
@@ -69,5 +66,5 @@ export function DeckModal({ session, onClose }: DeckModalProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

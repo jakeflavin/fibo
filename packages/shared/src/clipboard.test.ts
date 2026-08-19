@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { committedPoints, resultsTable, splitPastedTitles } from '../src/clipboard';
-import type { Session, Story } from '../src/types';
+import { committedPoints, resultsTable, splitPastedTitles } from './clipboard';
+import type { Session, Story } from './types';
 
 const story = (over: Partial<Story>): Story => ({
   id: 'sid',

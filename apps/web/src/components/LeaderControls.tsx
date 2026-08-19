@@ -1,14 +1,14 @@
-import { RotateCcw } from 'lucide-react';
-import type { Session } from '@fibo/shared';
-import { COFFEE, deckCards, SKIP } from '@fibo/shared';
-import { revealCards, revote, setAutoFlip, setResult, startTimer } from '../lib/api';
-import { VoteGlyph } from './VoteGlyph';
+import { RotateCcw } from 'lucide-react'
+import type { Session } from '@fibo/shared'
+import { COFFEE, deckCards, SKIP } from '@fibo/shared'
+import { revealCards, revote, setAutoFlip, setResult, startTimer } from '../lib/api'
+import { VoteGlyph } from './VoteGlyph'
 
 const PRESETS = [
   { label: '30s', seconds: 30 },
   { label: '1m', seconds: 60 },
   { label: '2m', seconds: 120 },
-];
+]
 
 /**
  * Every leader/owner-only round action, colocated at the top of the rail.
@@ -16,9 +16,9 @@ const PRESETS = [
  * round state instead of appearing and disappearing.
  */
 export function LeaderControls({ session }: { session: Session }) {
-  const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
-  const revealed = session.revealed && !!story;
-  const timer = session.timer ?? null;
+  const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined
+  const revealed = session.revealed && !!story
+  const timer = session.timer ?? null
 
   return (
     <div className="rail-section rail-card leader-controls">
@@ -79,5 +79,5 @@ export function LeaderControls({ session }: { session: Session }) {
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Bot,
   ClipboardList,
@@ -14,23 +14,23 @@ import {
   Settings,
   Share2,
   Sun,
-} from 'lucide-react';
-import type { Session } from '@fibo/shared';
-import { exportSession, parseSessionExport, resultsTable, ImportError } from '@fibo/shared';
-import { createSession, importStories, removeUser } from '../lib/api';
-import { clearMyUserId } from '../lib/storage';
-import { ConfirmModal } from './ConfirmModal';
-import { ConnectClaudeModal } from './ConnectClaudeModal';
-import { DeckModal } from './DeckModal';
-import { useTheme } from './ThemeToggle';
-import { useToast } from './Toast';
+} from 'lucide-react'
+import type { Session } from '@fibo/shared'
+import { exportSession, parseSessionExport, resultsTable, ImportError } from '@fibo/shared'
+import { createSession, importStories, removeUser } from '../lib/api'
+import { clearMyUserId } from '../lib/storage'
+import { ConfirmModal } from './ConfirmModal'
+import { ConnectClaudeModal } from './ConnectClaudeModal'
+import { DeckModal } from './DeckModal'
+import { useTheme } from './ThemeToggle'
+import { useToast } from './Toast'
 
 interface RoomHeaderProps {
-  session: Session;
-  myUserId: string;
-  canLead: boolean;
-  onShare: () => void;
-  onShortcuts: () => void;
+  session: Session
+  myUserId: string
+  canLead: boolean
+  onShare: () => void
+  onShortcuts: () => void
 }
 
 /**
@@ -38,82 +38,82 @@ interface RoomHeaderProps {
  * session, theme, leave session).
  */
 export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }: RoomHeaderProps) {
-  const toast = useToast();
-  const navigate = useNavigate();
-  const [confirmLeave, setConfirmLeave] = useState(false);
-  const [deckOpen, setDeckOpen] = useState(false);
-  const [connectOpen, setConnectOpen] = useState(false);
-  const isAdmin = session.users?.[myUserId]?.role === 'owner';
-  const { theme, toggle } = useTheme();
-  const fileInput = useRef<HTMLInputElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(false);
+  const toast = useToast()
+  const navigate = useNavigate()
+  const [confirmLeave, setConfirmLeave] = useState(false)
+  const [deckOpen, setDeckOpen] = useState(false)
+  const [connectOpen, setConnectOpen] = useState(false)
+  const isAdmin = session.users?.[myUserId]?.role === 'owner'
+  const { theme, toggle } = useTheme()
+  const fileInput = useRef<HTMLInputElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
 
   // Close the menu on outside click or Escape.
   useEffect(() => {
-    if (!open) return;
+    if (!open) return
     const onDown = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
-    };
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false)
+    }
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('keydown', onKey);
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
     return () => {
-      document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [open]);
+      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
 
   const doExport = () => {
-    const doc = exportSession(session);
-    const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `fibo-session-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast('Session exported');
-  };
+    const doc = exportSession(session)
+    const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `fibo-session-${new Date().toISOString().slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    toast('Session exported')
+  }
 
   const copyResults = async () => {
     try {
-      await navigator.clipboard.writeText(resultsTable(session));
-      toast('Results copied — paste into Jira or a spreadsheet');
+      await navigator.clipboard.writeText(resultsTable(session))
+      toast('Results copied — paste into Jira or a spreadsheet')
     } catch {
-      toast('Could not access the clipboard.', 'error');
+      toast('Could not access the clipboard.', 'error')
     }
-  };
+  }
 
   const doImport = async (file: File) => {
     try {
-      const doc = parseSessionExport(await file.text());
-      await importStories(session, doc);
-      toast(`Imported ${doc.stories.length} stories`);
+      const doc = parseSessionExport(await file.text())
+      await importStories(session, doc)
+      toast(`Imported ${doc.stories.length} stories`)
     } catch (err) {
-      toast(err instanceof ImportError ? err.message : 'Import failed.', 'error');
+      toast(err instanceof ImportError ? err.message : 'Import failed.', 'error')
     }
-  };
+  }
 
   const pick = (action: () => void) => () => {
-    setOpen(false);
-    action();
-  };
+    setOpen(false)
+    action()
+  }
 
   const newSession = async () => {
-    const name = session.users?.[myUserId]?.name ?? '';
-    if (!name) return;
-    const sessionId = await createSession(name);
-    navigate(`/s/${sessionId}`);
-  };
+    const name = session.users?.[myUserId]?.name ?? ''
+    if (!name) return
+    const sessionId = await createSession(name)
+    navigate(`/s/${sessionId}`)
+  }
 
   const leave = async () => {
-    await removeUser(session, myUserId);
-    clearMyUserId(session.id);
-    navigate('/');
-  };
+    await removeUser(session, myUserId)
+    clearMyUserId(session.id)
+    navigate('/')
+  }
 
   return (
     <header className="room-header">
@@ -156,11 +156,7 @@ export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }:
             <div className="menu-sep" />
             {/* Session setup */}
             {isAdmin && (
-              <button
-                className="menu-item"
-                role="menuitem"
-                onClick={pick(() => setDeckOpen(true))}
-              >
+              <button className="menu-item" role="menuitem" onClick={pick(() => setDeckOpen(true))}>
                 <Layers size={14} /> Change deck
               </button>
             )}
@@ -176,7 +172,11 @@ export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }:
             <button className="menu-item" role="menuitem" onClick={pick(onShortcuts)}>
               <Keyboard size={14} /> Keyboard shortcuts
             </button>
-            <button className="menu-item" role="menuitem" onClick={pick(() => setConnectOpen(true))}>
+            <button
+              className="menu-item"
+              role="menuitem"
+              onClick={pick(() => setConnectOpen(true))}
+            >
               <Bot size={14} /> Connect Claude
             </button>
             <a
@@ -209,8 +209,8 @@ export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }:
           message={<>Leave this session? You can rejoin any time with the invite link.</>}
           confirmLabel="Leave"
           onConfirm={() => {
-            setConfirmLeave(false);
-            void leave();
+            setConfirmLeave(false)
+            void leave()
           }}
           onClose={() => setConfirmLeave(false)}
         />
@@ -222,12 +222,12 @@ export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }:
           accept="application/json,.json"
           hidden
           onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) void doImport(f);
-            e.target.value = '';
+            const f = e.target.files?.[0]
+            if (f) void doImport(f)
+            e.target.value = ''
           }}
         />
       )}
     </header>
-  );
+  )
 }

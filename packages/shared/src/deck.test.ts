@@ -8,7 +8,7 @@ import {
   parseCustomDeck,
   sanitizeDeck,
   SKIP,
-} from '../src/deck';
+} from './deck';
 
 describe('DECK_PRESETS', () => {
   it('fib is the Fibonacci numbers in rank order', () => {

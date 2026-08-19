@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   DndContext,
   KeyboardSensor,
@@ -7,29 +7,29 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
-} from '@dnd-kit/core';
+} from '@dnd-kit/core'
 import {
   SortableContext,
   arrayMove,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import type { Session, Story } from '@fibo/shared';
-import { splitPastedTitles } from '@fibo/shared';
-import { activateStory, addStories, addStory, reorderStories } from '../lib/api';
-import { VoteGlyph } from './VoteGlyph';
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import type { Session, Story } from '@fibo/shared'
+import { splitPastedTitles } from '@fibo/shared'
+import { activateStory, addStories, addStory, reorderStories } from '../lib/api'
+import { VoteGlyph } from './VoteGlyph'
 
 interface StoryQueueProps {
-  session: Session;
-  canLead: boolean;
+  session: Session
+  canLead: boolean
 }
 
 interface RowProps {
-  session: Session;
-  story: Story;
-  canLead: boolean;
+  session: Session
+  story: Story
+  canLead: boolean
 }
 
 /**
@@ -40,10 +40,10 @@ function StoryRow({ session, story: s, canLead }: RowProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: s.id,
     disabled: !canLead,
-  });
-  const clickable = canLead && s.status !== 'active';
+  })
+  const clickable = canLead && s.status !== 'active'
   // dnd-kit's keyboard listener owns Space (lift/drop); Enter activates.
-  const dndKeyDown = listeners?.onKeyDown as ((e: React.KeyboardEvent) => void) | undefined;
+  const dndKeyDown = listeners?.onKeyDown as ((e: React.KeyboardEvent) => void) | undefined
 
   return (
     <li
@@ -57,11 +57,11 @@ function StoryRow({ session, story: s, canLead }: RowProps) {
       onClick={clickable ? () => void activateStory(session, s.id) : undefined}
       onKeyDown={(e) => {
         if (clickable && e.key === 'Enter') {
-          e.preventDefault();
-          void activateStory(session, s.id);
-          return;
+          e.preventDefault()
+          void activateStory(session, s.id)
+          return
         }
-        dndKeyDown?.(e);
+        dndKeyDown?.(e)
       }}
       title={
         clickable
@@ -78,7 +78,7 @@ function StoryRow({ session, story: s, canLead }: RowProps) {
         {s.title}
       </span>
     </li>
-  );
+  )
 }
 
 /**
@@ -87,43 +87,43 @@ function StoryRow({ session, story: s, canLead }: RowProps) {
  * shows its points.
  */
 export function StoryQueue({ session, canLead }: StoryQueueProps) {
-  const [title, setTitle] = useState('');
-  const stories = Object.values(session.stories ?? {}).sort((a, b) => a.order - b.order);
-  const maxOrder = stories.reduce((m, s) => Math.max(m, s.order), -1);
+  const [title, setTitle] = useState('')
+  const stories = Object.values(session.stories ?? {}).sort((a, b) => a.order - b.order)
+  const maxOrder = stories.reduce((m, s) => Math.max(m, s.order), -1)
 
   // A drag begins only after 6px of travel, so plain clicks still
   // activate rows and keyboard users get the sortable shortcuts.
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-  );
+  )
 
   const onDragEnd = (e: DragEndEvent) => {
-    const over = e.over;
-    if (!over || e.active.id === over.id) return;
-    const ids = stories.map((s) => s.id);
-    const reordered = arrayMove(ids, ids.indexOf(String(e.active.id)), ids.indexOf(String(over.id)));
-    void reorderStories(session.id, reordered);
-  };
+    const over = e.over
+    if (!over || e.active.id === over.id) return
+    const ids = stories.map((s) => s.id)
+    const reordered = arrayMove(ids, ids.indexOf(String(e.active.id)), ids.indexOf(String(over.id)))
+    void reorderStories(session.id, reordered)
+  }
 
   /** Pasting a multi-line list queues one story per line. */
   const onPaste = async (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const titles = splitPastedTitles(e.clipboardData.getData('text/plain'));
-    if (titles.length < 2) return; // single-line pastes edit the field normally
-    e.preventDefault();
-    setTitle('');
-    await addStories(session, titles, maxOrder + 1);
-  };
+    const titles = splitPastedTitles(e.clipboardData.getData('text/plain'))
+    if (titles.length < 2) return // single-line pastes edit the field normally
+    e.preventDefault()
+    setTitle('')
+    await addStories(session, titles, maxOrder + 1)
+  }
 
   const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const t = title.trim();
-    if (!t) return;
-    setTitle('');
+    e.preventDefault()
+    const t = title.trim()
+    if (!t) return
+    setTitle('')
     // A new story goes straight onto the table.
-    const id = await addStory(session.id, t, maxOrder + 1);
-    await activateStory(session, id);
-  };
+    const id = await addStory(session.id, t, maxOrder + 1)
+    await activateStory(session, id)
+  }
 
   return (
     <div className="rail-section rail-card">
@@ -156,5 +156,5 @@ export function StoryQueue({ session, canLead }: StoryQueueProps) {
         </SortableContext>
       </DndContext>
     </div>
-  );
+  )
 }

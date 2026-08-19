@@ -1,5 +1,5 @@
-import { formatVote } from './deck';
-import type { Session, Story } from './types';
+import { formatVote } from './deck'
+import type { Session, Story } from './types'
 
 /**
  * A story's committed points: done stories keep theirs, and the active
@@ -10,10 +10,10 @@ export function committedPoints(
   story: Pick<Story, 'status' | 'result'>,
   session: Pick<Session, 'revealed'>,
 ): Story['result'] | null {
-  if (story.result == null) return null;
-  if (story.status === 'done') return story.result;
-  if (story.status === 'active' && session.revealed) return story.result;
-  return null;
+  if (story.result == null) return null
+  if (story.status === 'done') return story.result
+  if (story.status === 'active' && session.revealed) return story.result
+  return null
 }
 
 /**
@@ -22,13 +22,13 @@ export function committedPoints(
  * Unpointed stories get an empty points cell.
  */
 export function resultsTable(session: Session): string {
-  const stories = Object.values(session.stories ?? {}).sort((a, b) => a.order - b.order);
+  const stories = Object.values(session.stories ?? {}).sort((a, b) => a.order - b.order)
   return stories
     .map((s) => {
-      const points = committedPoints(s, session);
-      return `${s.title}\t${points != null ? formatVote(points) : ''}`;
+      const points = committedPoints(s, session)
+      return `${s.title}\t${points != null ? formatVote(points) : ''}`
     })
-    .join('\n');
+    .join('\n')
 }
 
 /**
@@ -41,5 +41,5 @@ export function splitPastedTitles(text: string): string[] {
     .split(/\r?\n/)
     .map((line) => line.replace(/^\s*[-*•]\s+/, '').trim())
     .filter((line) => line.length > 0)
-    .map((line) => line.slice(0, 200));
+    .map((line) => line.slice(0, 200))
 }

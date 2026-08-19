@@ -1,10 +1,10 @@
-import type { Session, SessionExport, Story } from './types';
-import { deckCards, isStoredPoints, sanitizeDeck } from './deck';
-import { committedPoints } from './clipboard';
+import type { Session, SessionExport, Story } from './types'
+import { deckCards, isStoredPoints, sanitizeDeck } from './deck'
+import { committedPoints } from './clipboard'
 
 /** Serialize a session to the portable export document (stories + points). */
 export function exportSession(session: Session): SessionExport {
-  const stories = Object.values(session.stories ?? {}).sort((a, b) => a.order - b.order);
+  const stories = Object.values(session.stories ?? {}).sort((a, b) => a.order - b.order)
   return {
     app: 'fibo',
     version: 3,
@@ -13,10 +13,10 @@ export function exportSession(session: Session): SessionExport {
     stories: stories.map((s) => {
       // A flipped active story's standing result counts (the app
       // commits it when switching away).
-      const points = committedPoints(s, session);
-      return points != null ? { title: s.title, points } : { title: s.title };
+      const points = committedPoints(s, session)
+      return points != null ? { title: s.title, points } : { title: s.title }
     }),
-  };
+  }
 }
 
 export class ImportError extends Error {}
@@ -27,40 +27,40 @@ export class ImportError extends Error {}
  * the JSON isn't a valid Fibo export.
  */
 export function parseSessionExport(json: string): SessionExport {
-  let data: unknown;
+  let data: unknown
   try {
-    data = JSON.parse(json);
+    data = JSON.parse(json)
   } catch {
-    throw new ImportError('That file is not valid JSON.');
+    throw new ImportError('That file is not valid JSON.')
   }
   if (typeof data !== 'object' || data === null) {
-    throw new ImportError('That file is not a Fibo session export.');
+    throw new ImportError('That file is not a Fibo session export.')
   }
-  const doc = data as Record<string, unknown>;
+  const doc = data as Record<string, unknown>
   if (doc.app !== 'fibo' || (doc.version !== 1 && doc.version !== 2 && doc.version !== 3)) {
-    throw new ImportError('That file is not a Fibo session export (missing app/version marker).');
+    throw new ImportError('That file is not a Fibo session export (missing app/version marker).')
   }
   if (!Array.isArray(doc.stories)) {
-    throw new ImportError('Export is missing its stories list.');
+    throw new ImportError('Export is missing its stories list.')
   }
   // v1/v2 predate deck choices and were always Fibonacci.
-  const deck = doc.version === 3 ? sanitizeDeck(doc.deck) : null;
+  const deck = doc.version === 3 ? sanitizeDeck(doc.deck) : null
   const stories = doc.stories.map((raw, i) => {
     if (typeof raw !== 'object' || raw === null) {
-      throw new ImportError(`Story #${i + 1} is malformed.`);
+      throw new ImportError(`Story #${i + 1} is malformed.`)
     }
-    const s = raw as Record<string, unknown>;
+    const s = raw as Record<string, unknown>
     if (typeof s.title !== 'string' || s.title.trim() === '') {
-      throw new ImportError(`Story #${i + 1} is missing a title.`);
+      throw new ImportError(`Story #${i + 1} is missing a title.`)
     }
     // v2+ store points; v1 stored result (+ status, which points implies).
     // Points are validated for sanity, not against the deck: a session
     // can hold results pointed under earlier decks.
     const rawPoints =
-      (doc.version as number) >= 2 ? s.points : s.status === 'done' ? s.result : null;
-    const points = isStoredPoints(rawPoints) ? rawPoints : null;
-    return points != null ? { title: s.title, points } : { title: s.title };
-  });
+      (doc.version as number) >= 2 ? s.points : s.status === 'done' ? s.result : null
+    const points = isStoredPoints(rawPoints) ? rawPoints : null
+    return points != null ? { title: s.title, points } : { title: s.title }
+  })
   return {
     app: 'fibo',
     version: 3,
@@ -70,7 +70,7 @@ export function parseSessionExport(json: string): SessionExport {
         : new Date(typeof doc.exportedAt === 'number' ? doc.exportedAt : Date.now()).toISOString(),
     ...(deck ? { deck } : {}),
     stories,
-  };
+  }
 }
 
 /**
@@ -82,9 +82,9 @@ export function storiesFromExport(
   makeId: () => string,
   now: number = Date.now(),
 ): Record<string, Story> {
-  const out: Record<string, Story> = {};
+  const out: Record<string, Story> = {}
   doc.stories.forEach((s, i) => {
-    const id = makeId();
+    const id = makeId()
     out[id] = {
       id,
       title: s.title,
@@ -92,7 +92,7 @@ export function storiesFromExport(
       order: i,
       result: s.points ?? null,
       createdAt: now,
-    };
-  });
-  return out;
+    }
+  })
+  return out
 }

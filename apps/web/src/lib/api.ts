@@ -7,7 +7,7 @@ import {
   onValue,
   onDisconnect,
   serverTimestamp,
-} from 'firebase/database';
+} from 'firebase/database'
 import {
   computeWinner,
   deckCards,
@@ -22,18 +22,18 @@ import {
   type SessionExport,
   type Story,
   type VoteValue,
-} from '@fibo/shared';
-import { db } from '../firebase';
-import { saveMyUserId } from './storage';
+} from '@fibo/shared'
+import { db } from '../firebase'
+import { saveMyUserId } from './storage'
 
-const sessionRef = (sessionId: string) => ref(db, `sessions/${sessionId}`);
+const sessionRef = (sessionId: string) => ref(db, `sessions/${sessionId}`)
 
 /**
  * Stamp the session's last-activity time. The weekly cleanup and the
  * on-open expiry gate treat a session as abandoned only when this (and
  * presence) goes quiet — see packages/shared/src/expiry.ts.
  */
-const touch = (sessionId: string) => set(ref(db, `sessions/${sessionId}/touchedAt`), Date.now());
+const touch = (sessionId: string) => set(ref(db, `sessions/${sessionId}/touchedAt`), Date.now())
 
 /** Create a session owned by the given user; returns the session id. */
 export async function createSession(
@@ -41,9 +41,9 @@ export async function createSession(
   deck?: DeckChoice | null,
   stories?: Record<string, Story>,
 ): Promise<string> {
-  const sessionId = newSessionId();
-  const userId = newUserId();
-  const now = Date.now();
+  const sessionId = newSessionId()
+  const userId = newUserId()
+  const now = Date.now()
   const session: Session = {
     id: sessionId,
     createdAt: now,
@@ -61,10 +61,10 @@ export async function createSession(
         joinedAt: now,
       },
     },
-  };
-  await set(sessionRef(sessionId), session);
-  saveMyUserId(sessionId, userId);
-  return sessionId;
+  }
+  await set(sessionRef(sessionId), session)
+  saveMyUserId(sessionId, userId)
+  return sessionId
 }
 
 /** Add a member with a free identity; returns their user id. */
@@ -73,25 +73,28 @@ export async function joinSession(
   name: string,
   role: Extract<Role, 'participant' | 'spectator'> = 'participant',
 ): Promise<string> {
-  const usersSnap = await get(ref(db, `sessions/${sessionId}/users`));
-  const users = (usersSnap.val() ?? {}) as Record<string, { identity: number; name?: string; role?: string }>;
-  const taken = Object.values(users).map((u) => u.identity);
+  const usersSnap = await get(ref(db, `sessions/${sessionId}/users`))
+  const users = (usersSnap.val() ?? {}) as Record<
+    string,
+    { identity: number; name?: string; role?: string }
+  >
+  const taken = Object.values(users).map((u) => u.identity)
   // Ownerless sessions (created headlessly via MCP, or whose admin
   // left) seat their first arriving player as the admin. Spectators
   // never inherit the seat.
-  const hasOwner = Object.values(users).some((u) => u?.name && u.role === 'owner');
-  const effectiveRole = !hasOwner && role === 'participant' ? 'owner' : role;
-  const userId = newUserId();
+  const hasOwner = Object.values(users).some((u) => u?.name && u.role === 'owner')
+  const effectiveRole = !hasOwner && role === 'participant' ? 'owner' : role
+  const userId = newUserId()
   await set(ref(db, `sessions/${sessionId}/users/${userId}`), {
     name: name.trim(),
     role: effectiveRole,
     identity: pickIdentity(taken),
     online: true,
     joinedAt: Date.now(),
-  });
-  await touch(sessionId);
-  saveMyUserId(sessionId, userId);
-  return userId;
+  })
+  await touch(sessionId)
+  saveMyUserId(sessionId, userId)
+  return userId
 }
 
 /**
@@ -101,28 +104,28 @@ export async function joinSession(
  * partial ghost, while removing a field of a deleted record is a no-op.
  */
 export function trackPresence(sessionId: string, userId: string): () => void {
-  const onlineRef = ref(db, `sessions/${sessionId}/users/${userId}/online`);
+  const onlineRef = ref(db, `sessions/${sessionId}/users/${userId}/online`)
   // Session-level last-seen stamp, written server-side on disconnect: it
   // feeds the expiry clock without touching (or resurrecting) any user
   // record, and a stamp against an already-deleted session is rejected
   // by the rules' id/createdAt validation.
-  const lastSeenRef = ref(db, `sessions/${sessionId}/lastSeenAt`);
-  const connectedRef = ref(db, '.info/connected');
+  const lastSeenRef = ref(db, `sessions/${sessionId}/lastSeenAt`)
+  const connectedRef = ref(db, '.info/connected')
   const unsubscribe = onValue(connectedRef, (snap) => {
     if (snap.val() === true) {
       void onDisconnect(onlineRef)
         .remove()
-        .then(() => set(onlineRef, true));
-      void onDisconnect(lastSeenRef).set(serverTimestamp());
+        .then(() => set(onlineRef, true))
+      void onDisconnect(lastSeenRef).set(serverTimestamp())
     }
-  });
+  })
   return () => {
-    unsubscribe();
-    void onDisconnect(onlineRef).cancel();
-    void onDisconnect(lastSeenRef).cancel();
-    void remove(onlineRef);
-    void set(lastSeenRef, Date.now());
-  };
+    unsubscribe()
+    void onDisconnect(onlineRef).cancel()
+    void onDisconnect(lastSeenRef).cancel()
+    void remove(onlineRef)
+    void set(lastSeenRef, Date.now())
+  }
 }
 
 /** Live-subscribe to a session; the callback gets null when it vanishes. */
@@ -131,8 +134,8 @@ export function subscribeSession(
   callback: (session: Session | null) => void,
 ): () => void {
   return onValue(sessionRef(sessionId), (snap) => {
-    callback(snap.exists() ? (snap.val() as Session) : null);
-  });
+    callback(snap.exists() ? (snap.val() as Session) : null)
+  })
 }
 
 /**
@@ -143,12 +146,12 @@ export async function setRole(session: Session, userId: string, role: Role): Pro
   const updates: Record<string, unknown> = {
     [`users/${userId}/role`]: role,
     touchedAt: Date.now(),
-  };
-  const storyId = session.currentStoryId;
-  if (role === 'spectator' && storyId) {
-    updates[`stories/${storyId}/votes/${userId}`] = null;
   }
-  await update(sessionRef(session.id), updates);
+  const storyId = session.currentStoryId
+  if (role === 'spectator' && storyId) {
+    updates[`stories/${storyId}/votes/${userId}`] = null
+  }
+  await update(sessionRef(session.id), updates)
 }
 
 /**
@@ -161,7 +164,7 @@ export async function setAutoFlip(sessionId: string, on: boolean): Promise<void>
     autoFlip: on,
     ...(on ? { timer: null } : {}),
     touchedAt: Date.now(),
-  });
+  })
 }
 
 /** Admin-only: change the deck in play. Standing results keep their
@@ -170,7 +173,7 @@ export async function setDeck(sessionId: string, deck: DeckChoice): Promise<void
   await update(sessionRef(sessionId), {
     deck: deck.preset === 'fib' ? null : deck,
     touchedAt: Date.now(),
-  });
+  })
 }
 
 /**
@@ -187,20 +190,20 @@ export async function transferAdmin(
     [`users/${toUserId}/role`]: 'owner',
     [`users/${fromUserId}/role`]: 'leader',
     touchedAt: Date.now(),
-  });
+  })
 }
 
 /** Remove a user from the session, along with their vote on the table. */
 export async function removeUser(session: Session, userId: string): Promise<void> {
-  const updates: Record<string, unknown> = { [`users/${userId}`]: null, touchedAt: Date.now() };
-  const storyId = session.currentStoryId;
-  if (storyId) updates[`stories/${storyId}/votes/${userId}`] = null;
-  await update(sessionRef(session.id), updates);
+  const updates: Record<string, unknown> = { [`users/${userId}`]: null, touchedAt: Date.now() }
+  const storyId = session.currentStoryId
+  if (storyId) updates[`stories/${storyId}/votes/${userId}`] = null
+  await update(sessionRef(session.id), updates)
 }
 
 /** Append a story to the queue; returns its id. */
 export async function addStory(sessionId: string, title: string, order: number): Promise<string> {
-  const id = newStoryId();
+  const id = newStoryId()
   const story: Story = {
     id,
     title: title.trim(),
@@ -208,10 +211,10 @@ export async function addStory(sessionId: string, title: string, order: number):
     order,
     result: null,
     createdAt: Date.now(),
-  };
-  await set(ref(db, `sessions/${sessionId}/stories/${id}`), story);
-  await touch(sessionId);
-  return id;
+  }
+  await set(ref(db, `sessions/${sessionId}/stories/${id}`), story)
+  await touch(sessionId)
+  return id
 }
 
 /**
@@ -223,16 +226,16 @@ export async function addStories(
   titles: string[],
   startOrder: number,
 ): Promise<void> {
-  if (titles.length === 0) return;
-  const now = Date.now();
+  if (titles.length === 0) return
+  const now = Date.now()
   // The first pasted story starts the round when the table is empty.
   // Its status is set inside the story object itself — a multi-path
   // update may not write both stories/x and stories/x/status.
-  const dealFirst = !session.currentStoryId;
-  const updates: Record<string, unknown> = { touchedAt: now };
+  const dealFirst = !session.currentStoryId
+  const updates: Record<string, unknown> = { touchedAt: now }
   titles.forEach((title, i) => {
-    const id = newStoryId();
-    const first = i === 0;
+    const id = newStoryId()
+    const first = i === 0
     const story: Story = {
       id,
       title: title.trim(),
@@ -240,23 +243,23 @@ export async function addStories(
       order: startOrder + i,
       result: null,
       createdAt: now,
-    };
-    updates[`stories/${id}`] = story;
-    if (dealFirst && first) {
-      updates.currentStoryId = id;
-      updates.revealed = false;
     }
-  });
-  await update(sessionRef(session.id), updates);
+    updates[`stories/${id}`] = story
+    if (dealFirst && first) {
+      updates.currentStoryId = id
+      updates.revealed = false
+    }
+  })
+  await update(sessionRef(session.id), updates)
 }
 
 /** Persist a drag-reorder: story orders become their new list positions. */
 export async function reorderStories(sessionId: string, orderedIds: string[]): Promise<void> {
-  const updates: Record<string, unknown> = { touchedAt: Date.now() };
+  const updates: Record<string, unknown> = { touchedAt: Date.now() }
   orderedIds.forEach((id, i) => {
-    updates[`stories/${id}/order`] = i;
-  });
-  await update(sessionRef(sessionId), updates);
+    updates[`stories/${id}/order`] = i
+  })
+  await update(sessionRef(sessionId), updates)
 }
 
 /** Delete a story; deleting the active story also clears the table. */
@@ -268,10 +271,10 @@ export async function deleteStory(session: Session, storyId: string): Promise<vo
       timer: null,
       touchedAt: Date.now(),
       [`stories/${storyId}`]: null,
-    });
+    })
   } else {
-    await remove(ref(db, `sessions/${session.id}/stories/${storyId}`));
-    await touch(session.id);
+    await remove(ref(db, `sessions/${session.id}/stories/${storyId}`))
+    await touch(session.id)
   }
 }
 
@@ -281,31 +284,31 @@ export async function deleteStory(session: Session, storyId: string): Promise<vo
  * everyone's cards and the consensus intact (revote clears it for a new round).
  */
 export async function activateStory(session: Session, storyId: string): Promise<void> {
-  const reopen = session.stories?.[storyId]?.status === 'done';
+  const reopen = session.stories?.[storyId]?.status === 'done'
   const updates: Record<string, unknown> = {
     currentStoryId: storyId,
     revealed: reopen,
     timer: null,
     touchedAt: Date.now(),
     [`stories/${storyId}/status`]: 'active',
-  };
-  if (!reopen) {
-    updates[`stories/${storyId}/votes`] = null;
-    updates[`stories/${storyId}/result`] = null;
   }
-  const previousId = session.currentStoryId;
-  const previous = previousId ? session.stories?.[previousId] : undefined;
+  if (!reopen) {
+    updates[`stories/${storyId}/votes`] = null
+    updates[`stories/${storyId}/result`] = null
+  }
+  const previousId = session.currentStoryId
+  const previous = previousId ? session.stories?.[previousId] : undefined
   if (previous && previousId !== storyId) {
     if (session.revealed && previous.result != null) {
       // Cards were flipped and a result stands: switching away accepts it.
-      updates[`stories/${previousId}/status`] = 'done';
-      updates[`stories/${previousId}/pointedAt`] = Date.now();
+      updates[`stories/${previousId}/status`] = 'done'
+      updates[`stories/${previousId}/pointedAt`] = Date.now()
     } else {
-      updates[`stories/${previousId}/status`] = 'queued';
-      updates[`stories/${previousId}/votes`] = null;
+      updates[`stories/${previousId}/status`] = 'queued'
+      updates[`stories/${previousId}/votes`] = null
     }
   }
-  await update(sessionRef(session.id), updates);
+  await update(sessionRef(session.id), updates)
 }
 
 /** Play (or with null, take back) a card for the current round. */
@@ -315,23 +318,23 @@ export async function castVote(
   userId: string,
   value: VoteValue | null,
 ): Promise<void> {
-  const voteRef = ref(db, `sessions/${sessionId}/stories/${storyId}/votes/${userId}`);
-  if (value === null) await remove(voteRef);
-  else await set(voteRef, value);
-  await touch(sessionId);
+  const voteRef = ref(db, `sessions/${sessionId}/stories/${storyId}/votes/${userId}`)
+  if (value === null) await remove(voteRef)
+  else await set(voteRef, value)
+  await touch(sessionId)
 }
 
 /** Flip the cards: everyone sees the votes and the default winner is written. */
 export async function revealCards(session: Session): Promise<void> {
-  const storyId = session.currentStoryId;
-  if (!storyId) return;
-  const votes = session.stories?.[storyId]?.votes ?? {};
+  const storyId = session.currentStoryId
+  if (!storyId) return
+  const votes = session.stories?.[storyId]?.votes ?? {}
   await update(sessionRef(session.id), {
     revealed: true,
     timer: null,
     touchedAt: Date.now(),
     [`stories/${storyId}/result`]: computeWinner(votes, deckCards(session)),
-  });
+  })
 }
 
 /** Rename a story (from the inline title editor). */
@@ -340,8 +343,8 @@ export async function updateStoryTitle(
   storyId: string,
   title: string,
 ): Promise<void> {
-  await set(ref(db, `sessions/${sessionId}/stories/${storyId}/title`), title.trim());
-  await touch(sessionId);
+  await set(ref(db, `sessions/${sessionId}/stories/${storyId}/title`), title.trim())
+  await touch(sessionId)
 }
 
 /** Leaders can override the winning value after the flip. */
@@ -350,21 +353,21 @@ export async function setResult(
   storyId: string,
   value: VoteValue,
 ): Promise<void> {
-  await set(ref(db, `sessions/${sessionId}/stories/${storyId}/result`), value);
-  await touch(sessionId);
+  await set(ref(db, `sessions/${sessionId}/stories/${storyId}/result`), value)
+  await touch(sessionId)
 }
 
 /** Clear votes and flip cards back down for another round on the same story. */
 export async function revote(session: Session): Promise<void> {
-  const storyId = session.currentStoryId;
-  if (!storyId) return;
+  const storyId = session.currentStoryId
+  if (!storyId) return
   await update(sessionRef(session.id), {
     revealed: false,
     timer: null,
     touchedAt: Date.now(),
     [`stories/${storyId}/votes`]: null,
     [`stories/${storyId}/result`]: null,
-  });
+  })
 }
 
 /** Start the shared countdown; cards auto-flip when it ends. */
@@ -373,12 +376,12 @@ export async function startTimer(sessionId: string, seconds: number): Promise<vo
     timer: { endsAt: Date.now() + seconds * 1000, seconds },
     autoFlip: false,
     touchedAt: Date.now(),
-  });
+  })
 }
 
 /** Delete a whole session (the on-open expiry gate's cleanup). */
 export async function deleteSession(sessionId: string): Promise<void> {
-  await remove(sessionRef(sessionId));
+  await remove(sessionRef(sessionId))
 }
 
 /**
@@ -394,5 +397,5 @@ export async function importStories(session: Session, doc: SessionExport): Promi
     revealed: false,
     timer: null,
     touchedAt: Date.now(),
-  });
+  })
 }

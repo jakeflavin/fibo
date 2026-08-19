@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { newSessionId, newStoryId, newUserId } from '../src/ids';
+import { newSessionId, newStoryId, newUserId } from './ids';
 
 /** Ids must be lowercase and skip the ambiguous 0/o and 1/l glyphs. */
 const SHAPE = /^[a-km-np-z2-9]+$/;

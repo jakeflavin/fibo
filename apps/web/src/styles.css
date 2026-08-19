@@ -39,8 +39,7 @@
 
   --shadow-card: 0 1px 1px rgba(1, 4, 4, 0.5), 0 0 1px rgba(1, 4, 4, 0.5);
   --shadow-float:
-    0 0 0 1px rgba(189, 189, 189, 0.12), 0 8px 12px rgba(1, 4, 4, 0.36),
-    0 0 1px rgba(1, 4, 4, 0.5);
+    0 0 0 1px rgba(189, 189, 189, 0.12), 0 8px 12px rgba(1, 4, 4, 0.36), 0 0 1px rgba(1, 4, 4, 0.5);
   --shadow-vote: 0 4px 12px rgba(1, 4, 4, 0.45);
   --card-face: #2b2c2f; /* elevation.surface.overlay */
   --shadow-play: 0 1px 1px rgba(1, 4, 4, 0.5), 0 0 1px rgba(1, 4, 4, 0.5);
@@ -331,8 +330,6 @@ svg.lucide {
   color: var(--accent-ink);
 }
 
-
-
 .field {
   display: block;
   margin-bottom: 16px;
@@ -530,7 +527,6 @@ svg.lucide {
 .home-form {
   text-align: left;
 }
-
 
 .home-form .btn-primary {
   margin-top: 4px;
@@ -1263,7 +1259,6 @@ svg.lucide {
   justify-content: center;
 }
 
-
 /* ── timer ───────────────────────────────────────────────────── */
 
 /* Lives in the consensus card, standing in for the result headline —
@@ -1589,7 +1584,6 @@ svg.lucide {
   animation: pop 0.3s ease-out both;
 }
 
-
 /* ── story queue ─────────────────────────────────────────────── */
 
 .story-add {
@@ -1681,7 +1675,6 @@ svg.lucide {
   white-space: nowrap;
   font-size: var(--font-body);
 }
-
 
 .panel-body {
   margin: 0;

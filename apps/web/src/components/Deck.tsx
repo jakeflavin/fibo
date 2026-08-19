@@ -1,11 +1,11 @@
-import type { Session } from '@fibo/shared';
-import { COFFEE, deckCards, SKIP } from '@fibo/shared';
-import { castVote } from '../lib/api';
-import { VoteGlyph } from './VoteGlyph';
+import type { Session } from '@fibo/shared'
+import { COFFEE, deckCards, SKIP } from '@fibo/shared'
+import { castVote } from '../lib/api'
+import { VoteGlyph } from './VoteGlyph'
 
 interface DeckProps {
-  session: Session;
-  myUserId: string;
+  session: Session
+  myUserId: string
 }
 
 /**
@@ -14,15 +14,15 @@ interface DeckProps {
  * after the flip.
  */
 export function Deck({ session, myUserId }: DeckProps) {
-  const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
-  const myVote = story?.votes?.[myUserId];
-  const disabled = !story || session.revealed;
+  const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined
+  const myVote = story?.votes?.[myUserId]
+  const disabled = !story || session.revealed
 
   return (
     <div className="deck" data-disabled={disabled || undefined}>
       <div className="deck-cards">
         {[...deckCards(session), SKIP, COFFEE].map((value) => {
-          const selected = !disabled && myVote === value;
+          const selected = !disabled && myVote === value
           return (
             <button
               key={String(value)}
@@ -48,9 +48,9 @@ export function Deck({ session, myUserId }: DeckProps) {
                 <VoteGlyph value={value} />
               </span>
             </button>
-          );
+          )
         })}
       </div>
     </div>
-  );
+  )
 }

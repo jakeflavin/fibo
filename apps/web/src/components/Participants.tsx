@@ -1,18 +1,23 @@
-import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { Check, Crown, Ellipsis, Eye, UserMinus, UserPen } from 'lucide-react';
-import type { Session } from '@fibo/shared';
-import { removeUser, setRole, transferAdmin } from '../lib/api';
-import { ConfirmModal } from './ConfirmModal';
-import { identityVars, PixelAvatar } from './PixelAvatar';
-import { VoteGlyph } from './VoteGlyph';
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { Check, Crown, Ellipsis, Eye, UserMinus, UserPen } from 'lucide-react'
+import type { Session } from '@fibo/shared'
+import { removeUser, setRole, transferAdmin } from '../lib/api'
+import { ConfirmModal } from './ConfirmModal'
+import { identityVars, PixelAvatar } from './PixelAvatar'
+import { VoteGlyph } from './VoteGlyph'
 
 interface ParticipantsProps {
-  session: Session;
-  myUserId: string;
+  session: Session
+  myUserId: string
 }
 
-const ROLE_TAG = { owner: 'Admin', leader: 'Lead', participant: '', spectator: 'Spectator' } as const;
+const ROLE_TAG = {
+  owner: 'Admin',
+  leader: 'Lead',
+  participant: '',
+  spectator: 'Spectator',
+} as const
 
 /**
  * The team list: presence, identity, role lozenges, and vote status per
@@ -20,68 +25,66 @@ const ROLE_TAG = { owner: 'Admin', leader: 'Lead', participant: '', spectator: '
  * remove from session).
  */
 export function Participants({ session, myUserId }: ParticipantsProps) {
-  const users = session.users ?? {};
-  const iAmOwner = users[myUserId]?.role === 'owner';
-  const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined;
-  const votes = story?.votes ?? {};
+  const users = session.users ?? {}
+  const iAmOwner = users[myUserId]?.role === 'owner'
+  const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined
+  const votes = story?.votes ?? {}
   // Guard against partial records (e.g. a kicked client's presence write).
   const rows = Object.entries(users)
     .filter(([, u]) => u && u.name)
-    .sort(([, a], [, b]) => a.joinedAt - b.joinedAt);
+    .sort(([, a], [, b]) => a.joinedAt - b.joinedAt)
 
   // One open actions menu at a time. The team list scrolls inside its
   // card, so the menu is fixed-positioned from the trigger; it closes on
   // outside click, Escape, or any scroll.
-  const [menu, setMenu] = useState<{ uid: string; top: number; left: number } | null>(null);
+  const [menu, setMenu] = useState<{ uid: string; top: number; left: number } | null>(null)
   // Transfer is confirmed first: the admin gives up their own powers.
-  const [pendingTransfer, setPendingTransfer] = useState<{ uid: string; name: string } | null>(
-    null,
-  );
-  const listRef = useRef<HTMLUListElement>(null);
+  const [pendingTransfer, setPendingTransfer] = useState<{ uid: string; name: string } | null>(null)
+  const listRef = useRef<HTMLUListElement>(null)
   useEffect(() => {
-    if (!menu) return;
-    const close = () => setMenu(null);
+    if (!menu) return
+    const close = () => setMenu(null)
     const onDown = (e: MouseEvent) => {
-      const target = e.target as Element;
+      const target = e.target as Element
       // The menu is portaled to <body>; clicks inside it aren't "outside".
-      if (target.closest('.user-menu')) return;
-      if (listRef.current && !listRef.current.contains(target)) close();
-    };
+      if (target.closest('.user-menu')) return
+      if (listRef.current && !listRef.current.contains(target)) close()
+    }
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close();
-    };
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('keydown', onKey);
-    document.addEventListener('scroll', close, true);
+      if (e.key === 'Escape') close()
+    }
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
+    document.addEventListener('scroll', close, true)
     return () => {
-      document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('keydown', onKey);
-      document.removeEventListener('scroll', close, true);
-    };
-  }, [menu]);
+      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('keydown', onKey)
+      document.removeEventListener('scroll', close, true)
+    }
+  }, [menu])
 
   const toggleMenu = (uid: string) => (e: React.MouseEvent<HTMLButtonElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
+    const rect = e.currentTarget.getBoundingClientRect()
     // Anchor the menu's top-left at the trigger; shift left only when it
     // would run off the viewport.
-    const estimatedWidth = 200;
+    const estimatedWidth = 200
     const left =
       rect.left + estimatedWidth > window.innerWidth - 8
         ? Math.max(8, window.innerWidth - 8 - estimatedWidth)
-        : rect.left;
-    setMenu((m) => (m?.uid === uid ? null : { uid, top: rect.bottom + 4, left }));
-  };
+        : rect.left
+    setMenu((m) => (m?.uid === uid ? null : { uid, top: rect.bottom + 4, left }))
+  }
 
   return (
     <div className="rail-section rail-card team-card">
       <div className="eyebrow">Team · {rows.length}</div>
       <ul className="user-list" ref={listRef}>
         {rows.map(([uid, user]) => {
-          const vote = story ? votes[uid] : undefined;
-          const voted = vote !== undefined;
-          const canManage = iAmOwner && user.role !== 'owner';
-          const isLead = user.role === 'leader';
-          const isSpectator = user.role === 'spectator';
+          const vote = story ? votes[uid] : undefined
+          const voted = vote !== undefined
+          const canManage = iAmOwner && user.role !== 'owner'
+          const isLead = user.role === 'leader'
+          const isSpectator = user.role === 'spectator'
           return (
             <li key={uid} className={`user-row ${user.online ? '' : 'user-offline'}`}>
               <span className={`presence-dot ${user.online ? 'on' : 'off'}`} />
@@ -109,53 +112,53 @@ export function Participants({ session, myUserId }: ParticipantsProps) {
                           role="menu"
                           style={{ position: 'fixed', top: menu.top, left: menu.left }}
                         >
-                        {!isSpectator && (
+                          {!isSpectator && (
+                            <button
+                              className="menu-item"
+                              role="menuitem"
+                              onClick={() => {
+                                setMenu(null)
+                                void setRole(session, uid, isLead ? 'participant' : 'leader')
+                              }}
+                            >
+                              <UserPen size={14} /> {isLead ? 'Remove as lead' : 'Make lead'}
+                            </button>
+                          )}
                           <button
                             className="menu-item"
                             role="menuitem"
                             onClick={() => {
-                              setMenu(null);
-                              void setRole(session, uid, isLead ? 'participant' : 'leader');
+                              setMenu(null)
+                              void setRole(session, uid, isSpectator ? 'participant' : 'spectator')
                             }}
                           >
-                            <UserPen size={14} /> {isLead ? 'Remove as lead' : 'Make lead'}
+                            <Eye size={14} /> {isSpectator ? 'Make participant' : 'Make spectator'}
                           </button>
-                        )}
-                        <button
-                          className="menu-item"
-                          role="menuitem"
-                          onClick={() => {
-                            setMenu(null);
-                            void setRole(session, uid, isSpectator ? 'participant' : 'spectator');
-                          }}
-                        >
-                          <Eye size={14} /> {isSpectator ? 'Make participant' : 'Make spectator'}
-                        </button>
-                        {!isSpectator && (
+                          {!isSpectator && (
+                            <button
+                              className="menu-item"
+                              role="menuitem"
+                              onClick={() => {
+                                setMenu(null)
+                                setPendingTransfer({ uid, name: user.name })
+                              }}
+                            >
+                              <Crown size={14} /> Transfer admin
+                            </button>
+                          )}
                           <button
-                            className="menu-item"
+                            className="menu-item menu-item-danger"
                             role="menuitem"
                             onClick={() => {
-                              setMenu(null);
-                              setPendingTransfer({ uid, name: user.name });
+                              setMenu(null)
+                              void removeUser(session, uid)
                             }}
                           >
-                            <Crown size={14} /> Transfer admin
+                            <UserMinus size={14} /> Remove from session
                           </button>
-                        )}
-                        <button
-                          className="menu-item menu-item-danger"
-                          role="menuitem"
-                          onClick={() => {
-                            setMenu(null);
-                            void removeUser(session, uid);
-                          }}
-                        >
-                          <UserMinus size={14} /> Remove from session
-                        </button>
-                      </div>,
-                      document.body,
-                    )}
+                        </div>,
+                        document.body,
+                      )}
                   </span>
                 )}
               </span>
@@ -173,7 +176,7 @@ export function Participants({ session, myUserId }: ParticipantsProps) {
                 )}
               </span>
             </li>
-          );
+          )
         })}
       </ul>
       {pendingTransfer && (
@@ -187,13 +190,13 @@ export function Participants({ session, myUserId }: ParticipantsProps) {
           }
           confirmLabel="Transfer"
           onConfirm={() => {
-            const { uid } = pendingTransfer;
-            setPendingTransfer(null);
-            void transferAdmin(session.id, myUserId, uid);
+            const { uid } = pendingTransfer
+            setPendingTransfer(null)
+            void transferAdmin(session.id, myUserId, uid)
           }}
           onClose={() => setPendingTransfer(null)}
         />
       )}
     </div>
-  );
+  )
 }

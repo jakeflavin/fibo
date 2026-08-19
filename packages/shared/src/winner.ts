@@ -1,5 +1,5 @@
-import { DECK_PRESETS, SKIP, COFFEE } from './deck';
-import type { VoteValue } from './types';
+import { DECK_PRESETS, SKIP, COFFEE } from './deck'
+import type { VoteValue } from './types'
 
 /**
  * Compute the default winning value for a revealed round: the most
@@ -12,27 +12,29 @@ export function computeWinner(
   votes: Record<string, VoteValue> | undefined | null,
   cards: VoteValue[] = DECK_PRESETS.fib,
 ): VoteValue | null {
-  if (!votes) return null;
-  const values = Object.values(votes);
-  if (values.length === 0) return null;
+  if (!votes) return null
+  const values = Object.values(votes)
+  if (values.length === 0) return null
 
-  const played = values.filter((v) => v !== SKIP && v !== COFFEE);
+  const played = values.filter((v) => v !== SKIP && v !== COFFEE)
   // Guarding the first card rather than the length: the same condition, in the form the
   // compiler can carry down to the reads below.
-  const [firstPlayed] = played;
-  if (!firstPlayed) return SKIP;
+  const [firstPlayed] = played
+  // Compared against undefined, not coerced: 0 is a real card, and a falsy check
+  // reported a round of zero-point stories as everybody having skipped.
+  if (firstPlayed === undefined) return SKIP
 
-  const rank = (v: VoteValue) => cards.findIndex((c) => c === v);
-  const counts = new Map<VoteValue, number>();
-  for (const v of played) counts.set(v, (counts.get(v) ?? 0) + 1);
+  const rank = (v: VoteValue) => cards.findIndex((c) => c === v)
+  const counts = new Map<VoteValue, number>()
+  for (const v of played) counts.set(v, (counts.get(v) ?? 0) + 1)
 
-  let winner = firstPlayed;
-  let best = 0;
+  let winner = firstPlayed
+  let best = 0
   for (const [value, count] of counts) {
     if (count > best || (count === best && rank(value) > rank(winner))) {
-      winner = value;
-      best = count;
+      winner = value
+      best = count
     }
   }
-  return winner;
+  return winner
 }

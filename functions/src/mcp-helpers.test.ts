@@ -7,7 +7,7 @@ import {
   resolveDeck,
   resultsTable,
   type StoryRecord,
-} from '../src/mcp-helpers';
+} from './mcp-helpers';
 
 describe('parseSessionRef', () => {
   it('accepts bare ids and full links', () => {

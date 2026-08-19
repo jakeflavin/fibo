@@ -1,23 +1,29 @@
-import { useEffect } from 'react';
-import { X } from 'lucide-react';
+import { useEffect } from 'react'
+import { X } from 'lucide-react'
 
 interface ConfirmModalProps {
-  title: string;
-  message: React.ReactNode;
-  confirmLabel: string;
-  onConfirm: () => void;
-  onClose: () => void;
+  title: string
+  message: React.ReactNode
+  confirmLabel: string
+  onConfirm: () => void
+  onClose: () => void
 }
 
 /** Small confirmation dialog in the same shell as the share modal. */
-export function ConfirmModal({ title, message, confirmLabel, onConfirm, onClose }: ConfirmModalProps) {
+export function ConfirmModal({
+  title,
+  message,
+  confirmLabel,
+  onConfirm,
+  onClose,
+}: ConfirmModalProps) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -45,5 +51,5 @@ export function ConfirmModal({ title, message, confirmLabel, onConfirm, onClose 
         </div>
       </div>
     </div>
-  );
+  )
 }

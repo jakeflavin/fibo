@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import type { DeckChoice, DeckPreset } from '@fibo/shared';
-import { DECK_PRESETS, parseCustomDeck } from '@fibo/shared';
+import { useState } from 'react'
+import type { DeckChoice, DeckPreset } from '@fibo/shared'
+import { DECK_PRESETS, parseCustomDeck } from '@fibo/shared'
 
 interface DeckPickerProps {
-  value: DeckChoice;
-  onChange: (deck: DeckChoice | null) => void;
+  value: DeckChoice
+  onChange: (deck: DeckChoice | null) => void
 }
 
 const PRESETS: Array<{ id: DeckPreset; label: string }> = [
   { id: 'fib', label: 'Fibonacci' },
   { id: 'tshirt', label: 'T-shirt' },
   { id: 'custom', label: 'Custom' },
-];
+]
 
 /**
  * Deck chooser shared by the home page and the in-session deck modal:
@@ -22,16 +22,16 @@ const PRESETS: Array<{ id: DeckPreset; label: string }> = [
 export function DeckPicker({ value, onChange }: DeckPickerProps) {
   const [customText, setCustomText] = useState(
     value.preset === 'custom' ? value.cards.map(String).join(', ') : '',
-  );
+  )
 
   const pick = (preset: DeckPreset) => {
     if (preset === 'custom') {
-      const cards = parseCustomDeck(customText);
-      onChange(cards ? { preset, cards } : null);
+      const cards = parseCustomDeck(customText)
+      onChange(cards ? { preset, cards } : null)
     } else {
-      onChange({ preset, cards: DECK_PRESETS[preset] });
+      onChange({ preset, cards: DECK_PRESETS[preset] })
     }
-  };
+  }
 
   return (
     <div className="deck-picker">
@@ -54,9 +54,9 @@ export function DeckPicker({ value, onChange }: DeckPickerProps) {
           <input
             value={customText}
             onChange={(e) => {
-              setCustomText(e.target.value);
-              const cards = parseCustomDeck(e.target.value);
-              onChange(cards ? { preset: 'custom', cards } : null);
+              setCustomText(e.target.value)
+              const cards = parseCustomDeck(e.target.value)
+              onChange(cards ? { preset: 'custom', cards } : null)
             }}
             placeholder="XS, S, M, L, XL — low to high"
             aria-label="Custom deck cards"
@@ -69,5 +69,5 @@ export function DeckPicker({ value, onChange }: DeckPickerProps) {
         <div className="deck-picker-preview dim">Enter at least two cards, lowest first.</div>
       )}
     </div>
-  );
+  )
 }

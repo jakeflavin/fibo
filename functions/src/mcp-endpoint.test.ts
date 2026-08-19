@@ -53,7 +53,7 @@ describe.skipIf(!up)('mcp endpoint (against the DB emulator)', () => {
     process.env.GCLOUD_PROJECT = 'demo-fibo';
     const { initializeApp } = await import('firebase-admin/app');
     initializeApp({ databaseURL: `http://${EMULATOR}?ns=${NS}` });
-    const { app } = await import('../src/mcp');
+    const { app } = await import('./mcp');
     await new Promise<void>((resolve) => {
       server = app.listen(0, () => resolve());
     });

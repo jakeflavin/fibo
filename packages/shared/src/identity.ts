@@ -9,13 +9,13 @@
  */
 
 export interface IdentitySet {
-  name: string;
+  name: string
   /** Color on a dark canvas (bright pastel). */
-  color: string;
+  color: string
   /** Color on a light canvas (deep saturated variant of the same hue). */
-  colorLight: string;
+  colorLight: string
   /** 8 rows x 8 cols pixel grid. */
-  pixels: string[];
+  pixels: string[]
 }
 
 /** Non-empty by construction, so an identity always resolves to a set. */
@@ -200,7 +200,7 @@ export const IDENTITY_SETS: [IdentitySet, ...IdentitySet[]] = [
       '..X..X..',
     ],
   },
-];
+]
 
 /**
  * Pick the identity for a new user: the lowest set index not already taken.
@@ -208,7 +208,7 @@ export const IDENTITY_SETS: [IdentitySet, ...IdentitySet[]] = [
  */
 export function pickIdentity(taken: number[], random: () => number = Math.random): number {
   for (let i = 0; i < IDENTITY_SETS.length; i++) {
-    if (!taken.includes(i)) return i;
+    if (!taken.includes(i)) return i
   }
-  return Math.floor(random() * IDENTITY_SETS.length);
+  return Math.floor(random() * IDENTITY_SETS.length)
 }

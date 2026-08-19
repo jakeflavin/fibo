@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { Copy, X } from 'lucide-react';
-import { useToast } from './Toast';
+import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
+import { Copy, X } from 'lucide-react'
+import { useToast } from './Toast'
 
 /**
  * Setup instructions for the remote MCP endpoint: connect once and
@@ -9,27 +9,27 @@ import { useToast } from './Toast';
  * stories, and read results — no fibo account involved.
  */
 export function ConnectClaudeModal({ onClose }: { onClose: () => void }) {
-  const toast = useToast();
+  const toast = useToast()
   // The endpoint sits under the app's own base, so it moves with it.
-  const url = `${window.location.origin}${import.meta.env.BASE_URL}mcp`;
-  const command = `claude mcp add --transport http --scope user fibo ${url}`;
+  const url = `${window.location.origin}${import.meta.env.BASE_URL}mcp`
+  const command = `claude mcp add --transport http --scope user fibo ${url}`
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
 
   const copy = (value: string, what: string) => async () => {
     try {
-      await navigator.clipboard.writeText(value);
-      toast(`${what} copied`);
+      await navigator.clipboard.writeText(value)
+      toast(`${what} copied`)
     } catch {
-      toast('Could not access the clipboard.', 'error');
+      toast('Could not access the clipboard.', 'error')
     }
-  };
+  }
 
   // Portaled: the settings menus live inside fixed-position wrappers
   // whose stacking contexts would trap the backdrop under page content.
@@ -49,8 +49,8 @@ export function ConnectClaudeModal({ onClose }: { onClose: () => void }) {
           </button>
         </div>
         <p className="panel-body">
-          Add fibo as a connector once, and Claude can start sessions from your backlog, add
-          stories mid-meeting, and read the points back out — no account needed.
+          Add fibo as a connector once, and Claude can start sessions from your backlog, add stories
+          mid-meeting, and read the points back out — no account needed.
         </p>
 
         <div className="connect-row">
@@ -61,7 +61,9 @@ export function ConnectClaudeModal({ onClose }: { onClose: () => void }) {
               <Copy size={14} />
             </button>
           </div>
-          <p className="panel-hint dim">Settings → Connectors → Add custom connector → paste the URL.</p>
+          <p className="panel-hint dim">
+            Settings → Connectors → Add custom connector → paste the URL.
+          </p>
         </div>
 
         <div className="connect-row">
@@ -85,5 +87,5 @@ export function ConnectClaudeModal({ onClose }: { onClose: () => void }) {
       </div>
     </div>,
     document.body,
-  );
+  )
 }

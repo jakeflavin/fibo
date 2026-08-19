@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { everyoneVoted } from '../src/round';
-import type { Session, SessionUser } from '../src/types';
+import { everyoneVoted } from './round';
+import type { Session, SessionUser } from './types';
 
 const user = (over: Partial<SessionUser>): SessionUser => ({
   name: 'u',

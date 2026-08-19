@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { exportSession, ImportError, parseSessionExport, storiesFromExport } from '../src/codec';
-import type { Session, Story } from '../src/types';
+import { exportSession, ImportError, parseSessionExport, storiesFromExport } from './codec';
+import type { Session, Story } from './types';
 
 const story = (over: Partial<Story>): Story => ({
   id: 'sid',

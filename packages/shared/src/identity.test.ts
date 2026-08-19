@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { IDENTITY_SETS, pickIdentity } from '../src/identity';
+import { IDENTITY_SETS, pickIdentity } from './identity';
 
 describe('IDENTITY_SETS', () => {
   it('holds 12 sets, each with both theme colors and an 8x8 grid', () => {

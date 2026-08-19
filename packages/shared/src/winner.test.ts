@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { computeWinner } from '../src/winner';
-import { DECK_PRESETS } from '../src/deck';
-import type { VoteValue } from '../src/types';
+import { computeWinner } from './winner';
+import { DECK_PRESETS } from './deck';
+import type { VoteValue } from './types';
 
 const votes = (...values: VoteValue[]): Record<string, VoteValue> =>
   Object.fromEntries(values.map((v, i) => [`u${i}`, v]));

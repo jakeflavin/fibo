@@ -14,7 +14,7 @@
     "lint": "oxlint",
     "format": "prettier --write .",
     "typecheck": "npm run typecheck -w packages/shared && npm run typecheck -w apps/web",
-    "test": "npm run test -w packages/shared",
+    "test": "npm run test -w packages/shared && npm --prefix functions test",
     "emulators": "firebase emulators:start --project demo-fibo",
     "test:e2e": "playwright test",
     "e2e:serve": "npm run build:test -w apps/web && npm run preview -w apps/web"
