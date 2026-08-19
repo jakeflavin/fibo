@@ -60,15 +60,17 @@ export function Shortcuts({ session, myUserId, canLead, canVote, open, onOpen, o
       const cards = deckCards(session);
       let value = null;
       if (/^[0-9]$/.test(e.key)) {
+        // Reading the card decides it: the bounds test alone left `value` a maybe, and a
+        // digit past the end of the deck should do nothing rather than clear the vote.
         const index = e.key === '0' ? 9 : Number(e.key) - 1;
-        if (index < cards.length) value = cards[index];
+        value = cards[index] ?? null;
       } else if (key === 's') {
         value = SKIP;
       } else if (key === 'c') {
         value = COFFEE;
       }
       if (value === null) return;
-      const mine = story.votes?.[myUserId];
+      const mine = story.votes?.[myUserId] ?? null;
       void castVote(session.id, story.id, myUserId, mine === value ? null : value);
     };
     window.addEventListener('keydown', onKey);

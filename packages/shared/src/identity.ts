@@ -18,7 +18,8 @@ export interface IdentitySet {
   pixels: string[];
 }
 
-export const IDENTITY_SETS: IdentitySet[] = [
+/** Non-empty by construction, so an identity always resolves to a set. */
+export const IDENTITY_SETS: [IdentitySet, ...IdentitySet[]] = [
   {
     name: 'bot', // rose
     color: '#F0909E',

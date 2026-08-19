@@ -17,13 +17,16 @@ export function computeWinner(
   if (values.length === 0) return null;
 
   const played = values.filter((v) => v !== SKIP && v !== COFFEE);
-  if (played.length === 0) return SKIP;
+  // Guarding the first card rather than the length: the same condition, in the form the
+  // compiler can carry down to the reads below.
+  const [firstPlayed] = played;
+  if (!firstPlayed) return SKIP;
 
   const rank = (v: VoteValue) => cards.findIndex((c) => c === v);
   const counts = new Map<VoteValue, number>();
   for (const v of played) counts.set(v, (counts.get(v) ?? 0) + 1);
 
-  let winner = played[0];
+  let winner = firstPlayed;
   let best = 0;
   for (const [value, count] of counts) {
     if (count > best || (count === best && rank(value) > rank(winner))) {

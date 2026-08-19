@@ -15,8 +15,17 @@ interface Props {
  * or light variant depending on the active theme (see .identity in
  * styles.css); `ink` overrides it for stamped renderings.
  */
+/**
+ * Resolves an identity to its pixel set. Normalised for negatives — only the upper bound
+ * was handled, so a negative identity indexed off the front of the list.
+ */
+function identitySet(identity: number) {
+  const count = IDENTITY_SETS.length;
+  return IDENTITY_SETS[((identity % count) + count) % count] ?? IDENTITY_SETS[0];
+}
+
 export function PixelAvatar({ identity, size = 32, className, ink }: Props) {
-  const set = IDENTITY_SETS[identity % IDENTITY_SETS.length];
+  const set = identitySet(identity);
   const fill = ink ?? 'var(--idc)';
   const rects: React.ReactElement[] = [];
   set.pixels.forEach((row, y) => {
@@ -43,6 +52,6 @@ export function PixelAvatar({ identity, size = 32, className, ink }: Props) {
 
 /** CSS custom properties carrying an identity's dark/light color pair. */
 export function identityVars(identity: number): React.CSSProperties {
-  const set = IDENTITY_SETS[identity % IDENTITY_SETS.length];
+  const set = identitySet(identity);
   return { '--id-dark': set.color, '--id-light': set.colorLight } as React.CSSProperties;
 }
