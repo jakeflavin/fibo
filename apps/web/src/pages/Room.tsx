@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { RoomGrid, RoomMain, RoomShell, RoomSide, RoomTable } from './Room.styled'
-import { Button, Dim, HomeCard, NoticeTitle, PanelBody, RoomFooter } from '@/styles/shared.styled'
+import { Button, Dim, NoticeCard, NoticeTitle, PanelBody, RoomFooter } from '@/styles/shared.styled'
 import { Heart } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 import type { Session } from '@fibo/shared'
@@ -92,7 +92,7 @@ function RoomInner({ sessionId }: { sessionId: string }) {
         title="This fibo session has expired"
         tagline="That link has run out"
         notes="No accounts, no signup — sessions are temporary">
-        <HomeCard>
+        <NoticeCard>
           <NoticeTitle>Session expired</NoticeTitle>
           <PanelBody $dim>
             This session ended more than 48 hours ago and has been deleted.
@@ -100,7 +100,7 @@ function RoomInner({ sessionId }: { sessionId: string }) {
           <Button as="a" $primary $block href={appPath()}>
             Start a new session
           </Button>
-        </HomeCard>
+        </NoticeCard>
       </OutsideRoom>
     )
   }
@@ -111,13 +111,13 @@ function RoomInner({ sessionId }: { sessionId: string }) {
         title="This fibo session was not found"
         tagline="Nothing is waiting at that link"
         notes="No accounts, no signup — sessions are temporary">
-        <HomeCard>
+        <NoticeCard>
           <NoticeTitle>Session not found</NoticeTitle>
           <PanelBody $dim>This session doesn't exist, or it expired and was deleted.</PanelBody>
           <Button as="a" $primary $block href={appPath()}>
             Start a new session
           </Button>
-        </HomeCard>
+        </NoticeCard>
       </OutsideRoom>
     )
   }
