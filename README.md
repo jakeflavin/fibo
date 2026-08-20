@@ -3,8 +3,8 @@
 **Story points, no strings attached.** Ephemeral sprint-planning
 sessions — no accounts, just a link and a name.
 
-Live at **https://fibo-49d58.web.app** · Atlassian Design System styling
-· MIT licensed.
+Live at **https://portfolio-4b9fe.web.app/fibo/** · Atlassian Design
+System styling · MIT licensed.
 
 ## What it does
 
@@ -18,6 +18,7 @@ Live at **https://fibo-49d58.web.app** · Atlassian Design System styling
 - Get points out: copy a table for Jira, export JSON, or use the MCP
   endpoint from Claude.
 - Sessions expire 48 hours after everyone leaves.
+- Follows your system's light/dark preference until you pick one.
 
 See [FEATURES.md](FEATURES.md) for the full spec.
 
@@ -29,8 +30,9 @@ fibo/
 │   └── src/
 │       ├── components/
 │       ├── pages/          # Home and Room routes
-│       ├── lib/            # api.ts (all database I/O), storage.ts, useSession.ts
-│       └── styles.css      # the single stylesheet
+│       ├── lib/            # api.ts (all database I/O), storage.ts, theme.ts, urls.ts
+│       ├── styles/         # shared styled-components and primitives
+│       └── styles.css      # tokens and reset only — components style themselves
 ├── packages/shared/        # pure domain logic + vitest suite
 ├── functions/              # Cloud Functions: cleanup + MCP (standalone package)
 ├── scripts/                # one-time ops scripts
@@ -87,12 +89,12 @@ New deployment target, one-time:
 
 ## Connect Claude (MCP)
 
-Endpoint: `https://fibo-49d58.web.app/mcp`. Add it once:
+Endpoint: `https://portfolio-4b9fe.web.app/fibo/mcp`. Add it once:
 
 - Claude Desktop / claude.ai: Settings → Connectors → Add custom
   connector → paste the URL.
 - Claude Code:
-  `claude mcp add --transport http --scope user fibo https://fibo-49d58.web.app/mcp`
+  `claude mcp add --transport http --scope user fibo https://portfolio-4b9fe.web.app/fibo/mcp`
 
 Claude can then create sessions, add stories, and read results. The
 first person to open a Claude-created session becomes its admin.
@@ -110,6 +112,9 @@ first person to open a Claude-created session becomes its admin.
 - Vote secrecy is a UI convention. Don't use fibo for salary votes.
 - The MCP endpoint is public but rate-limited; it can do nothing
   without a session link.
+- fibo is served from a sub-path of the portfolio, so every URL built at
+  runtime goes through `lib/urls.ts`. A root-absolute path is answered by
+  the directory's catch-all with an HTTP 200, which fails silently.
 - Expired sessions can sit at rest for up to a week between sweeps.
 
 ## License

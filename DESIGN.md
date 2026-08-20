@@ -17,6 +17,16 @@ layout (toolbar → stage → rail). No functionality changes.
 App tokens map to ADS tokens as follows. Light mode is the reference
 experience (Jira is light-first); dark mode uses the ADS dark ramp.
 
+**Which one a visitor gets** has three states, not two. An explicit choice
+wins in either direction and persists in `fibo:theme`; without one, follow
+`prefers-color-scheme`. Light is therefore the bare `:root` block and dark is
+redefined twice — once behind `@media (prefers-color-scheme: dark)` guarded as
+`:root:not([data-theme='light'])`, once behind `:root[data-theme='dark']`. A
+colour declared *only* inside a `[data-theme]` block never applies to the
+un-stamped document, which is the classic way to paint one theme's text on the
+other's ground. `theme-color` is a meta tag no stylesheet reaches, so it is set
+alongside the attribute.
+
 | fibo token      | ADS token                          | Light                | Dark                 |
 | --------------- | ---------------------------------- | -------------------- | -------------------- |
 | `--bg`          | `elevation.surface.sunken`         | `#F8F8F8`            | `#18191A`            |
@@ -60,8 +70,12 @@ Rules:
 - **Section headers** (card eyebrows): 12px, weight 600, `--dim`,
   sentence case — **no uppercase, no letter-spacing** (Jira uses quiet
   sentence-case section headers).
-- Monospace is retired everywhere, including numbers (use
-  `font-variant-numeric: tabular-nums` where alignment matters).
+- Monospace is retired from chrome and from numbers (use
+  `font-variant-numeric: tabular-nums` where alignment matters). **One
+  exception**: the copyable code pill — an invite URL, a connector URL, a shell
+  command. Those are read character by character before being pasted somewhere
+  else, which is the job the face exists for. Declare `--font-mono`; a bare
+  `<code>` inheriting the UA default is an accident, not a decision.
 
 ### The enforced UI scale
 
@@ -129,9 +143,14 @@ join pages, where the form card floats).
     buttons).
   - *Disabled*: neutral bg at reduced opacity, no fill drop needed since
     fills are quiet.
-- **Segmented groups** (timer presets, point ruler): joined cells inside a
-  single `--line` border, radius 4px, active cell = `--accent-dim` bg +
-  `--accent` text (Jira "selected" pattern) instead of solid fill.
+- **Segmented groups** (timer presets, point ruler, deck picker): joined cells
+  inside a single `--line` border, radius 4px, active cell = `--accent-dim` bg +
+  `--accent` text (Jira "selected" pattern).
+
+  **One idiom for selection, everywhere.** A solid `--accent` fill means an
+  action you can take; `--accent-dim` means state that is already true. That is
+  what the queue's active row and the hand's selected card already said, and the
+  ruler disagreed with both on the same screen.
 - **Text fields**: `--surface` bg, 1px `--control` border, radius 4px,
   focus = 2px `--accent` border (border-color swap + 1px inset ring), no
   glow. No prompt glyphs (`>`, `+`) — use placeholder + label.
@@ -143,7 +162,11 @@ join pages, where the form card floats).
 - **Dropdown menu**: overlay surface + overlay shadow, radius 8px, item
   hover `--surface-hi`, 14px text, icons at 16px.
 - **Modals**: overlay surface, radius 12px, overlay shadow, title 20/24
-  weight 600 left-aligned, actions right-aligned (primary on the right).
+  weight 600 left-aligned, actions right-aligned (primary on the right), body
+  copy left-aligned. 320px is the default width and the wrong one for a dialog
+  whose *content is a value to be read* — Connect Claude takes 480. A
+  destructive confirm carries the bold danger fill: it is the primary action of
+  its dialog, and it sat at the same weight as the Cancel beside it.
 - **Toasts**: overlay surface + shadow, radius 8px, no glyph prefixes.
 - **List rows** (team, queue): 32px min height, 4px radius hover
   (`--surface-hi`), selected/active = `--accent-dim` bg with `--accent`
@@ -171,8 +194,6 @@ join pages, where the form card floats).
   accent text (frame tinted to match) — never a solid dark fill. Hover
   is a subtle 2px lift, not a launch.
 
-- **Segmented pickers** (deck picker, timer segment): joined `--line`
-  group; active cell = solid primary fill.
 - **Key chips** (cheat sheet): `--font-small` 600 on `--surface-hi`,
   1px border, 4px radius, 40px min width.
 - **Copyable rows** (Connect Claude): label + code pill (scrolls
@@ -245,7 +266,13 @@ main column aligns to it. The sidebar has its own 20px internal padding.
 
 Row and title actions are invisible until intent: `opacity: 0`, shown on
 hover of the row/line and on `:focus-within` (keyboard users always get
-them). Pair `pointer-events: none` with the hidden state. Examples: the
+them). Pair `pointer-events: none` with the hidden state.
+
+**And turn them on under `@media (hover: none)`**, where there is no gesture
+that can reveal them. Without that the pattern is not a subtlety, it is a
+missing feature: on a phone a lead could add a story and never rename or delete
+one. Give them a 44px hit area there too, keeping the glyph its desktop size so
+the row does not grow. Examples: the
 team-row meatball menu, the story-title pencil/trash. Title actions sit
 inline **after the last character**; when the title truncates they
 overlay the clipped corner on the title's own background.
@@ -267,6 +294,15 @@ bottom-right corner on raised tiles; Enter saves, Escape cancels, and
 - Modals always portal to `document.body` so the blanket covers the whole
   app. Destructive confirms put the danger-colored action on the right.
 
+### Touch targets
+
+Interactive controls are 32px tall and joined segment cells 30px — the Jira
+density §2 asks for, and correct with a pointer. Under `@media (hover: none)`
+they go to 44px. Where a control cannot be 44 wide in its row, change the
+layout rather than the size: the point ruler is ten cells that each silently
+override the whole team's estimate, so on touch it deals into a 5-wide grid,
+the shape the hand already takes below 480px.
+
 ### Responsive breakpoints
 
 - `>860px` — desktop grid (stage + 320px sidebar).
@@ -278,6 +314,10 @@ bottom-right corner on raised tiles; Enter saves, Escape cancels, and
   repoint).
 - `≤480px` — sidebar single column; the hand deals into a 5×2 grid so
   the whole deck stays on screen.
+- Below 860 the shell keeps `min-height: 100dvh` and reserves the fixed hand's
+  real height as bottom padding. `height: auto` alone is right on a phone, where
+  the page always overflows, and leaves a void on a tablet in portrait, where it
+  does not.
 - Text inputs hold **16px at ≤860px** — anything smaller makes iOS
   Safari zoom into the field.
 

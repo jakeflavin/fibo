@@ -2,7 +2,7 @@
 
 Every feature, its rules, and its edge cases. With
 [DESIGN.md](DESIGN.md) and [STANDARDS.md](STANDARDS.md), this should be
-enough to rebuild the app. Live at https://fibo-49d58.web.app.
+enough to rebuild the app. Live at https://portfolio-4b9fe.web.app/fibo/.
 
 ## Sessions
 
@@ -29,7 +29,10 @@ enough to rebuild the app. Live at https://fibo-49d58.web.app.
 
 ### Share, New session, Leave
 
-- **Share / QR**: modal with the invite URL and a QR code.
+- **Share / QR**: modal with the invite URL and a QR code. The link carries
+  the app's base path — fibo is served from `/fibo/`, and a root-absolute
+  `/s/<id>` is answered by the portfolio's catch-all with its own index and an
+  HTTP 200, so a wrong link fails silently.
 - **New session**: creates a fresh session under your name and
   navigates into it as Admin. Rooms remount per session id.
 - **Leave session** (danger, confirmed): removes your user record and
@@ -46,7 +49,10 @@ enough to rebuild the app. Live at https://fibo-49d58.web.app.
   `createdAt`, user/story timestamps).
 - A Cloud Function sweeps expired sessions Sundays 3:00 AM Eastern.
   Opening an expired link shows "Session expired" and deletes it on the
-  spot. A dead link shows "Session not found".
+  spot. A dead link shows "Session not found". Both wear the same shell as
+  home and the join gate — wordmark, tagline, card, gear menu, footer — so
+  someone who followed a colleague's invite can tell what failed them, and
+  both offer "Start a new session".
 
 ## Roles & team management
 
@@ -61,7 +67,8 @@ enough to rebuild the app. Live at https://fibo-49d58.web.app.
   target becomes `owner`, previous admin becomes `leader`) or the
   first-joiner rule.
 - Your row carries a `You` lozenge.
-- **Row actions (Admin)** — hover a row for the `…` menu: Make/Remove
+- **Row actions (Admin)** — hover a row for the `…` menu (always visible on a
+  touchscreen): Make/Remove
   lead (hidden for spectators), Make spectator/participant (to
   spectator also clears their standing vote), Transfer admin (hidden
   for spectators), Remove from session (danger; deletes the user and
@@ -111,7 +118,8 @@ enough to rebuild the app. Live at https://fibo-49d58.web.app.
 - **Inline edit** (leads): hover reveals a pencil right after the last
   character (overlaid on the corner when truncated). Input with ✓/✕
   below its right corner. Enter/✓ saves; Escape/✕/clicking away
-  cancels.
+  cancels. On a touchscreen — where nothing can hover — the pencil and trash
+  are always visible and take a 44px hit area.
 - **Delete** (leads): trash icon, confirmed; deleting the active story
   clears the table.
 
@@ -143,6 +151,16 @@ Toolbar: Flip · `30s 1m 2m Auto` · point ruler · repoint.
   merges skips, coffees, and non-voters.
 - **Override**: the ruler sets the result to any deck value.
 - **Repoint**: clears votes and result, cards go face-down.
+
+## Appearance
+
+- Light and dark, switched from either gear menu. An explicit choice persists
+  in `fibo:theme` and wins over the system in both directions; without one,
+  fibo follows `prefers-color-scheme` and keeps following it if the system
+  changes mid-session. The theme is resolved before the first paint, so there
+  is no flash of the wrong palette.
+- The deck picker is a real radiogroup: one tab stop, arrow keys between the
+  three presets.
 
 ## Keyboard shortcuts
 
@@ -188,7 +206,7 @@ modifier held; the sheet shows only rows for your role.
 
 ## Connect Claude (MCP)
 
-Endpoint: `https://fibo-49d58.web.app/mcp` (stateless streamable HTTP,
+Endpoint: `https://portfolio-4b9fe.web.app/fibo/mcp` (stateless streamable HTTP,
 POST only, no auth). Setup instructions in both gear menus → Connect
 Claude. Tools accept a full link or bare id:
 
