@@ -1,4 +1,6 @@
-import { useEffect, useId, useRef, type MouseEvent, type ReactNode } from 'react'
+import { type MouseEvent, type ReactNode, useEffect, useId, useRef } from 'react'
+import { Dialog, ModalClose, ModalTitle } from './Modal.styled'
+import { Eyebrow } from '@/styles/shared.styled'
 import { X } from 'lucide-react'
 
 interface ModalProps {
@@ -51,9 +53,9 @@ export function Modal({ title, onClose, role = 'dialog', className, children }: 
   }
 
   return (
-    <dialog
+    <Dialog
       ref={ref}
-      className={className ? `modal ${className}` : 'modal'}
+      className={className}
       role={role}
       aria-labelledby={titleId}
       onCancel={(event) => {
@@ -62,15 +64,15 @@ export function Modal({ title, onClose, role = 'dialog', className, children }: 
       }}
       onClick={onDialogClick}
     >
-      <div className="modal-title">
-        <span className="eyebrow" id={titleId}>
+      <ModalTitle>
+        <Eyebrow as="span"  id={titleId}>
           {title}
-        </span>
-        <button className="btn btn-ghost modal-close" onClick={onClose} aria-label="Close">
+        </Eyebrow>
+        <ModalClose $ghost onClick={onClose} aria-label="Close">
           <X size={15} />
-        </button>
-      </div>
+        </ModalClose>
+      </ModalTitle>
       {children}
-    </dialog>
+    </Dialog>
   )
 }

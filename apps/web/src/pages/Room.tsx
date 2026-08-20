@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { Notfound, RoomEmpty, RoomGrid, RoomMain, RoomShell, RoomSide, RoomTable } from './Room.styled'
+import { Button, Dim, Eyebrow, RoomFooter } from '@/styles/shared.styled'
 import { Heart } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 import type { Session } from '@fibo/shared'
@@ -76,42 +78,42 @@ function RoomInner({ sessionId }: { sessionId: string }) {
 
   if (loading) {
     return (
-      <div className="room-empty">
-        <p className="dim">Connecting…</p>
-      </div>
+      <RoomEmpty>
+        <Dim>Connecting…</Dim>
+      </RoomEmpty>
     )
   }
 
   if (expired) {
     return (
-      <div className="room-empty">
-        <div className="notfound">
-          <div className="eyebrow">Session expired</div>
-          <p className="dim">
+      <RoomEmpty>
+        <Notfound>
+          <Eyebrow>Session expired</Eyebrow>
+          <Dim>
             This session ended more than 48 hours ago and has been deleted. Sessions on fibo are
             temporary.
-          </p>
-          <a className="btn btn-primary" href="/">
+          </Dim>
+          <Button as="a" $primary  href="/">
             Start a new session
-          </a>
-        </div>
-      </div>
+          </Button>
+        </Notfound>
+      </RoomEmpty>
     )
   }
 
   if (!session) {
     return (
-      <div className="room-empty">
-        <div className="notfound">
-          <div className="eyebrow">Session not found</div>
-          <p className="dim">
+      <RoomEmpty>
+        <Notfound>
+          <Eyebrow>Session not found</Eyebrow>
+          <Dim>
             This session doesn't exist (or has expired). Sessions on fibo are temporary.
-          </p>
-          <a className="btn btn-primary" href="/">
+          </Dim>
+          <Button as="a" $primary  href="/">
             Start a new session
-          </a>
-        </div>
-      </div>
+          </Button>
+        </Notfound>
+      </RoomEmpty>
     )
   }
 
@@ -120,7 +122,7 @@ function RoomInner({ sessionId }: { sessionId: string }) {
   }
 
   return (
-    <div className="room">
+    <RoomShell>
       <RoomHeader
         session={session}
         myUserId={myUserId!}
@@ -137,25 +139,25 @@ function RoomInner({ sessionId }: { sessionId: string }) {
         onOpen={() => setShortcutsOpen(true)}
         onClose={() => setShortcutsOpen(false)}
       />
-      <main className="room-grid">
-        <section className="room-main">
+      <RoomGrid>
+        <RoomMain>
           {canLead && <LeaderControls session={session} />}
-          <section className="room-table">
+          <RoomTable>
             <CardTable session={session} myUserId={myUserId!} canLead={canLead} />
             {me.role !== 'spectator' && <Deck session={session} myUserId={myUserId!} />}
-          </section>
-        </section>
-        <aside className="room-side">
+          </RoomTable>
+        </RoomMain>
+        <RoomSide>
           <RoundResult session={session} />
           <Participants session={session} myUserId={myUserId!} />
           <StoryQueue session={session} canLead={canLead} />
-        </aside>
-      </main>
-      <footer className="room-footer dim">
+        </RoomSide>
+      </RoomGrid>
+      <RoomFooter>
         made with <Heart size={11} aria-label="love" /> by jake
-      </footer>
+      </RoomFooter>
       {shareOpen && <ShareModal session={session} onClose={() => setShareOpen(false)} />}
-    </div>
+    </RoomShell>
   )
 }
 

@@ -1,4 +1,5 @@
 import type { Session } from '@fibo/shared'
+import { DeckBox, DeckCards, PlayCard, PlayCardValue } from './Deck.styled'
 import { COFFEE, deckCards, SKIP } from '@fibo/shared'
 import { castVote } from '@/lib/api'
 import { VoteGlyph } from './VoteGlyph'
@@ -19,16 +20,14 @@ export function Deck({ session, myUserId }: DeckProps) {
   const disabled = !story || session.revealed
 
   return (
-    <div className="deck" data-disabled={disabled || undefined}>
-      <div className="deck-cards">
+    <DeckBox  data-disabled={disabled || undefined}>
+      <DeckCards>
         {[...deckCards(session), SKIP, COFFEE].map((value) => {
           const selected = !disabled && myVote === value
           return (
-            <button
+            <PlayCard
               key={String(value)}
-              className={`play-card ${selected ? 'play-card-selected' : ''} ${
-                typeof value !== 'number' ? 'play-card-skip' : ''
-              }`}
+              $selected={selected}
               disabled={disabled}
               onClick={() =>
                 void castVote(session.id, story!.id, myUserId, selected ? null : value)
@@ -44,13 +43,13 @@ export function Deck({ session, myUserId }: DeckProps) {
                       : String(value)
               }
             >
-              <span className="play-card-value">
+              <PlayCardValue>
                 <VoteGlyph value={value} />
-              </span>
-            </button>
+              </PlayCardValue>
+            </PlayCard>
           )
         })}
-      </div>
-    </div>
+      </DeckCards>
+    </DeckBox>
   )
 }

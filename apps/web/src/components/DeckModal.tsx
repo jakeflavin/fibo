@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Button, ModalActions, PanelBody } from '@/styles/shared.styled'
 import type { DeckChoice, Session } from '@fibo/shared'
 import { deckCards } from '@fibo/shared'
 import { setDeck } from '@/lib/api'
@@ -24,25 +25,24 @@ export function DeckModal({ session, onClose }: DeckModalProps) {
   return (
     <Modal title="Change deck" onClose={onClose}>
       <DeckPicker value={choice ?? { preset: 'custom', cards: [] }} onChange={setChoice} />
-      <p className="panel-body dim">
+      <PanelBody $dim>
         Stories already pointed keep their values unless they're repointed.
-      </p>
-      <div className="modal-actions">
-        <button className="btn" onClick={onClose}>
+      </PanelBody>
+      <ModalActions>
+        <Button  onClick={onClose}>
           Cancel
-        </button>
-        <button
-          className="btn btn-primary"
+        </Button>
+        <Button $primary
+          
           disabled={!choice}
           onClick={() => {
             if (!choice) return
             void setDeck(session.id, choice)
             onClose()
-          }}
-        >
+          }}>
           Save deck
-        </button>
-      </div>
+        </Button>
+      </ModalActions>
     </Modal>
   )
 }

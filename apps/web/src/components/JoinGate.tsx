@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Button, Field, FieldLabel, HomeCard, HomeCorner, HomeForm, HomeImport, HomeMain, HomeNotes, HomeShell, Logo, RoomFooter, SrOnly, Tagline, TextField } from '@/styles/shared.styled'
 import { Eye, Heart } from 'lucide-react'
 import type { Session } from '@fibo/shared'
 import { joinSession } from '@/lib/api'
@@ -38,22 +39,22 @@ export function JoinGate({ session, onJoined }: JoinGateProps) {
   }
 
   return (
-    <div className="home">
-      <div className="home-corner">
+    <HomeShell>
+      <HomeCorner>
         <SettingsMenu />
-      </div>
-      <main className="home-main">
-        <div className="logo" aria-hidden="true">
+      </HomeCorner>
+      <HomeMain>
+        <Logo  aria-hidden="true">
           fibo
-        </div>
-        <h1 className="sr-only">Join this fibo session</h1>
-        <p className="tagline">You've been invited to point some stories</p>
+        </Logo>
+        <SrOnly>Join this fibo session</SrOnly>
+        <Tagline>You've been invited to point some stories</Tagline>
 
-        <div className="rail-card home-card">
-          <form className="home-form" onSubmit={submit}>
-            <label className="field">
-              <span className="field-label">Your name *</span>
-              <div className="text-field">
+        <HomeCard>
+          <HomeForm  onSubmit={submit}>
+            <Field>
+              <FieldLabel>Your name *</FieldLabel>
+              <TextField>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -62,30 +63,28 @@ export function JoinGate({ session, onJoined }: JoinGateProps) {
                   autoFocus
                   required
                 />
-              </div>
-            </label>
-            <button className="btn btn-primary btn-block" disabled={!name.trim() || busy}>
+              </TextField>
+            </Field>
+            <Button $primary $block  disabled={!name.trim() || busy}>
               {busy ? 'Joining…' : 'Join session'}
-            </button>
-            <button
+            </Button>
+            <HomeImport $ghost $block
               type="button"
-              className="btn btn-ghost btn-block home-import"
               disabled={!name.trim() || busy}
               onClick={() => void join('spectator')}
-              title="Watch the session without a seat or a hand"
-            >
+              title="Watch the session without a seat or a hand">
               <Eye size={14} /> Join as spectator
-            </button>
-          </form>
-        </div>
+            </HomeImport>
+          </HomeForm>
+        </HomeCard>
 
-        <p className="home-notes">
+        <HomeNotes>
           {count} {count === 1 ? 'person is' : 'people are'} here — no account needed
-        </p>
-      </main>
-      <footer className="room-footer dim">
+        </HomeNotes>
+      </HomeMain>
+      <RoomFooter>
         made with <Heart size={11} aria-label="love" /> by jake
-      </footer>
-    </div>
+      </RoomFooter>
+    </HomeShell>
   )
 }

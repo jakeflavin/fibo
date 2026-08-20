@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { Kbd, ShortcutList, ShortcutRow } from './Shortcuts.styled'
 import type { Session } from '@fibo/shared'
 import { COFFEE, deckCards, SKIP } from '@fibo/shared'
 import { castVote, revealCards, revote } from '@/lib/api'
@@ -96,16 +97,16 @@ export function Shortcuts({
 
   return (
     <Modal title="Keyboard shortcuts" onClose={onClose}>
-      <ul className="shortcut-list">
+      <ShortcutList>
         {rows
           .filter(([, , show]) => show)
           .map(([keys, what]) => (
-            <li key={keys} className="shortcut-row">
-              <kbd className="kbd">{keys}</kbd>
+            <ShortcutRow key={keys}>
+              <Kbd>{keys}</Kbd>
               <span>{what}</span>
-            </li>
+            </ShortcutRow>
           ))}
-      </ul>
+      </ShortcutList>
     </Modal>
   )
 }

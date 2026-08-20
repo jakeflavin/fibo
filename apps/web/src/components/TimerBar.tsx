@@ -1,4 +1,5 @@
 import { Timer } from 'lucide-react'
+import { TimerClock, TimerFill, TimerRow, TimerTrack } from './TimerBar.styled'
 import type { Session } from '@fibo/shared'
 import { useNow } from '@/lib/useSession'
 
@@ -20,13 +21,13 @@ export function TimerBar({ session }: { session: Session }) {
   const ss = String(remaining % 60).padStart(2, '0')
 
   return (
-    <div className={`timer-row ${remaining <= 5 ? 'timer-critical' : ''}`}>
-      <span className="timer-clock">
+    <TimerRow $critical={remaining <= 5}>
+      <TimerClock>
         <Timer size={13} /> {mm}:{ss}
-      </span>
-      <div className="timer-track" role="progressbar" aria-valuenow={remaining}>
-        <div className="timer-fill" style={{ width: `${fraction * 100}%` }} />
-      </div>
-    </div>
+      </TimerClock>
+      <TimerTrack  role="progressbar" aria-valuenow={remaining}>
+        <TimerFill  style={{ width: `${fraction * 100}%` }}/>
+      </TimerTrack>
+    </TimerRow>
   )
 }

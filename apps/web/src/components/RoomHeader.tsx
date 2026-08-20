@@ -1,22 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
+import { Brand, BrandName, BrandVersion, HeaderBar } from './RoomHeader.styled'
+import { Menu, MenuButton, MenuItem, MenuSep, MenuWrap } from '@/styles/shared.styled'
 import { useNavigate } from 'react-router-dom'
-import {
-  Bot,
-  ClipboardList,
-  FileDown,
-  FileUp,
-  GitBranch,
-  Keyboard,
-  Layers,
-  LogOut,
-  Moon,
-  Plus,
-  Settings,
-  Share2,
-  Sun,
-} from 'lucide-react'
+import { Bot, ClipboardList, FileDown, FileUp, GitBranch, Keyboard, Layers, LogOut, Moon, Plus, Settings, Share2, Sun } from 'lucide-react'
 import type { Session } from '@fibo/shared'
-import { exportSession, parseSessionExport, resultsTable, ImportError } from '@fibo/shared'
+import { ImportError, exportSession, parseSessionExport, resultsTable } from '@fibo/shared'
 import { createSession, importStories, removeUser } from '@/lib/api'
 import { clearMyUserId } from '@/lib/storage'
 import { ConfirmModal } from './ConfirmModal'
@@ -116,91 +104,85 @@ export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }:
   }
 
   return (
-    <header className="room-header">
-      <a className="brand" href="/" title="fibo home">
-        <span className="brand-name">fibo</span>
-        <span className="brand-version">v{__APP_VERSION__}</span>
-      </a>
-      <div className="menu-wrap" ref={menuRef}>
-        <button
-          className="btn btn-ghost menu-button"
+    <HeaderBar>
+      <Brand  href="/" title="fibo home">
+        <BrandName>fibo</BrandName>
+        <BrandVersion>v{__APP_VERSION__}</BrandVersion>
+      </Brand>
+      <MenuWrap  ref={menuRef}>
+        <MenuButton $ghost
           aria-label="menu"
           aria-expanded={open}
-          onClick={() => setOpen((o) => !o)}
-        >
+          onClick={() => setOpen((o) => !o)}>
           <Settings size={18} />
-        </button>
+        </MenuButton>
         {open && (
-          <div className="menu" role="menu">
+          <Menu  role="menu">
             {/* Sharing */}
-            <button className="menu-item" role="menuitem" onClick={pick(onShare)}>
+            <MenuItem  role="menuitem" onClick={pick(onShare)}>
               <Share2 size={14} /> Share / QR
-            </button>
-            <div className="menu-sep" />
+            </MenuItem>
+            <MenuSep/>
             {/* Stories in and out */}
-            <button className="menu-item" role="menuitem" onClick={pick(() => void copyResults())}>
+            <MenuItem  role="menuitem" onClick={pick(() => void copyResults())}>
               <ClipboardList size={14} /> Copy results
-            </button>
-            <button className="menu-item" role="menuitem" onClick={pick(doExport)}>
+            </MenuItem>
+            <MenuItem  role="menuitem" onClick={pick(doExport)}>
               <FileDown size={14} /> Export JSON
-            </button>
+            </MenuItem>
             {canLead && (
-              <button
-                className="menu-item"
+              <MenuItem
+                
                 role="menuitem"
-                onClick={pick(() => fileInput.current?.click())}
-              >
+                onClick={pick(() => fileInput.current?.click())}>
                 <FileUp size={14} /> Import JSON
-              </button>
+              </MenuItem>
             )}
-            <div className="menu-sep" />
+            <MenuSep/>
             {/* Session setup */}
             {isAdmin && (
-              <button className="menu-item" role="menuitem" onClick={pick(() => setDeckOpen(true))}>
+              <MenuItem  role="menuitem" onClick={pick(() => setDeckOpen(true))}>
                 <Layers size={14} /> Change deck
-              </button>
+              </MenuItem>
             )}
-            <button className="menu-item" role="menuitem" onClick={pick(() => void newSession())}>
+            <MenuItem  role="menuitem" onClick={pick(() => void newSession())}>
               <Plus size={14} /> New session
-            </button>
-            <div className="menu-sep" />
+            </MenuItem>
+            <MenuSep/>
             {/* App: preferences and help */}
-            <button className="menu-item" role="menuitem" onClick={pick(toggle)}>
+            <MenuItem  role="menuitem" onClick={pick(toggle)}>
               {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />} Switch to{' '}
               {theme === 'dark' ? 'light' : 'dark'} mode
-            </button>
-            <button className="menu-item" role="menuitem" onClick={pick(onShortcuts)}>
+            </MenuItem>
+            <MenuItem  role="menuitem" onClick={pick(onShortcuts)}>
               <Keyboard size={14} /> Keyboard shortcuts
-            </button>
-            <button
-              className="menu-item"
+            </MenuItem>
+            <MenuItem
+              
               role="menuitem"
-              onClick={pick(() => setConnectOpen(true))}
-            >
+              onClick={pick(() => setConnectOpen(true))}>
               <Bot size={14} /> Connect Claude
-            </button>
-            <a
-              className="menu-item"
+            </MenuItem>
+            <MenuItem as="a"
+              
               role="menuitem"
               href="https://github.com/jakeflavin/fibo"
               target="_blank"
               rel="noreferrer"
-              onClick={() => setOpen(false)}
-            >
+              onClick={() => setOpen(false)}>
               <GitBranch size={14} /> View on GitHub
-            </a>
-            <div className="menu-sep" />
+            </MenuItem>
+            <MenuSep/>
             {/* Destructive, last and alone */}
-            <button
-              className="menu-item menu-item-danger"
+            <MenuItem $danger
+              
               role="menuitem"
-              onClick={pick(() => setConfirmLeave(true))}
-            >
+              onClick={pick(() => setConfirmLeave(true))}>
               <LogOut size={14} /> Leave session
-            </button>
-          </div>
+            </MenuItem>
+          </Menu>
         )}
-      </div>
+      </MenuWrap>
       {deckOpen && <DeckModal session={session} onClose={() => setDeckOpen(false)} />}
       {connectOpen && <ConnectClaudeModal onClose={() => setConnectOpen(false)} />}
       {confirmLeave && (
@@ -228,6 +210,6 @@ export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }:
           }}
         />
       )}
-    </header>
+    </HeaderBar>
   )
 }

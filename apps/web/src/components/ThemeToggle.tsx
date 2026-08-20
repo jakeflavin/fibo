@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Menu, MenuButton, MenuItem, MenuSep, MenuWrap } from '@/styles/shared.styled'
 import { Bot, GitBranch, Moon, Settings, Sun } from 'lucide-react'
 import { getTheme, saveTheme } from '@/lib/storage'
 import { ConnectClaudeModal } from './ConnectClaudeModal'
@@ -49,52 +50,47 @@ export function SettingsMenu() {
   }, [open])
 
   return (
-    <div className="menu-wrap" ref={menuRef}>
-      <button
-        className="btn btn-ghost menu-button"
+    <MenuWrap  ref={menuRef}>
+      <MenuButton $ghost
         aria-label="Settings"
         aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
-      >
+        onClick={() => setOpen((o) => !o)}>
         <Settings size={18} />
-      </button>
+      </MenuButton>
       {open && (
-        <div className="menu" role="menu">
-          <button
-            className="menu-item"
+        <Menu  role="menu">
+          <MenuItem
+            
             role="menuitem"
             onClick={() => {
               setOpen(false)
               toggle()
-            }}
-          >
+            }}>
             {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />} Switch to{' '}
             {theme === 'dark' ? 'light' : 'dark'} mode
-          </button>
-          <div className="menu-sep" />
-          <button
-            className="menu-item"
+          </MenuItem>
+          <MenuSep/>
+          <MenuItem
+            
             role="menuitem"
             onClick={() => {
               setOpen(false)
               setConnectOpen(true)
-            }}
-          >
+            }}>
             <Bot size={14} /> Connect Claude
-          </button>
-          <a
-            className="menu-item"
+          </MenuItem>
+          <MenuItem as="a"
+            
             role="menuitem"
             href="https://github.com/jakeflavin/fibo"
             target="_blank"
             rel="noreferrer"
-            onClick={() => setOpen(false)}
-          >
+            onClick={() => setOpen(false)}>
             <GitBranch size={14} /> View on GitHub
-          </a>
-        </div>
+          </MenuItem>
+        </Menu>
       )}
       {connectOpen && <ConnectClaudeModal onClose={() => setConnectOpen(false)} />}
-    </div>
+    </MenuWrap>
   )
 }

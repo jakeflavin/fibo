@@ -11,7 +11,7 @@ describe('RoundResult', () => {
 
   it('tallies the votes once revealed, most common first', () => {
     const { container } = render(<RoundResult session={voted({ a: 5, b: 5, c: 8 })} />);
-    expect(container.querySelector('.result-summary')?.textContent).toMatch(/5×2.*8×1/);
+    expect(container.querySelector('[data-summary]')?.textContent).toMatch(/5×2.*8×1/);
   });
 
   it('counts a player who has not voted as a question mark', () => {
@@ -43,14 +43,14 @@ describe('RoundResult', () => {
   it('shows the timer instead of the readout while the round is still running', () => {
     const s = session({ timer: { endsAt: Date.now() + 60_000, seconds: 60 }, revealed: false });
     const { container } = render(<RoundResult session={s} />);
-    expect(container.querySelector('.result-headline')).toBeNull();
+    expect(container.querySelector('[data-headline]')).toBeNull();
   });
 
   it('stays mounted before and after the reveal, so the rail never reshuffles', () => {
     const { container: before } = render(<RoundResult session={session()} />);
     const { container: after } = render(<RoundResult session={voted({ a: 3 })} />);
-    expect(before.querySelector('.round-result')).not.toBeNull();
-    expect(after.querySelector('.round-result')).not.toBeNull();
+    expect(before.querySelector('[data-round-result]')).not.toBeNull();
+    expect(after.querySelector('[data-round-result]')).not.toBeNull();
   });
 
   it('treats a story that is gone as not revealed', () => {

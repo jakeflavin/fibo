@@ -1,4 +1,6 @@
 import type { Session, VoteValue } from '@fibo/shared'
+import { ResultHeadline, ResultStrip, ResultSummary, ResultValue } from './RoundResult.styled'
+import { Eyebrow } from '@/styles/shared.styled'
 import { TimerBar } from './TimerBar'
 import { VoteGlyph } from './VoteGlyph'
 
@@ -32,17 +34,17 @@ export function RoundResult({ session }: { session: Session }) {
   }
 
   return (
-    <div className="rail-section rail-card round-result">
-      <div className="eyebrow">Consensus</div>
+    <ResultStrip data-round-result>
+      <Eyebrow>Consensus</Eyebrow>
       {timerRunning ? (
         <TimerBar session={session} />
       ) : (
-        <div className="result-headline">
-          <span className={`result-value ${revealed ? '' : 'result-none'}`}>
+        <ResultHeadline data-headline>
+          <ResultValue $none={!revealed}>
             {revealed ? <VoteGlyph value={story?.result ?? null} /> : '?'}
-          </span>
+          </ResultValue>
           {revealed && (tally.length > 0 || questionMarks > 0) && (
-            <span className="result-summary dim">
+            <ResultSummary data-summary>
               {tally.map(([v, n], i) => (
                 <span key={String(v)}>
                   {i > 0 && ' · '}
@@ -54,10 +56,10 @@ export function RoundResult({ session }: { session: Session }) {
                   {tally.length > 0 && ' · '}?×{questionMarks}
                 </span>
               )}
-            </span>
+            </ResultSummary>
           )}
-        </div>
+        </ResultHeadline>
       )}
-    </div>
+    </ResultStrip>
   )
 }

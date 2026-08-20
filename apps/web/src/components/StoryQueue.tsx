@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { QueueRow, StoryAdd, StoryBadge, StoryList, StoryRowTitle } from './StoryQueue.styled'
+import { Eyebrow, PanelBody, RailCard, TextField } from '@/styles/shared.styled'
 import {
   DndContext,
   KeyboardSensor,
@@ -46,16 +48,16 @@ function StoryRow({ session, story: s, canLead }: RowProps) {
   const dndKeyDown = listeners?.onKeyDown as ((e: React.KeyboardEvent) => void) | undefined
 
   return (
-    <li
+    <QueueRow
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`story-row story-${s.status} ${clickable ? 'story-clickable' : ''} ${
-        isDragging ? 'story-dragging' : ''
-      }`}
+      data-status={s.status}
+      $clickable={clickable}
+      $dragging={isDragging}
       {...(canLead ? attributes : {})}
       {...(canLead ? listeners : {})}
       onClick={clickable ? () => void activateStory(session, s.id) : undefined}
-      onKeyDown={(e) => {
+      onKeyDown={(e: React.KeyboardEvent<HTMLLIElement>) => {
         if (clickable && e.key === 'Enter') {
           e.preventDefault()
           void activateStory(session, s.id)
@@ -71,13 +73,13 @@ function StoryRow({ session, story: s, canLead }: RowProps) {
           : undefined
       }
     >
-      <span className="story-badge">
+      <StoryBadge>
         <VoteGlyph value={s.result ?? null} />
-      </span>
-      <span className="story-row-title" title={s.title}>
+      </StoryBadge>
+      <StoryRowTitle  title={s.title}>
         {s.title}
-      </span>
-    </li>
+      </StoryRowTitle>
+    </QueueRow>
   )
 }
 
@@ -126,11 +128,11 @@ export function StoryQueue({ session, canLead }: StoryQueueProps) {
   }
 
   return (
-    <div className="rail-section rail-card">
-      <div className="eyebrow">Queue · {stories.length}</div>
+    <RailCard>
+      <Eyebrow>Queue · {stories.length}</Eyebrow>
       {canLead && (
-        <form className="story-add" onSubmit={submit}>
-          <div className="text-field">
+        <StoryAdd  onSubmit={submit}>
+          <TextField>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -138,23 +140,23 @@ export function StoryQueue({ session, canLead }: StoryQueueProps) {
               maxLength={200}
               onPaste={(e) => void onPaste(e)}
             />
-          </div>
-        </form>
+          </TextField>
+        </StoryAdd>
       )}
       {stories.length === 0 && (
-        <p className="panel-body dim">
+        <PanelBody $dim>
           {canLead ? 'The queue is empty. Add the first story above.' : 'No stories yet.'}
-        </p>
+        </PanelBody>
       )}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
         <SortableContext items={stories.map((s) => s.id)} strategy={verticalListSortingStrategy}>
-          <ul className="story-list">
+          <StoryList>
             {stories.map((s) => (
               <StoryRow key={s.id} session={session} story={s} canLead={canLead} />
             ))}
-          </ul>
+          </StoryList>
         </SortableContext>
       </DndContext>
-    </div>
+    </RailCard>
   )
 }

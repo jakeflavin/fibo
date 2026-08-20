@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
+import { PresenceDot, TeamCard, UserList, UserMain, UserMenu, UserMore, UserMoreWrap, UserName, UserRow, UserTag, UserVote } from './Participants.styled'
+import { Eyebrow, MenuItem } from '@/styles/shared.styled'
 import { createPortal } from 'react-dom'
 import { Check, Crown, Ellipsis, Eye, UserMinus, UserPen } from 'lucide-react'
 import type { Session } from '@fibo/shared'
 import { removeUser, setRole, transferAdmin } from '@/lib/api'
 import { ConfirmModal } from './ConfirmModal'
-import { identityVars, PixelAvatar } from './PixelAvatar'
+import { PixelAvatar, identityVars } from './PixelAvatar'
 import { VoteGlyph } from './VoteGlyph'
 
 interface ParticipantsProps {
@@ -76,9 +78,9 @@ export function Participants({ session, myUserId }: ParticipantsProps) {
   }
 
   return (
-    <div className="rail-section rail-card team-card">
-      <div className="eyebrow">Team · {rows.length}</div>
-      <ul className="user-list" ref={listRef}>
+    <TeamCard>
+      <Eyebrow>Team · {rows.length}</Eyebrow>
+      <UserList  ref={listRef}>
         {rows.map(([uid, user]) => {
           const vote = story ? votes[uid] : undefined
           const voted = vote !== undefined
@@ -86,83 +88,75 @@ export function Participants({ session, myUserId }: ParticipantsProps) {
           const isLead = user.role === 'leader'
           const isSpectator = user.role === 'spectator'
           return (
-            <li key={uid} className={`user-row ${user.online ? '' : 'user-offline'}`}>
-              <span className={`presence-dot ${user.online ? 'on' : 'off'}`} />
+            <UserRow key={uid} $offline={!user.online}>
+              <PresenceDot $on={user.online} $off={!user.online} />
               <PixelAvatar identity={user.identity} size={22} />
-              <span className="user-main">
-                <span className="user-name identity" style={identityVars(user.identity)}>
+              <UserMain>
+                <UserName style={identityVars(user.identity)}>
                   {user.name}
-                </span>
-                {uid === myUserId && <span className="user-tag">You</span>}
-                {ROLE_TAG[user.role] && <span className="user-tag">{ROLE_TAG[user.role]}</span>}
+                </UserName>
+                {uid === myUserId && <UserTag>You</UserTag>}
+                {ROLE_TAG[user.role] && <UserTag>{ROLE_TAG[user.role]}</UserTag>}
                 {canManage && (
-                  <span className="user-more-wrap">
-                    <button
-                      className="btn btn-ghost user-more"
+                  <UserMoreWrap>
+                    <UserMore $ghost
                       aria-label={`Actions for ${user.name}`}
                       aria-expanded={menu?.uid === uid}
-                      onClick={toggleMenu(uid)}
-                    >
+                      onClick={toggleMenu(uid)}>
                       <Ellipsis size={14} />
-                    </button>
+                    </UserMore>
                     {menu?.uid === uid &&
                       createPortal(
-                        <div
-                          className="menu user-menu"
+                        <UserMenu
                           role="menu"
-                          style={{ position: 'fixed', top: menu.top, left: menu.left }}
-                        >
+                          style={{ position: 'fixed', top: menu.top, left: menu.left }}>
                           {!isSpectator && (
-                            <button
-                              className="menu-item"
+                            <MenuItem
+                              
                               role="menuitem"
                               onClick={() => {
                                 setMenu(null)
                                 void setRole(session, uid, isLead ? 'participant' : 'leader')
-                              }}
-                            >
+                              }}>
                               <UserPen size={14} /> {isLead ? 'Remove as lead' : 'Make lead'}
-                            </button>
+                            </MenuItem>
                           )}
-                          <button
-                            className="menu-item"
+                          <MenuItem
+                            
                             role="menuitem"
                             onClick={() => {
                               setMenu(null)
                               void setRole(session, uid, isSpectator ? 'participant' : 'spectator')
-                            }}
-                          >
+                            }}>
                             <Eye size={14} /> {isSpectator ? 'Make participant' : 'Make spectator'}
-                          </button>
+                          </MenuItem>
                           {!isSpectator && (
-                            <button
-                              className="menu-item"
+                            <MenuItem
+                              
                               role="menuitem"
                               onClick={() => {
                                 setMenu(null)
                                 setPendingTransfer({ uid, name: user.name })
-                              }}
-                            >
+                              }}>
                               <Crown size={14} /> Transfer admin
-                            </button>
+                            </MenuItem>
                           )}
-                          <button
-                            className="menu-item menu-item-danger"
+                          <MenuItem $danger
+                            
                             role="menuitem"
                             onClick={() => {
                               setMenu(null)
                               void removeUser(session, uid)
-                            }}
-                          >
+                            }}>
                             <UserMinus size={14} /> Remove from session
-                          </button>
-                        </div>,
+                          </MenuItem>
+                        </UserMenu>,
                         document.body,
                       )}
-                  </span>
+                  </UserMoreWrap>
                 )}
-              </span>
-              <span className={`user-vote ${voted ? 'user-voted' : ''}`}>
+              </UserMain>
+              <UserVote $voted={voted} data-vote>
                 {story && user.role !== 'spectator' ? (
                   session.revealed ? (
                     <VoteGlyph value={vote ?? null} />
@@ -174,11 +168,11 @@ export function Participants({ session, myUserId }: ParticipantsProps) {
                 ) : (
                   ''
                 )}
-              </span>
-            </li>
+              </UserVote>
+            </UserRow>
           )
         })}
-      </ul>
+      </UserList>
       {pendingTransfer && (
         <ConfirmModal
           title="Transfer admin"
@@ -197,6 +191,6 @@ export function Participants({ session, myUserId }: ParticipantsProps) {
           onClose={() => setPendingTransfer(null)}
         />
       )}
-    </div>
+    </TeamCard>
   )
 }

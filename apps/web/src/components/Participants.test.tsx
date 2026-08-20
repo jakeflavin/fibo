@@ -40,8 +40,8 @@ describe('Participants', () => {
     });
     render(<Participants session={s} myUserId="u1" />);
     // Ada's status is an icon, so compare rendered content rather than text.
-    expect(seatOf('Watcher')?.querySelector('.user-vote')?.innerHTML).toBe('');
-    expect(seatOf('Ada')?.querySelector('.user-vote')?.innerHTML).not.toBe('');
+    expect(seatOf('Watcher')?.querySelector('[data-vote]')?.innerHTML).toBe('');
+    expect(seatOf('Ada')?.querySelector('[data-vote]')?.innerHTML).not.toBe('');
   });
 
   it('offers seat management only to the owner', () => {

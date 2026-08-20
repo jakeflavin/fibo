@@ -89,8 +89,8 @@ describe('Modal', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  it('keeps the caller’s class alongside its own', () => {
+  it('passes a caller’s class through to the dialog', () => {
     open({ className: 'connect-modal' });
-    expect(screen.getByRole('dialog')).toHaveClass('modal', 'connect-modal');
+    expect(screen.getByRole('dialog')).toHaveClass('connect-modal');
   });
 });

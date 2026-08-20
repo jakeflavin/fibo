@@ -1,4 +1,6 @@
 import { QRCodeSVG } from 'qrcode.react'
+import { QrBox } from './ShareModal.styled'
+import { Button, Dim, ShareUrl } from '@/styles/shared.styled'
 import type { Session } from '@fibo/shared'
 import { Modal } from './Modal'
 import { useToast } from './Toast'
@@ -24,7 +26,7 @@ export function ShareModal({ session, onClose }: ShareModalProps) {
 
   return (
     <Modal title="Invite your team" onClose={onClose}>
-      <div className="qr-box">
+      <QrBox>
         <QRCodeSVG
           value={url}
           size={208}
@@ -33,12 +35,12 @@ export function ShareModal({ session, onClose }: ShareModalProps) {
           bgColor="#ffffff"
           fgColor="#000000"
         />
-      </div>
-      <code className="share-url">{url}</code>
-      <button className="btn btn-primary btn-block" onClick={copy}>
+      </QrBox>
+      <ShareUrl>{url}</ShareUrl>
+      <Button $primary $block  onClick={copy}>
         Copy link
-      </button>
-      <p className="dim panel-hint">Anyone with the link joins by entering a name.</p>
+      </Button>
+      <Dim>Anyone with the link joins by entering a name.</Dim>
     </Modal>
   )
 }

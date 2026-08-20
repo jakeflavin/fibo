@@ -1,4 +1,7 @@
 import { useState } from 'react'
+
+import { DeckPickerCustom, DeckPickerPreview, DeckPickerSeg, PickerGrid } from './DeckPicker.styled'
+import { SegCell } from '@/styles/shared.styled'
 import type { DeckChoice, DeckPreset } from '@fibo/shared'
 import { DECK_PRESETS, parseCustomDeck } from '@fibo/shared'
 
@@ -34,23 +37,23 @@ export function DeckPicker({ value, onChange }: DeckPickerProps) {
   }
 
   return (
-    <div className="deck-picker">
-      <div className="seg deck-picker-seg" role="radiogroup" aria-label="Deck">
+    <PickerGrid>
+      <DeckPickerSeg role="radiogroup" aria-label="Deck">
         {PRESETS.map((p) => (
-          <button
+          <SegCell
             key={p.id}
             type="button"
-            className={`seg-cell ${value.preset === p.id ? 'seg-cell-active' : ''}`}
+            $active={value.preset === p.id}
             role="radio"
             aria-checked={value.preset === p.id}
             onClick={() => pick(p.id)}
           >
             {p.label}
-          </button>
+          </SegCell>
         ))}
-      </div>
+      </DeckPickerSeg>
       {value.preset === 'custom' && (
-        <div className="text-field deck-picker-custom">
+        <DeckPickerCustom>
           <input
             value={customText}
             onChange={(e) => {
@@ -63,11 +66,11 @@ export function DeckPicker({ value, onChange }: DeckPickerProps) {
             maxLength={80}
             autoFocus
           />
-        </div>
+        </DeckPickerCustom>
       )}
       {value.preset === 'custom' && (
-        <div className="deck-picker-preview dim">Enter at least two cards, lowest first.</div>
+        <DeckPickerPreview>Enter at least two cards, lowest first.</DeckPickerPreview>
       )}
-    </div>
+    </PickerGrid>
   )
 }

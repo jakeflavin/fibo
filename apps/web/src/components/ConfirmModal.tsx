@@ -1,4 +1,5 @@
 import { Modal } from './Modal'
+import { Button, ModalActions, PanelBody } from '@/styles/shared.styled'
 
 interface ConfirmModalProps {
   title: string
@@ -18,15 +19,15 @@ export function ConfirmModal({
 }: ConfirmModalProps) {
   return (
     <Modal title={title} onClose={onClose} role="alertdialog">
-      <p className="panel-body">{message}</p>
-      <div className="modal-actions">
-        <button className="btn" onClick={onClose}>
+      <PanelBody>{message}</PanelBody>
+      <ModalActions>
+        <Button  onClick={onClose}>
           cancel
-        </button>
-        <button className="btn btn-danger" onClick={onConfirm}>
+        </Button>
+        <Button $danger  onClick={onConfirm}>
           {confirmLabel}
-        </button>
-      </div>
+        </Button>
+      </ModalActions>
     </Modal>
   )
 }

@@ -1,6 +1,8 @@
 import { RotateCcw } from 'lucide-react'
+import { Chip, ControlsActions, ControlsBar, ControlsPanel, ControlsSep, ResultEdit } from './LeaderControls.styled'
+import { Button, Eyebrow, Seg, SegCell } from '@/styles/shared.styled'
 import type { Session } from '@fibo/shared'
-import { COFFEE, deckCards, SKIP } from '@fibo/shared'
+import { COFFEE, SKIP, deckCards } from '@fibo/shared'
 import { revealCards, revote, setAutoFlip, setResult, startTimer } from '@/lib/api'
 import { VoteGlyph } from './VoteGlyph'
 
@@ -21,63 +23,60 @@ export function LeaderControls({ session }: { session: Session }) {
   const timer = session.timer ?? null
 
   return (
-    <div className="rail-section rail-card leader-controls">
-      <div className="eyebrow">Controls</div>
+    <ControlsPanel>
+      <Eyebrow>Controls</Eyebrow>
       {/* One toolbar row: round zone | result zone. */}
-      <div className="controls-row controls-bar">
-        <button
-          className="btn btn-primary btn-flip"
+      <ControlsBar>
+        <Button $primary data-btn-flip
+          
           disabled={!story || revealed}
-          onClick={() => void revealCards(session)}
-        >
+          onClick={() => void revealCards(session)}>
           Flip
-        </button>
-        <div className="seg">
+        </Button>
+        <Seg>
           {PRESETS.map((p) => (
-            <button
+            <SegCell as="button"
               key={p.seconds}
-              className="seg-cell"
+              
               disabled={!story || revealed || !!timer}
               onClick={() => void startTimer(session.id, p.seconds)}
-              title={`Start a ${p.label} countdown — cards auto-flip at zero`}
-            >
+              title={`Start a ${p.label} countdown — cards auto-flip at zero`}>
               {p.label}
-            </button>
+            </SegCell>
           ))}
-          <button
-            className={`seg-cell ${session.autoFlip ? 'seg-cell-active' : ''}`}
+          <SegCell
+            $active={!!session.autoFlip}
             aria-pressed={!!session.autoFlip}
             onClick={() => void setAutoFlip(session.id, !session.autoFlip)}
             title="Flip automatically once everyone online has voted"
           >
             Auto
-          </button>
-        </div>
-        <div className="controls-sep" />
-        <div className="result-edit">
+          </SegCell>
+        </Seg>
+        <ControlsSep/>
+        <ResultEdit>
           {[...deckCards(session), SKIP, COFFEE].map((v) => (
-            <button
+            <Chip
               key={String(v)}
-              className={`chip ${revealed && story?.result === v ? 'chip-active' : ''}`}
+              $active={revealed && story?.result === v}
               disabled={!revealed}
               onClick={() => story && void setResult(session.id, story.id, v)}
             >
               <VoteGlyph value={v} />
-            </button>
+            </Chip>
           ))}
-        </div>
-        <div className="controls-actions">
-          <button
-            className="btn btn-icon"
+        </ResultEdit>
+        <ControlsActions>
+          <Button $icon
+            
             disabled={!revealed}
             onClick={() => void revote(session)}
             title="Clear votes and go another round"
-            aria-label="Repoint this story"
-          >
+            aria-label="Repoint this story">
             <RotateCcw size={15} />
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </ControlsActions>
+      </ControlsBar>
+    </ControlsPanel>
   )
 }

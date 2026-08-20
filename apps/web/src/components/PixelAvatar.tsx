@@ -1,9 +1,9 @@
 import { IDENTITY_SETS } from '@fibo/shared'
+import { AvatarSvg } from './PixelAvatar.styled'
 
 interface PixelAvatarProps {
   identity: number
   size?: number
-  className?: string
   /** Single-tone silhouette color; overrides the identity's own tones. */
   ink?: string
 }
@@ -24,7 +24,7 @@ function identitySet(identity: number) {
   return IDENTITY_SETS[((identity % count) + count) % count] ?? IDENTITY_SETS[0]
 }
 
-export function PixelAvatar({ identity, size = 32, className, ink }: PixelAvatarProps) {
+export function PixelAvatar({ identity, size = 32, ink }: PixelAvatarProps) {
   const set = identitySet(identity)
   const fill = ink ?? 'var(--idc)'
   const rects: React.ReactElement[] = []
@@ -35,18 +35,17 @@ export function PixelAvatar({ identity, size = 32, className, ink }: PixelAvatar
     })
   })
   return (
-    <svg
+    <AvatarSvg
       viewBox="0 0 8 8"
       width={size}
       height={size}
       shapeRendering="crispEdges"
       role="img"
       aria-label={`${set.name} avatar`}
-      className={`identity ${className ?? ''}`}
       style={identityVars(identity)}
     >
       {rects}
-    </svg>
+    </AvatarSvg>
   )
 }
 

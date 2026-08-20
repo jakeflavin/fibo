@@ -1,10 +1,12 @@
 import { useLayoutEffect, useRef, useState } from 'react'
+import { Seat, SeatCard, SeatCardBack, SeatCardCorner, SeatCardCornerBr, SeatCardFront, SeatCardInner, SeatLabel, SeatName, SeatRow, SeatUnit, Seats, SeatsInner, StoryLine, StoryTitle, TableEmpty, TablePanel, TitleAction, TitleActions, TitleEdit, TitleEditAction, TitleEditActions, TitleEditField } from './CardTable.styled'
+import { Dim } from '@/styles/shared.styled'
 import { createPortal } from 'react-dom'
 import { Check, Pencil, Trash2, X } from 'lucide-react'
 import type { Session } from '@fibo/shared'
 import { deleteStory, updateStoryTitle } from '@/lib/api'
 import { ConfirmModal } from './ConfirmModal'
-import { identityVars, PixelAvatar } from './PixelAvatar'
+import { PixelAvatar, identityVars } from './PixelAvatar'
 import { VoteGlyph } from './VoteGlyph'
 
 interface CardTableProps {
@@ -29,7 +31,7 @@ function scatter(uid: string) {
   return { tilt: (h % 11) - 5, dy: (h >> 4) % 6 }
 }
 
-export function CardTable({ session, myUserId, canLead }: CardTableProps) {
+export function CardTable({ session, canLead }: CardTableProps) {
   const users = session.users ?? {}
   const story = session.currentStoryId ? session.stories?.[session.currentStoryId] : undefined
   const votes = story?.votes ?? {}
@@ -129,46 +131,42 @@ export function CardTable({ session, myUserId, canLead }: CardTableProps) {
 
   if (!story) {
     return (
-      <div className="table-panel">
-        <div className="table-empty">
-          <p className="dim">No story on the table.</p>
-        </div>
-      </div>
+      <TablePanel>
+        <TableEmpty>
+          <Dim>No story on the table.</Dim>
+        </TableEmpty>
+      </TablePanel>
     )
   }
 
   return (
-    <div className="table-panel">
-      <div className="story-line">
+    <TablePanel>
+      <StoryLine>
         {editingTitle === null ? (
-          <h2
-            className={`story-title ${titleClipped ? 'story-title-overflow' : ''}`}
+          <StoryTitle
+            $overflow={titleClipped}
             ref={titleRef}
             title={story.title}
           >
             {story.title}
             {canLead && (
-              <span className="title-actions">
-                <button
-                  className="btn btn-ghost title-action"
+              <TitleActions>
+                <TitleAction $ghost
                   aria-label="Edit story title"
-                  onClick={() => setEditingTitle(story.title)}
-                >
+                  onClick={() => setEditingTitle(story.title)}>
                   <Pencil size={14} />
-                </button>
-                <button
-                  className="btn btn-ghost title-action"
+                </TitleAction>
+                <TitleAction $ghost
                   aria-label="Delete story"
-                  onClick={() => setConfirmDelete(true)}
-                >
+                  onClick={() => setConfirmDelete(true)}>
                   <Trash2 size={14} />
-                </button>
-              </span>
+                </TitleAction>
+              </TitleActions>
             )}
-          </h2>
+          </StoryTitle>
         ) : (
-          <form
-            className="title-edit"
+          <TitleEdit as="form"
+            
             onSubmit={(e) => {
               e.preventDefault()
               const t = editingTitle.trim()
@@ -178,9 +176,8 @@ export function CardTable({ session, myUserId, canLead }: CardTableProps) {
             onBlur={(e) => {
               // Clicking anywhere outside the editor cancels.
               if (!e.currentTarget.contains(e.relatedTarget)) setEditingTitle(null)
-            }}
-          >
-            <div className="text-field title-edit-field">
+            }}>
+            <TitleEditField>
               <input
                 value={editingTitle}
                 onChange={(e) => setEditingTitle(e.target.value)}
@@ -190,28 +187,24 @@ export function CardTable({ session, myUserId, canLead }: CardTableProps) {
                   if (e.key === 'Escape') setEditingTitle(null)
                 }}
               />
-            </div>
-            <span className="title-edit-actions">
-              <button
-                className="btn title-edit-action"
+            </TitleEditField>
+            <TitleEditActions>
+              <TitleEditAction
                 type="submit"
                 disabled={!editingTitle.trim()}
-                aria-label="Save title"
-              >
+                aria-label="Save title">
                 <Check size={14} />
-              </button>
-              <button
-                className="btn title-edit-action"
+              </TitleEditAction>
+              <TitleEditAction
                 type="button"
                 onClick={() => setEditingTitle(null)}
-                aria-label="Cancel editing"
-              >
+                aria-label="Cancel editing">
                 <X size={14} />
-              </button>
-            </span>
-          </form>
+              </TitleEditAction>
+            </TitleEditActions>
+          </TitleEdit>
         )}
-      </div>
+      </StoryLine>
       {confirmDelete &&
         createPortal(
           <ConfirmModal
@@ -231,22 +224,19 @@ export function CardTable({ session, myUserId, canLead }: CardTableProps) {
           document.body,
         )}
 
-      <div
-        className="seats"
+      <Seats
+        
         ref={seatsRef}
-        style={{ '--rows': rows.length, '--cols': cols } as React.CSSProperties}
-      >
-        <div
-          className="seats-inner"
+        style={{ '--rows': rows.length, '--cols': cols } as React.CSSProperties}>
+        <SeatsInner
+          
           ref={innerRef}
-          style={{ transform: fitScale < 1 ? `scale(${fitScale})` : undefined }}
-        >
+          style={{ transform: fitScale < 1 ? `scale(${fitScale})` : undefined }}>
           {rows.map((row, ri) => (
-            <div key={ri} className="seat-row">
+            <SeatRow key={ri}>
               {row.map(([uid, user]) => {
                 const vote = votes[uid]
                 const hasVoted = vote !== undefined
-                const isMe = uid === myUserId
                 const state = revealed
                   ? 'revealed'
                   : hasVoted
@@ -255,16 +245,16 @@ export function CardTable({ session, myUserId, canLead }: CardTableProps) {
                       ? 'thinking'
                       : 'away'
                 return (
-                  <div
+                  <Seat
                     key={uid}
-                    className={`seat seat-${state} ${hasVoted ? 'seat-has-vote' : ''} ${
-                      isMe ? 'seat-me' : ''
-                    } identity`}
+                    data-state={state}
+                    $hasVote={hasVoted}
+                    data-has-vote={hasVoted || undefined}
                     style={identityVars(user.identity)}
                   >
-                    <div className="seat-unit">
-                      <div
-                        className={`seat-card ${revealed ? 'flipped' : ''}`}
+                    <SeatUnit>
+                      <SeatCard
+                        $flipped={revealed}
                         style={
                           {
                             '--tilt': `${scatter(uid).tilt}deg`,
@@ -272,42 +262,42 @@ export function CardTable({ session, myUserId, canLead }: CardTableProps) {
                           } as React.CSSProperties
                         }
                       >
-                        <div className="seat-card-inner">
-                          <div className="seat-card-back">
+                        <SeatCardInner>
+                          <SeatCardBack>
                             <PixelAvatar
                               identity={user.identity}
                               size={38}
                               ink={hasVoted ? 'var(--bg)' : 'var(--idc)'}
                             />
-                          </div>
-                          <div className="seat-card-front">
+                          </SeatCardBack>
+                          <SeatCardFront>
                             {/* Corner indices, like a real playing card. */}
                             {revealed && (
                               <>
-                                <span className="seat-card-corner">
+                                <SeatCardCornerBr>
                                   {hasVoted ? <VoteGlyph value={vote} /> : '?'}
-                                </span>
-                                <span className="seat-card-corner seat-card-corner-br">
+                                </SeatCardCornerBr>
+                                <SeatCardCorner>
                                   {hasVoted ? <VoteGlyph value={vote} /> : '?'}
-                                </span>
+                                </SeatCardCorner>
                               </>
                             )}
                             {/* Vote values stay out of the DOM until the flip. */}
                             {revealed ? hasVoted ? <VoteGlyph value={vote} /> : '?' : ''}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="seat-label">
-                        <span className="seat-name">{user.name}</span>
-                      </div>
-                    </div>
-                  </div>
+                          </SeatCardFront>
+                        </SeatCardInner>
+                      </SeatCard>
+                      <SeatLabel>
+                        <SeatName>{user.name}</SeatName>
+                      </SeatLabel>
+                    </SeatUnit>
+                  </Seat>
                 )
               })}
-            </div>
+            </SeatRow>
           ))}
-        </div>
-      </div>
-    </div>
+        </SeatsInner>
+      </Seats>
+    </TablePanel>
   )
 }

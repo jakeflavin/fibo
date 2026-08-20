@@ -1,14 +1,9 @@
 import { useRef, useState } from 'react'
+import { Button, Field, FieldLabel, HomeCard, HomeCorner, HomeForm, HomeImport, HomeMain, HomeNotes, HomeShell, Logo, RoomFooter, SrOnly, Tagline, TextField } from '@/styles/shared.styled'
 import { FileUp, Heart } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import type { DeckChoice, Story } from '@fibo/shared'
-import {
-  DECK_PRESETS,
-  ImportError,
-  newStoryId,
-  parseSessionExport,
-  storiesFromExport,
-} from '@fibo/shared'
+import { DECK_PRESETS, ImportError, newStoryId, parseSessionExport, storiesFromExport } from '@fibo/shared'
 import { createSession } from '@/lib/api'
 import { getLastName, saveLastName } from '@/lib/storage'
 import { SettingsMenu } from '@/components/ThemeToggle'
@@ -54,22 +49,22 @@ export function Home() {
   }
 
   return (
-    <div className="home">
-      <div className="home-corner">
+    <HomeShell>
+      <HomeCorner>
         <SettingsMenu />
-      </div>
-      <main className="home-main">
-        <div className="logo" aria-hidden="true">
+      </HomeCorner>
+      <HomeMain>
+        <Logo  aria-hidden="true">
           fibo
-        </div>
-        <h1 className="sr-only">fibo</h1>
-        <p className="tagline">Story points, no strings attached</p>
+        </Logo>
+        <SrOnly>fibo</SrOnly>
+        <Tagline>Story points, no strings attached</Tagline>
 
-        <div className="rail-card home-card">
-          <form className="home-form" onSubmit={submit}>
-            <label className="field">
-              <span className="field-label">Your name *</span>
-              <div className="text-field">
+        <HomeCard>
+          <HomeForm  onSubmit={submit}>
+            <Field>
+              <FieldLabel>Your name *</FieldLabel>
+              <TextField>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -78,29 +73,27 @@ export function Home() {
                   autoFocus
                   required
                 />
-              </div>
-            </label>
-            <div className="field">
-              <span className="field-label">Deck</span>
+              </TextField>
+            </Field>
+            <Field as="div">
+              <FieldLabel>Deck</FieldLabel>
               <DeckPicker value={deck ?? { preset: 'custom', cards: [] }} onChange={setDeck} />
-            </div>
-            <button className="btn btn-primary btn-block" disabled={!name.trim() || !deck || busy}>
+            </Field>
+            <Button $primary $block  disabled={!name.trim() || !deck || busy}>
               {busy ? 'Creating…' : 'Create session'}
-            </button>
-            <button
+            </Button>
+            <HomeImport $ghost $block
               type="button"
-              className="btn btn-ghost btn-block home-import"
               disabled={!name.trim() || busy}
               onClick={() => fileInput.current?.click()}
-              title="Start a session from a previously exported queue"
-            >
+              title="Start a session from a previously exported queue">
               <FileUp size={14} /> Start from an export…
-            </button>
-          </form>
-        </div>
+            </HomeImport>
+          </HomeForm>
+        </HomeCard>
 
-        <p className="home-notes">No accounts, no signup — sessions are temporary</p>
-      </main>
+        <HomeNotes>No accounts, no signup — sessions are temporary</HomeNotes>
+      </HomeMain>
       <input
         ref={fileInput}
         type="file"
@@ -112,9 +105,9 @@ export function Home() {
           e.target.value = ''
         }}
       />
-      <footer className="room-footer dim">
+      <RoomFooter>
         made with <Heart size={11} aria-label="love" /> by jake
-      </footer>
-    </div>
+      </RoomFooter>
+    </HomeShell>
   )
 }
