@@ -6,12 +6,14 @@
     <meta name="description" content="Fibo — ephemeral story-point planning for software teams. No accounts, just a link." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="theme-color" content="#18191a" />
+    <!-- Kept in step with the resolved theme by the script below; this value is
+         what a scripts-off visitor gets, and matches :root. -->
+    <meta name="theme-color" content="#f8f8f8" />
 
     <!-- iOS reads its own tags rather than the manifest, and ignores an SVG icon. -->
     <link rel="apple-touch-icon" href="/icon-180.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
     <!-- Link previews. The image is the app's own cover shot, served from the directory
          that hosts it; crawlers need an absolute URL and will not follow a relative one. -->
@@ -29,29 +31,31 @@
     <meta name="twitter:image:alt" content="Fibo" />
     <link rel="canonical" href="https://portfolio-4b9fe.web.app/fibo/" />
     <title>fibo — story points, no strings attached</title>
-    <script>
-      // Apply the stored theme before first paint. fibo is dark-first:
-      // dark unless the user explicitly chose light.
-      (function () {
-        var t = 'dark';
-        try {
-          if (localStorage.getItem('fibo:theme') === 'light') t = 'light';
-        } catch (e) {}
-        document.documentElement.setAttribute('data-theme', t);
-      })();
-    </script>
-      <!--
-      Resolves the theme before the first paint. Every app switches tokens on
-      <html data-theme>, but React only sets it on mount — so without this the page
-      paints the light palette first, which is a white flash on a dark screen.
+    <!--
+      Resolves the theme before the first paint. The tokens switch on
+      <html data-theme>, and React can only set that on mount — a frame too
+      late, which shows as a flash of the wrong palette. Mirrors
+      `resolveTheme`/`applyTheme` in src/lib/theme.ts: a stored choice wins in
+      either direction, otherwise follow the system. There were two of these
+      once, and the second read `fibo.theme` for a key written as `fibo:theme`,
+      so it always overrode the first with the system answer.
     -->
     <script>
-      try {
-        var stored = localStorage.getItem('fibo.theme');
-        var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.dataset.theme =
-          stored === 'light' || stored === 'dark' ? stored : dark ? 'dark' : 'light';
-      } catch (e) {}
+      (function () {
+        var theme = 'light';
+        try {
+          var stored = localStorage.getItem('fibo:theme');
+          theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+        } catch (e) {}
+        document.documentElement.setAttribute('data-theme', theme);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', theme === 'dark' ? '#18191a' : '#f8f8f8');
+      })();
     </script>
   </head>
   <body>

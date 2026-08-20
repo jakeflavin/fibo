@@ -4,11 +4,16 @@
 
 /*
  * Tokens map 1:1 to ADS tokens (current visual-refresh palette, pulled
- * from @atlaskit/tokens). Light is the reference experience; dark uses
- * the ADS dark ramp, where surfaces get lighter as they rise.
+ * from @atlaskit/tokens). Light is the reference experience (DESIGN.md §1);
+ * dark uses the ADS dark ramp, where surfaces get lighter as they rise.
+ *
+ * Three states, not two. A visitor who has chosen gets `data-theme`; one who
+ * has not gets whatever their system says. Light is therefore the bare :root
+ * block and dark is redefined twice — once behind the media query, once behind
+ * the explicit attribute — so each wins in the direction it should. Only tokens
+ * are redefined; nothing below this block names a theme.
  */
-:root,
-:root[data-theme='dark'] {
+:root {
   --font-sans:
     ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ubuntu, 'Helvetica Neue',
     Helvetica, Arial, sans-serif;
@@ -19,9 +24,75 @@
   --font-small: 12px;
   --font-lozenge: 11px;
 
+  --bg: #f8f8f8; /* elevation.surface.sunken */
+  --surface: #ffffff; /* elevation.surface.raised */
+  --surface-hi: rgba(5, 21, 36, 0.06); /* color.background.neutral */
+  --surface-hover: rgba(11, 18, 14, 0.14); /* color.background.neutral.hovered */
+  --line: rgba(11, 18, 14, 0.14); /* color.border */
+  --line-strong: #7d818a; /* color.border.bold */
+  --control: #8c8f97; /* color.border.input */
+  --text: #292a2e; /* color.text */
+  --dim: #6b6e76; /* color.text.subtlest */
+  --accent: #1868db; /* color.background.brand.bold */
+  --accent-ink: #ffffff; /* color.text.inverse */
+  --accent-dim: #e9f2fe; /* color.background.selected */
+  --accent-hover: #1558bc; /* color.background.brand.bold.hovered */
+  --success: #4c6b1f; /* color.text.success */
+  --danger: #ae2e24; /* color.text.danger */
+  --danger-bold: #c9372c; /* color.background.danger.bold */
+  --warn: #9e4c00; /* color.text.warning */
+  --backdrop: rgba(9, 30, 66, 0.54);
+
+  --shadow-card: 0 1px 1px rgba(30, 31, 33, 0.25), 0 0 1px rgba(30, 31, 33, 0.31);
+  --shadow-float: 0 8px 12px rgba(30, 31, 33, 0.15), 0 0 1px rgba(30, 31, 33, 0.31);
+  --shadow-vote: 0 4px 12px rgba(30, 31, 33, 0.25);
+  --card-face: #ffffff;
+  --shadow-play: 0 1px 1px rgba(30, 31, 33, 0.25), 0 0 1px rgba(30, 31, 33, 0.31);
+  --shadow-play-hover: 0 8px 12px rgba(30, 31, 33, 0.15), 0 0 1px rgba(30, 31, 33, 0.31);
+
+  color-scheme: light;
+}
+
+/* System dark, unless the visitor explicitly asked for light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #18191a; /* elevation.surface.sunken */
+    --surface: #242528; /* elevation.surface.raised */
+    --surface-hi: rgba(206, 206, 217, 0.07); /* color.background.neutral */
+    --surface-hover: rgba(227, 228, 242, 0.12); /* color.background.neutral.hovered */
+    --line: rgba(227, 228, 242, 0.12); /* color.border */
+    --line-strong: #7e8188; /* color.border.bold */
+    --control: #7e8188; /* color.border.input */
+    --text: #cecfd2; /* color.text */
+    --dim: #96999e; /* color.text.subtlest */
+    --accent: #669df1; /* color.background.brand.bold */
+    --accent-ink: #1f1f21; /* color.text.inverse */
+    --accent-dim: #1c2b42; /* color.background.selected */
+    --accent-hover: #8fb8f6; /* color.background.brand.bold.hovered */
+    --success: #b3df72; /* color.text.success */
+    --danger: #fd9891; /* color.text.danger */
+    --danger-bold: #f87168; /* color.background.danger.bold */
+    --warn: #fbc828; /* color.text.warning */
+    --backdrop: rgba(3, 4, 4, 0.6);
+
+    --shadow-card: 0 1px 1px rgba(1, 4, 4, 0.5), 0 0 1px rgba(1, 4, 4, 0.5);
+    --shadow-float:
+      0 0 0 1px rgba(189, 189, 189, 0.12), 0 8px 12px rgba(1, 4, 4, 0.36), 0 0 1px rgba(1, 4, 4, 0.5);
+    --shadow-vote: 0 4px 12px rgba(1, 4, 4, 0.45);
+    --card-face: #2b2c2f; /* elevation.surface.overlay */
+    --shadow-play: 0 1px 1px rgba(1, 4, 4, 0.5), 0 0 1px rgba(1, 4, 4, 0.5);
+    --shadow-play-hover: 0 8px 12px rgba(1, 4, 4, 0.36), 0 0 1px rgba(1, 4, 4, 0.5);
+
+    color-scheme: dark;
+  }
+}
+
+/* An explicit dark choice, which has to beat a light system too. */
+:root[data-theme='dark'] {
   --bg: #18191a; /* elevation.surface.sunken */
   --surface: #242528; /* elevation.surface.raised */
   --surface-hi: rgba(206, 206, 217, 0.07); /* color.background.neutral */
+  --surface-hover: rgba(227, 228, 242, 0.12); /* color.background.neutral.hovered */
   --line: rgba(227, 228, 242, 0.12); /* color.border */
   --line-strong: #7e8188; /* color.border.bold */
   --control: #7e8188; /* color.border.input */
@@ -46,35 +117,6 @@
   --shadow-play-hover: 0 8px 12px rgba(1, 4, 4, 0.36), 0 0 1px rgba(1, 4, 4, 0.5);
 
   color-scheme: dark;
-}
-
-:root[data-theme='light'] {
-  --bg: #f8f8f8; /* elevation.surface.sunken */
-  --surface: #ffffff; /* elevation.surface.raised */
-  --surface-hi: rgba(5, 21, 36, 0.06); /* color.background.neutral */
-  --line: rgba(11, 18, 14, 0.14); /* color.border */
-  --line-strong: #7d818a; /* color.border.bold */
-  --control: #8c8f97; /* color.border.input */
-  --text: #292a2e; /* color.text */
-  --dim: #6b6e76; /* color.text.subtlest */
-  --accent: #1868db; /* color.background.brand.bold */
-  --accent-ink: #ffffff; /* color.text.inverse */
-  --accent-dim: #e9f2fe; /* color.background.selected */
-  --accent-hover: #1558bc; /* color.background.brand.bold.hovered */
-  --success: #4c6b1f; /* color.text.success */
-  --danger: #ae2e24; /* color.text.danger */
-  --danger-bold: #c9372c; /* color.background.danger.bold */
-  --warn: #9e4c00; /* color.text.warning */
-  --backdrop: rgba(9, 30, 66, 0.54);
-
-  --shadow-card: 0 1px 1px rgba(30, 31, 33, 0.25), 0 0 1px rgba(30, 31, 33, 0.31);
-  --shadow-float: 0 8px 12px rgba(30, 31, 33, 0.15), 0 0 1px rgba(30, 31, 33, 0.31);
-  --shadow-vote: 0 4px 12px rgba(30, 31, 33, 0.25);
-  --card-face: #ffffff;
-  --shadow-play: 0 1px 1px rgba(30, 31, 33, 0.25), 0 0 1px rgba(30, 31, 33, 0.31);
-  --shadow-play-hover: 0 8px 12px rgba(30, 31, 33, 0.15), 0 0 1px rgba(30, 31, 33, 0.31);
-
-  color-scheme: light;
 }
 
 * {

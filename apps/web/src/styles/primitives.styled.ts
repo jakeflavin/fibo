@@ -23,10 +23,22 @@ export const pop = keyframes`
  * A mixin rather than a component: it is always applied alongside something else.
  */
 export const identity = css`
-  --idc: var(--id-dark);
+  /*
+   * Three states, matching the token block: an explicit choice wins in either
+   * direction, and a visitor who never chose follows their system. The base
+   * declaration has to be light, because a rule that only exists inside a
+   * [data-theme] block never applies to the un-stamped document.
+   */
+  --idc: var(--id-light);
 
-  :root[data-theme='light'] & {
-    --idc: var(--id-light);
+  :root[data-theme='dark'] & {
+    --idc: var(--id-dark);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) & {
+      --idc: var(--id-dark);
+    }
   }
 `
 

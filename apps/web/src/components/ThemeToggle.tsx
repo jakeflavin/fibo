@@ -1,21 +1,30 @@
 import { useEffect, useRef, useState } from 'react'
 import { Menu, MenuButton, MenuItem, MenuSep, MenuWrap } from '@/styles/shared.styled'
 import { Bot, GitBranch, Moon, Settings, Sun } from 'lucide-react'
-import { getTheme, saveTheme } from '@/lib/storage'
+import { saveTheme } from '@/lib/storage'
+import { applyTheme, resolveTheme, type Theme } from '@/lib/theme'
 import { ConnectClaudeModal } from './ConnectClaudeModal'
-
-function effectiveTheme(): 'light' | 'dark' {
-  // Dark-first: dark unless the user explicitly chose light.
-  return getTheme() === 'light' ? 'light' : 'dark'
-}
 
 /** Current theme plus a toggle; the choice persists in localStorage. */
 export function useTheme() {
-  const [theme, setTheme] = useState<'light' | 'dark'>(effectiveTheme)
+  const [theme, setTheme] = useState<Theme>(() => resolveTheme())
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
+    applyTheme(theme)
   }, [theme])
+
+  /*
+   * Follow the system live, but only while the visitor has not chosen. Two
+   * gear menus mount this hook, so the listener also keeps them agreeing with
+   * each other rather than each holding its own idea of the theme.
+   */
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return
+    const query = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleSchemeChange = () => setTheme(resolveTheme())
+    query.addEventListener('change', handleSchemeChange)
+    return () => query.removeEventListener('change', handleSchemeChange)
+  }, [])
 
   const toggle = () => {
     const next = theme === 'dark' ? 'light' : 'dark'
