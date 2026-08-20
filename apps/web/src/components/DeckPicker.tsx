@@ -36,16 +36,36 @@ export function DeckPicker({ value, onChange }: DeckPickerProps) {
     }
   }
 
+  /*
+   * A radiogroup is one tab stop with arrows moving between the options — the
+   * contract the roles advertise. Three plain tab stops and dead arrow keys is
+   * the mismatch this used to ship, so the roving tabindex and the key handler
+   * are what make the ARIA true rather than decorative.
+   */
+  const handleArrowKeys = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key]
+    if (step === undefined) return
+    event.preventDefault()
+    const from = PRESETS.findIndex((p) => p.id === value.preset)
+    const next = PRESETS[(from + step + PRESETS.length) % PRESETS.length]
+    if (!next) return
+    pick(next.id)
+    // Focus follows selection in a radiogroup, so the arrows keep working.
+    event.currentTarget.querySelector<HTMLElement>(`[data-preset="${next.id}"]`)?.focus()
+  }
+
   return (
     <PickerGrid>
-      <DeckPickerSeg role="radiogroup" aria-label="Deck">
+      <DeckPickerSeg role="radiogroup" aria-label="Deck" onKeyDown={handleArrowKeys}>
         {PRESETS.map((p) => (
           <SegCell
             key={p.id}
             type="button"
+            data-preset={p.id}
             $active={value.preset === p.id}
             role="radio"
             aria-checked={value.preset === p.id}
+            tabIndex={value.preset === p.id ? 0 : -1}
             onClick={() => pick(p.id)}
           >
             {p.label}
