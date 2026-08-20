@@ -5,6 +5,12 @@ export const Brand = styled.a`
   align-items: baseline;
   gap: 6px;
   line-height: 1;
+
+  /* A 63x14 link is not a tap target; the bar grows to hold a 44px one. */
+  @media (hover: none) {
+    align-items: center;
+    min-height: 44px;
+  }
 `
 
 export const BrandName = styled.span`
@@ -27,4 +33,8 @@ export const HeaderBar = styled.header`
   height: 40px;
   border-bottom: 1px solid var(--line);
   flex-shrink: 0;
+
+  @media (hover: none) {
+    height: 48px;
+  }
 `

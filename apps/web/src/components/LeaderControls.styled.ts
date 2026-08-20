@@ -12,6 +12,16 @@ export const ControlsActions = styled.div`
     align-items: center;
     justify-content: center;
   }
+
+  /* This rule matches Button's own touch height at equal specificity, so it has
+     to restate it rather than let injection order decide. */
+  @media (hover: none) {
+    ${Button} {
+      height: 44px;
+      width: 44px;
+      padding: 0;
+    }
+  }
 `
 
 export const Chip = styled.button<{ $active?: boolean }>`
@@ -137,9 +147,17 @@ export const ControlsBar = styled(ControlsRow)`
       }
     }
 
+    /* Leaves room for the repoint button and the row's 6px gap beside it; the
+       ruler's touch height is 44, so the old 44px allowance wrapped it away. */
     @media (max-width: 860px) {
       ${ResultEdit} {
         flex: 1 1 calc(100% - 44px);
+      }
+    }
+
+    @media (max-width: 860px) and (hover: none) {
+      ${ResultEdit} {
+        flex: 1 1 calc(100% - 54px);
       }
     }
 

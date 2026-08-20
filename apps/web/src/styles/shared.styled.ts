@@ -96,6 +96,11 @@ export const Button = styled.button<{ $block?: boolean; $danger?: boolean; $ghos
   box-shadow 0.1s ease;
   white-space: nowrap;
 
+  /* 32px is the ADS density and right with a pointer; a finger needs 44. */
+  @media (hover: none) {
+    height: 44px;
+  }
+
   &:hover:not(:disabled) {
     background: var(--surface-hover);
   }
@@ -170,6 +175,13 @@ export const Button = styled.button<{ $block?: boolean; $danger?: boolean; $ghos
     border: 1px solid var(--line);
     color: var(--dim);
   }
+
+  @media (hover: none) {
+    && {
+      height: 44px;
+      width: 44px;
+    }
+  }
   `}
 
   ${(props) => props.$primary && css`
@@ -215,6 +227,12 @@ export const HomeForm = styled.form`
     margin-top: 4px;
     height: 40px;
     padding: 0 16px;
+  }
+
+  @media (hover: none) {
+    ${Button}:not([type='button']) {
+      height: 48px;
+    }
   }
 
   ${Field} {

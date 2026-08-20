@@ -370,6 +370,13 @@ export const TitleEditAction = styled(Button)`
     background: var(--surface);
     box-shadow: var(--shadow-float);
   }
+
+  @media (hover: none) {
+    && {
+      width: 44px;
+      height: 44px;
+    }
+  }
 `
 
 export const TitleEditActions = styled.span`
@@ -413,4 +420,22 @@ export const StoryTitle = styled.h2<{ $overflow?: boolean }>`
     background: var(--surface);
   }
   `}
+
+  /*
+   * On touch the actions are always visible, which inline would cost ~96px of
+   * the line and clip a title that otherwise fits. They move to the bottom-right
+   * corner and the text reserves a gutter for them, so the two never overlap and
+   * the two-line clamp still holds — laying them over the text, the way the
+   * clipped case does, put the pencil on the last word of a one-line title.
+   */
+  @media (hover: none) {
+    padding-right: 100px;
+
+    && ${TitleActions} {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      margin-left: 0;
+    }
+  }
 `
