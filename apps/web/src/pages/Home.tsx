@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react'
-import { Button, Field, FieldLabel, HomeCard, HomeCorner, HomeForm, HomeImport, HomeMain, HomeNotes, HomeShell, Logo, RoomFooter, SrOnly, Tagline, TextField } from '@/styles/shared.styled'
-import { FileUp, Heart } from 'lucide-react'
+import { Button, Field, FieldLabel, HomeCard, HomeForm, HomeImport, TextField } from '@/styles/shared.styled'
+import { FileUp } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import type { DeckChoice, Story } from '@fibo/shared'
 import { DECK_PRESETS, ImportError, newStoryId, parseSessionExport, storiesFromExport } from '@fibo/shared'
 import { createSession } from '@/lib/api'
 import { getLastName, saveLastName } from '@/lib/storage'
-import { SettingsMenu } from '@/components/ThemeToggle'
+import { OutsideRoom } from '@/components/OutsideRoom'
 import { DeckPicker } from '@/components/DeckPicker'
 import { useToast } from '@/components/Toast'
 
@@ -49,51 +49,41 @@ export function Home() {
   }
 
   return (
-    <HomeShell>
-      <HomeCorner>
-        <SettingsMenu />
-      </HomeCorner>
-      <HomeMain>
-        <Logo  aria-hidden="true">
-          fibo
-        </Logo>
-        <SrOnly>fibo</SrOnly>
-        <Tagline>Story points, no strings attached</Tagline>
-
-        <HomeCard>
-          <HomeForm  onSubmit={submit}>
-            <Field>
-              <FieldLabel>Your name *</FieldLabel>
-              <TextField>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ada"
-                  maxLength={40}
-                  autoFocus
-                  required
-                />
-              </TextField>
-            </Field>
-            <Field as="div">
-              <FieldLabel>Deck</FieldLabel>
-              <DeckPicker value={deck ?? { preset: 'custom', cards: [] }} onChange={setDeck} />
-            </Field>
-            <Button $primary $block  disabled={!name.trim() || !deck || busy}>
-              {busy ? 'Creating…' : 'Create session'}
-            </Button>
-            <HomeImport $ghost $block
-              type="button"
-              disabled={!name.trim() || busy}
-              onClick={() => fileInput.current?.click()}
-              title="Start a session from a previously exported queue">
-              <FileUp size={14} /> Start from an export…
-            </HomeImport>
-          </HomeForm>
-        </HomeCard>
-
-        <HomeNotes>No accounts, no signup — sessions are temporary</HomeNotes>
-      </HomeMain>
+    <OutsideRoom
+      title="fibo"
+      tagline="Story points, no strings attached"
+      notes="No accounts, no signup — sessions are temporary">
+    <HomeCard>
+        <HomeForm  onSubmit={submit}>
+          <Field>
+            <FieldLabel>Your name *</FieldLabel>
+            <TextField>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ada"
+                maxLength={40}
+                autoFocus
+                required
+              />
+            </TextField>
+          </Field>
+          <Field as="div">
+            <FieldLabel>Deck</FieldLabel>
+            <DeckPicker value={deck ?? { preset: 'custom', cards: [] }} onChange={setDeck} />
+          </Field>
+          <Button $primary $block  disabled={!name.trim() || !deck || busy}>
+            {busy ? 'Creating…' : 'Create session'}
+          </Button>
+          <HomeImport $ghost $block
+            type="button"
+            disabled={!name.trim() || busy}
+            onClick={() => fileInput.current?.click()}
+            title="Start a session from a previously exported queue">
+            <FileUp size={14} /> Start from an export…
+          </HomeImport>
+        </HomeForm>
+    </HomeCard>
       <input
         ref={fileInput}
         type="file"
@@ -105,9 +95,6 @@ export function Home() {
           e.target.value = ''
         }}
       />
-      <RoomFooter>
-        made with <Heart size={11} aria-label="love" /> by jake
-      </RoomFooter>
-    </HomeShell>
+    </OutsideRoom>
   )
 }

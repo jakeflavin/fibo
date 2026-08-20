@@ -61,6 +61,16 @@ export const HomeCard = styled(RailCard)`
   }
 `
 
+export const NoticeTitle = styled.h2`
+  /* heading.medium (DESIGN.md §2). These screens used the 12px Eyebrow, which
+     left the headline smaller and no louder than its own body copy. */
+  margin: 0 0 8px;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--text);
+`
+
 export const HomeCorner = styled.div`
   position: fixed;
   top: 14px;

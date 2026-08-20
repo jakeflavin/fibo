@@ -4,22 +4,6 @@ import { TeamCard } from '@/components/Participants.styled'
 import { Seats, TablePanel } from '@/components/CardTable.styled'
 import { Eyebrow, RailSection } from '@/styles/shared.styled'
 
-export const Notfound = styled.div`
-  display: grid;
-  gap: 12px;
-  justify-items: center;
-  max-width: 380px;
-`
-
-export const RoomEmpty = styled.div`
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 24px;
-`
-
 export const RoomGrid = styled.main`
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;

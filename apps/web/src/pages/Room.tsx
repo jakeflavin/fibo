@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Notfound, RoomEmpty, RoomGrid, RoomMain, RoomShell, RoomSide, RoomTable } from './Room.styled'
-import { Button, Dim, Eyebrow, RoomFooter } from '@/styles/shared.styled'
+import { RoomGrid, RoomMain, RoomShell, RoomSide, RoomTable } from './Room.styled'
+import { Button, Dim, HomeCard, NoticeTitle, PanelBody, RoomFooter } from '@/styles/shared.styled'
 import { Heart } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 import type { Session } from '@fibo/shared'
@@ -11,6 +11,7 @@ import { appPath } from '@/lib/urls'
 import { useSession } from '@/lib/useSession'
 import { RoomHeader } from '@/components/RoomHeader'
 import { JoinGate } from '@/components/JoinGate'
+import { OutsideRoom } from '@/components/OutsideRoom'
 import { CardTable } from '@/components/CardTable'
 import { RoundResult } from '@/components/RoundResult'
 import { LeaderControls } from '@/components/LeaderControls'
@@ -79,42 +80,45 @@ function RoomInner({ sessionId }: { sessionId: string }) {
 
   if (loading) {
     return (
-      <RoomEmpty>
-        <Dim>Connecting…</Dim>
-      </RoomEmpty>
+      <OutsideRoom title="fibo" tagline="Story points, no strings attached">
+        <Dim role="status">Connecting…</Dim>
+      </OutsideRoom>
     )
   }
 
   if (expired) {
     return (
-      <RoomEmpty>
-        <Notfound>
-          <Eyebrow>Session expired</Eyebrow>
-          <Dim>
-            This session ended more than 48 hours ago and has been deleted. Sessions on fibo are
-            temporary.
-          </Dim>
-          <Button as="a" $primary  href={appPath()}>
+      <OutsideRoom
+        title="This fibo session has expired"
+        tagline="That link has run out"
+        notes="No accounts, no signup — sessions are temporary">
+        <HomeCard>
+          <NoticeTitle>Session expired</NoticeTitle>
+          <PanelBody $dim>
+            This session ended more than 48 hours ago and has been deleted.
+          </PanelBody>
+          <Button as="a" $primary $block href={appPath()}>
             Start a new session
           </Button>
-        </Notfound>
-      </RoomEmpty>
+        </HomeCard>
+      </OutsideRoom>
     )
   }
 
   if (!session) {
     return (
-      <RoomEmpty>
-        <Notfound>
-          <Eyebrow>Session not found</Eyebrow>
-          <Dim>
-            This session doesn't exist (or has expired). Sessions on fibo are temporary.
-          </Dim>
-          <Button as="a" $primary  href={appPath()}>
+      <OutsideRoom
+        title="This fibo session was not found"
+        tagline="Nothing is waiting at that link"
+        notes="No accounts, no signup — sessions are temporary">
+        <HomeCard>
+          <NoticeTitle>Session not found</NoticeTitle>
+          <PanelBody $dim>This session doesn't exist, or it expired and was deleted.</PanelBody>
+          <Button as="a" $primary $block href={appPath()}>
             Start a new session
           </Button>
-        </Notfound>
-      </RoomEmpty>
+        </HomeCard>
+      </OutsideRoom>
     )
   }
 
