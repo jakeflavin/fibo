@@ -42,16 +42,17 @@ export const Chip = styled.button<{ $active?: boolean }>`
     color: var(--dim);
   }
 
+  /* Selected state is a tint, not a fill — see SegCell. */
   ${(props) => props.$active && css`
   && {
-    background: var(--accent);
-    color: var(--accent-ink);
+    background: var(--accent-dim);
+    color: var(--accent);
     font-weight: 600;
   }
 
   &&:hover {
-    background: var(--accent-hover);
-    color: var(--accent-ink);
+    background: var(--accent-dim);
+    color: var(--accent);
   }
   `}
 `
@@ -78,6 +79,30 @@ export const ResultEdit = styled.div`
 
   ${Chip} + ${Chip} {
     border-left: 1px solid var(--line);
+  }
+
+  /*
+   * Ten joined 31x30 cells on a phone, and each one silently overrides the
+   * whole team's estimate. Where there is no pointer the ruler deals into a
+   * 5-wide grid of finger-sized tiles instead — the same shape the hand takes
+   * below 480px, so the two rows of point values match.
+   */
+  @media (hover: none) {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+    border: 0;
+    overflow: visible;
+
+    ${Chip} {
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+    }
+
+    ${Chip} + ${Chip} {
+      border-left: 1px solid var(--line);
+    }
   }
 `
 

@@ -290,6 +290,17 @@ export const TitleActions = styled.span`
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.12s ease;
+
+  /*
+   * Hover-reveal has no gesture on a touchscreen, and pairing it with
+   * pointer-events: none made these genuinely unreachable there: a lead on a
+   * phone could add a story but never rename or delete one. Where hover does
+   * not exist, the actions are simply always on.
+   */
+  @media (hover: none) {
+    opacity: 1;
+    pointer-events: auto;
+  }
 `
 
 export const StoryLine = styled.div`
@@ -331,6 +342,15 @@ export const TitleAction = styled(Button)`
     align-items: center;
     justify-content: center;
     color: var(--dim);
+  }
+
+  /* A finger needs 44px; the glyph stays 28 so the line doesn't grow. */
+  @media (hover: none) {
+    && {
+      width: 44px;
+      height: 44px;
+      margin: -8px 0;
+    }
   }
 `
 

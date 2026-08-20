@@ -87,15 +87,7 @@ export const Button = styled.button<{ $block?: boolean; $danger?: boolean; $ghos
   white-space: nowrap;
 
   &:hover:not(:disabled) {
-    background: rgba(11, 18, 14, 0.14);
-  }
-
-  :root[data-theme='dark'] &:hover:not(:disabled) {
-    background: rgba(227, 228, 242, 0.12);
-  }
-
-  :root:not([data-theme='light']) &:hover:not(:disabled) {
-    background: rgba(227, 228, 242, 0.12);
+    background: var(--surface-hover);
   }
 
   &:active:not(:disabled) {
@@ -268,6 +260,13 @@ export const MenuButton = styled(Button)`
     padding: 4px 12px;
     border-radius: 8px;
   }
+
+  @media (hover: none) {
+    && {
+      height: 44px;
+      min-width: 44px;
+    }
+  }
 `
 
 export const MenuSep = styled.div`
@@ -426,18 +425,35 @@ export const SegCell = styled.button<{ $active?: boolean }>`
     cursor: not-allowed;
   }
 
+  /*
+   * The Jira selected pattern, not a solid fill. DESIGN.md §5 asked for both —
+   * "--accent-dim bg + --accent text" for segmented groups and "solid primary
+   * fill" for segmented pickers — and the timer segment appears in both lists.
+   * One rule now: a solid accent fill means an action you can take, a tint
+   * means state that is already true. That matches the queue's active row and
+   * the hand's selected card, which is what these sit beside.
+   */
   ${(props) => props.$active && css`
   && {
-    background: var(--accent);
-    color: var(--accent-ink);
+    background: var(--accent-dim);
+    color: var(--accent);
     font-weight: 600;
   }
 
   &&:hover:not(:disabled) {
-    background: var(--accent-hover);
-    color: var(--accent-ink);
+    background: var(--accent-dim);
+    color: var(--accent);
   }
   `}
+  /*
+   * 30px is the desktop density DESIGN.md §2 asks for: a joined cell inside a
+   * 1px group border. A finger needs 44, so touch gets its own height rather
+   * than the whole set being sized for the smaller case.
+   */
+  @media (hover: none) {
+    height: 44px;
+  }
+
 `
 
 export const MenuItem = styled.button<{ $danger?: boolean }>`

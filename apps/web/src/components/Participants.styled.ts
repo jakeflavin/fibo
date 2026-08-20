@@ -3,10 +3,22 @@ import { identity, pop, rise } from '@/styles/primitives.styled'
 import { Button, Menu, RailCard } from '@/styles/shared.styled'
 
 export const IdentityMark = styled.span`
-  --idc: var(--id-dark);
+  /*
+   * Three states, matching the token block: an explicit choice wins in either
+   * direction, and a visitor who never chose follows their system. The base
+   * declaration has to be light, because a rule that only exists inside a
+   * [data-theme] block never applies to the un-stamped document.
+   */
+  --idc: var(--id-light);
 
-  :root[data-theme='light'] &  {
-    --idc: var(--id-light);
+  :root[data-theme='dark'] & {
+    --idc: var(--id-dark);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) & {
+      --idc: var(--id-dark);
+    }
   }
 `
 
@@ -62,10 +74,27 @@ export const UserMore = styled(Button)`
     width: 24px;
     padding: 0;
     opacity: 0;
+    /*
+     * DESIGN.md §8: a hidden hover-reveal action pairs opacity with
+     * pointer-events, or it is an invisible target sitting in the row.
+     */
+    pointer-events: none;
     transition: opacity 0.1s ease;
 
     &[aria-expanded='true'] {
       opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  /* No hover to reveal it, so it is always on — and finger-sized. */
+  @media (hover: none) {
+    && {
+      opacity: 1;
+      pointer-events: auto;
+      height: 44px;
+      width: 44px;
+      margin: -10px 0;
     }
   }
 `
@@ -144,10 +173,12 @@ export const UserRow = styled.li<{ $offline?: boolean }>`
 
   &:hover ${UserMore} {
     opacity: 1;
+    pointer-events: auto;
   }
 
   &:focus-within ${UserMore} {
     opacity: 1;
+    pointer-events: auto;
   }
 
   > svg${IdentityMark} {
