@@ -24,7 +24,7 @@ export function ConfirmModal({
         <Button  onClick={onClose}>
           Cancel
         </Button>
-        <Button $danger  onClick={onConfirm}>
+        <Button $danger $primary onClick={onConfirm}>
           {confirmLabel}
         </Button>
       </ModalActions>

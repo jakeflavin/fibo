@@ -14,10 +14,14 @@ export const ModalTitle = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   margin-bottom: 16px;
 
+  /* heading.medium, 20/24 (DESIGN.md §5). The Eyebrow primitive underneath is
+     12px; it used to be nudged to 16, which is neither size the spec names. */
   ${Eyebrow} {
-    font-size: 16px;
+    font-size: 20px;
+    line-height: 24px;
     font-weight: 600;
     color: var(--text);
   }
@@ -32,7 +36,9 @@ export const Dialog = styled.dialog`
      backdrop's padding used to provide on a narrow screen. */
   width: calc(100% - 40px);
   max-width: 320px;
-  text-align: center;
+  /* Left, per DESIGN.md §5. Centred prose is fine for a one-line confirm and
+     poor for the four paragraphs in Connect Claude, which is what shipped. */
+  text-align: left;
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--line);
@@ -47,7 +53,6 @@ export const Dialog = styled.dialog`
   }
 
   ${PanelHint} {
-    text-align: center;
     margin: 10px 0 0;
   }
 

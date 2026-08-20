@@ -117,7 +117,7 @@ export const Button = styled.button<{ $block?: boolean; $danger?: boolean; $ghos
   }
   `}
 
-  ${(props) => props.$danger && css`
+  ${(props) => props.$danger && !props.$primary && css`
   && {
     border-color: var(--danger);
     color: var(--danger);
@@ -126,6 +126,23 @@ export const Button = styled.button<{ $block?: boolean; $danger?: boolean; $ghos
   &&:hover {
     background: var(--danger);
     color: var(--bg);
+  }
+  `}
+
+  /*
+   * The confirm in a destructive dialog. It sat at the same weight as the
+   * escape hatch beside it — one shared background, differing only in text
+   * colour — which made the irreversible action the quieter of the two.
+   * DESIGN.md §1 keeps --danger for text and the bold fill for fills.
+   */
+  ${(props) => props.$danger && props.$primary && css`
+  && {
+    background: var(--danger-bold);
+    color: #ffffff;
+  }
+
+  &&:hover:not(:disabled) {
+    filter: brightness(0.92);
   }
   `}
 
@@ -292,11 +309,8 @@ export const MenuWrap = styled.div`
 
 export const ModalActions = styled.div`
   display: flex;
+  justify-content: flex-end;
   gap: 8px;
-
-  ${Button} {
-    flex: 1;
-  }
 `
 
 export const PanelBody = styled.p<{ $dim?: boolean }>`
@@ -336,15 +350,24 @@ export const Seg = styled.div`
 `
 
 export const ShareUrl = styled.code`
+  /*
+   * The one exception to "monospace is retired everywhere" (DESIGN.md §2).
+   * A URL and a shell command are read character by character before being
+   * pasted somewhere else, which is what the face is for; the rule is about
+   * chrome and numbers. It was monospace by accident before — a bare <code>
+   * inheriting the UA default — so the stack is declared rather than assumed.
+   */
   display: block;
   background: var(--surface-hi);
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 8px 12px;
+  font-family: var(--font-mono);
   font-size: var(--font-small);
+  line-height: 1.5;
   overflow-wrap: anywhere;
   margin-bottom: 12px;
   user-select: all;
-  color: var(--dim);
+  color: var(--text);
 `
 
 export const SrOnly = styled.h1`

@@ -1,7 +1,6 @@
 import { Copy } from 'lucide-react'
-import { Modal } from './Modal'
 import { appUrl } from '@/lib/urls'
-import { ConnectCopy, ConnectRow } from './ConnectClaudeModal.styled'
+import { ConnectCopy, ConnectDialog, ConnectRow } from './ConnectClaudeModal.styled'
 import { Button, FieldLabel, PanelBody, PanelHint, ShareUrl } from '@/styles/shared.styled'
 import { useToast } from './Toast'
 
@@ -32,7 +31,7 @@ export function ConnectClaudeModal({ onClose }: { onClose: () => void }) {
    * with showModal() is in the top layer, which no stacking context can contain.
    */
   return (
-    <Modal title="Connect Claude" onClose={onClose}>
+    <ConnectDialog title="Connect Claude" onClose={onClose}>
         <PanelBody>
           Add fibo as a connector once, and Claude can start sessions from your backlog, add stories
           mid-meeting, and read the points back out — no account needed.
@@ -68,6 +67,6 @@ export function ConnectClaudeModal({ onClose }: { onClose: () => void }) {
           Claude gets four tools: create a session, add stories, read the room, and read results.
           Whoever opens a Claude-created session first becomes its admin.
         </PanelHint>
-    </Modal>
+    </ConnectDialog>
   )
 }

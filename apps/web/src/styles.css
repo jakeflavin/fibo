@@ -17,6 +17,10 @@
   --font-sans:
     ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ubuntu, 'Helvetica Neue',
     Helvetica, Arial, sans-serif;
+  /* Code pills only — a URL or a shell command read character by character.
+     See DESIGN.md §2: monospace is retired from chrome and from numbers. */
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
   /* The only UI type sizes (headings and card metrics aside):
      body for anything read or clicked, small for secondary/labels,
      lozenge for tags. */
