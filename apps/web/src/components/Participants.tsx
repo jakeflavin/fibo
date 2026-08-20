@@ -48,8 +48,14 @@ export function Participants({ session, myUserId }: ParticipantsProps) {
     const close = () => setMenu(null)
     const onDown = (e: MouseEvent) => {
       const target = e.target as Element
-      // The menu is portaled to <body>; clicks inside it aren't "outside".
-      if (target.closest('.user-menu')) return
+      /*
+       * The menu is portaled to <body>, so the list ref never contains it and
+       * every click inside it read as "outside" — mousedown tore the menu down
+       * before mouseup, and no item in it ever fired. It was guarded by a class
+       * that nothing rendered; the marker has to be one the menu actually
+       * carries, which is why this is an attribute on the element itself.
+       */
+      if (target.closest('[data-user-menu]')) return
       if (listRef.current && !listRef.current.contains(target)) close()
     }
     const onKey = (e: KeyboardEvent) => {
@@ -109,6 +115,7 @@ export function Participants({ session, myUserId }: ParticipantsProps) {
                       createPortal(
                         <UserMenu
                           role="menu"
+                          data-user-menu
                           style={{ position: 'fixed', top: menu.top, left: menu.left }}>
                           {!isSpectator && (
                             <MenuItem
