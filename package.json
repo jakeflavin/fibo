@@ -14,7 +14,7 @@
     "dev": "npm run dev -w apps/web",
     "build": "npm run build -w apps/web",
     "preview": "npm run preview -w apps/web",
-    "lint": "oxlint",
+    "lint": "oxlint && npm run lint -w apps/web",
     "format": "prettier --write .",
     "typecheck": "npm run typecheck -w packages/shared && npm run typecheck -w apps/web",
     "test": "npm run test -w packages/shared && npm run test -w apps/web && npm --prefix functions test",
