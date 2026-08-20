@@ -7,6 +7,7 @@ import type { Session } from '@fibo/shared'
 import { ImportError, exportSession, parseSessionExport, resultsTable } from '@fibo/shared'
 import { createSession, importStories, removeUser } from '@/lib/api'
 import { clearMyUserId } from '@/lib/storage'
+import { appPath } from '@/lib/urls'
 import { ConfirmModal } from './ConfirmModal'
 import { ConnectClaudeModal } from './ConnectClaudeModal'
 import { DeckModal } from './DeckModal'
@@ -105,7 +106,7 @@ export function RoomHeader({ session, myUserId, canLead, onShare, onShortcuts }:
 
   return (
     <HeaderBar>
-      <Brand  href="/" title="fibo home">
+      <Brand  href={appPath()} title="fibo home">
         <BrandName>fibo</BrandName>
         <BrandVersion>v{__APP_VERSION__}</BrandVersion>
       </Brand>

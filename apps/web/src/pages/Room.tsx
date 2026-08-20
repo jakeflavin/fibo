@@ -7,6 +7,7 @@ import type { Session } from '@fibo/shared'
 import { everyoneVoted, isSessionExpired } from '@fibo/shared'
 import { deleteSession, revealCards, trackPresence } from '@/lib/api'
 import { getMyUserId } from '@/lib/storage'
+import { appPath } from '@/lib/urls'
 import { useSession } from '@/lib/useSession'
 import { RoomHeader } from '@/components/RoomHeader'
 import { JoinGate } from '@/components/JoinGate'
@@ -93,7 +94,7 @@ function RoomInner({ sessionId }: { sessionId: string }) {
             This session ended more than 48 hours ago and has been deleted. Sessions on fibo are
             temporary.
           </Dim>
-          <Button as="a" $primary  href="/">
+          <Button as="a" $primary  href={appPath()}>
             Start a new session
           </Button>
         </Notfound>
@@ -109,7 +110,7 @@ function RoomInner({ sessionId }: { sessionId: string }) {
           <Dim>
             This session doesn't exist (or has expired). Sessions on fibo are temporary.
           </Dim>
-          <Button as="a" $primary  href="/">
+          <Button as="a" $primary  href={appPath()}>
             Start a new session
           </Button>
         </Notfound>

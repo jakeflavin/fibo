@@ -2,6 +2,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import { QrBox } from './ShareModal.styled'
 import { Button, Dim, ShareUrl } from '@/styles/shared.styled'
 import type { Session } from '@fibo/shared'
+import { sessionUrl } from '@/lib/urls'
 import { Modal } from './Modal'
 import { useToast } from './Toast'
 
@@ -13,14 +14,14 @@ interface ShareModalProps {
 /** Invite modal: the session link as text and as a scannable QR code. */
 export function ShareModal({ session, onClose }: ShareModalProps) {
   const toast = useToast()
-  const url = `${window.location.origin}/s/${session.id}`
+  const url = sessionUrl(session.id)
 
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(url)
-      toast('link copied to clipboard')
+      toast('Link copied')
     } catch {
-      toast('could not copy — select the link manually', 'error')
+      toast('Could not copy — select the link manually.', 'error')
     }
   }
 

@@ -1,5 +1,6 @@
 import { Copy } from 'lucide-react'
 import { Modal } from './Modal'
+import { appUrl } from '@/lib/urls'
 import { ConnectCopy, ConnectRow } from './ConnectClaudeModal.styled'
 import { Button, FieldLabel, PanelBody, PanelHint, ShareUrl } from '@/styles/shared.styled'
 import { useToast } from './Toast'
@@ -12,7 +13,7 @@ import { useToast } from './Toast'
 export function ConnectClaudeModal({ onClose }: { onClose: () => void }) {
   const toast = useToast()
   // The endpoint sits under the app's own base, so it moves with it.
-  const url = `${window.location.origin}${import.meta.env.BASE_URL}mcp`
+  const url = appUrl('/mcp')
   const command = `claude mcp add --transport http --scope user fibo ${url}`
 
 
