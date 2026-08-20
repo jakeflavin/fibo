@@ -35,7 +35,7 @@ export const RoomShell = styled.div`
   /*
    * Below 860 the shell grows with its content instead of being clipped to the
    * window, and the hand leaves the stage to become a fixed bottom bar. It used
-   * to take `height: auto`, which is right on a phone — where the page always
+   * to take height:auto, which is right on a phone — where the page always
    * overflows — and left 261px of empty ground on a tablet in portrait, where
    * it does not: a footer floating mid-page with the deck parked at the bottom
    * of the glass. A minimum of one viewport keeps the room filling the window,
