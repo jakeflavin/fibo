@@ -32,14 +32,26 @@ export const RoomShell = styled.div`
   flex-direction: column;
   background: var(--surface);
 
+  /*
+   * Below 860 the shell grows with its content instead of being clipped to the
+   * window, and the hand leaves the stage to become a fixed bottom bar. It used
+   * to take `height: auto`, which is right on a phone — where the page always
+   * overflows — and left 261px of empty ground on a tablet in portrait, where
+   * it does not: a footer floating mid-page with the deck parked at the bottom
+   * of the glass. A minimum of one viewport keeps the room filling the window,
+   * and the padding reserves the bar's real height so the footer lands just
+   * above it rather than behind it.
+   */
   @media (max-width: 860px) {
     height: auto;
+    min-height: 100dvh;
     overflow: visible;
-    padding-bottom: 200px;
+    padding-bottom: 116px;
   }
 
+  /* The hand deals into a 5x2 grid here, so the bar is taller. */
   @media (max-width: 480px) {
-    padding-bottom: 200px;
+    padding-bottom: 176px;
   }
 `
 
