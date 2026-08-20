@@ -68,7 +68,7 @@ export const IDENTITY_SETS: [IdentitySet, ...IdentitySet[]] = [
   {
     name: 'cat', // amber
     color: '#E2C069',
-    colorLight: '#A06E00',
+    colorLight: '#956600',
     pixels: [
       '.X....X.',
       '.XX..XX.',
@@ -98,7 +98,7 @@ export const IDENTITY_SETS: [IdentitySet, ...IdentitySet[]] = [
   {
     name: 'slime', // lime
     color: '#B9D46E',
-    colorLight: '#6B8710',
+    colorLight: '#617B0F',
     pixels: [
       '........',
       '...XX...',
@@ -128,7 +128,7 @@ export const IDENTITY_SETS: [IdentitySet, ...IdentitySet[]] = [
   {
     name: 'fox', // orange
     color: '#E89A5C',
-    colorLight: '#BC6410',
+    colorLight: '#AE5C0F',
     pixels: [
       'X......X',
       'XX....XX',
