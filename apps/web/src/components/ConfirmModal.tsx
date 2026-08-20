@@ -22,7 +22,7 @@ export function ConfirmModal({
       <PanelBody>{message}</PanelBody>
       <ModalActions>
         <Button  onClick={onClose}>
-          cancel
+          Cancel
         </Button>
         <Button $danger  onClick={onConfirm}>
           {confirmLabel}
